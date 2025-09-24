@@ -18,15 +18,19 @@ pub fn file(text: impl BufRead) -> Vec<Line> {
 #[derive(Debug, Eq, PartialEq)]
 pub struct Line {
     /// the line number in the file
-    number: usize,
+    pub number: usize,
+
     /// complete text of the line, as it is in the file
-    full_text: String,
+    pub full_text: String,
+
     /// how much the line is indented
-    indent: Indentation,
+    pub indent: Indentation,
+
     /// line text without preceding whitespace
-    trimmed_text: TrimmedLine,
+    pub trimmed_text: TrimmedLine,
+
     /// whether this is a Given/When/Then line or not
-    line_type: LineType,
+    pub line_type: LineType,
 }
 
 impl Line {
@@ -57,7 +61,7 @@ fn clip_start(line: &str) -> (Indentation, TrimmedLine) {
 }
 
 #[derive(Debug, Eq, PartialEq)]
-enum LineType {
+pub enum LineType {
     /// this line starts a block, i.e. "Background", "Scenario", etc
     BlockStart,
     /// this line starts a step, i.e. "Given", "When", "Then", etc
@@ -72,7 +76,7 @@ struct Indentation(usize);
 
 /// a line without the initial whitespace
 #[derive(Debug, Eq, PartialEq)]
-struct TrimmedLine(String);
+pub struct TrimmedLine(String);
 
 impl TrimmedLine {
     fn line_type(&self) -> LineType {
@@ -96,6 +100,12 @@ impl TrimmedLine {
 impl From<&str> for TrimmedLine {
     fn from(value: &str) -> Self {
         TrimmedLine(value.to_string())
+    }
+}
+
+impl Into<String> for TrimmedLine {
+    fn into(self) -> String {
+        self.0
     }
 }
 

@@ -1,21 +1,22 @@
 use crate::config::Config;
 use crate::domain;
+use crate::gherkin;
 use camino::Utf8PathBuf;
 
 /// provides a copy of the given File with all Gherkin steps sorted the same way as the given configuration
-pub fn file(file: domain::File, config: &Config, issues: &mut Vec<Issue>) -> domain::File {
-    let mut new_blocks = Vec::<domain::Block>::new();
+pub fn file(file: gherkin::File, config: &Config, issues: &mut Vec<Issue>) -> gherkin::File {
+    let mut new_blocks = Vec::<gherkin::Block>::new();
     for file_block in file.blocks {
         new_blocks.push(block(file_block, config, issues));
     }
-    domain::File {
+    gherkin::File {
         blocks: new_blocks,
         initial_lines: file.initial_lines,
     }
 }
 
 /// provides the given block with all steps sorted according to the given configuration
-fn block(block: domain::Block, config: &Config, issues: &mut Vec<Issue>) -> domain::Block {
+fn block(block: gherkin::Block, config: &Config, issues: &mut Vec<Issue>) -> gherkin::Block {
     // order the lines in block the same order as the ones in config
     block
 }
@@ -33,27 +34,27 @@ mod tests {
         use big_s::S;
 
         use crate::config::Config;
-        use crate::{domain, sort};
+        use crate::{gherkin, sort};
 
         #[test]
         fn already_ordered() {
             let config = Config {
                 steps: vec![S("step 1"), S("step 2"), S("step 3")],
             };
-            let give_block = domain::Block {
+            let give_block = gherkin::Block {
                 start: 3,
                 steps: vec![
-                    domain::Step {
-                        text: S("Given step 1"),
+                    gherkin::Step {
                         title: S("step 1"),
+                        lines: vec![],
                     },
-                    domain::Step {
-                        text: S("Given step 2"),
+                    gherkin::Step {
                         title: S("step 2"),
+                        lines: vec![],
                     },
-                    domain::Step {
-                        text: S("Given step 3"),
+                    gherkin::Step {
                         title: S("step 3"),
+                        lines: vec![],
                     },
                 ],
             };

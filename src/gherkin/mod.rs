@@ -1,10 +1,10 @@
 mod lexer;
 mod parser;
 
-use crate::domain;
+pub use parser::{Block, File, Step};
 use std::io::BufRead;
 
-pub fn file(text: impl BufRead) -> domain::File {
+pub fn file(text: impl BufRead) -> parser::File {
     let lines = lexer::file(text);
     parser::file(lines)
 }
