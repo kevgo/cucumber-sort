@@ -43,13 +43,15 @@ impl Line {
 
 /// provides the number of leading whitespace characters and the text without that leading whitespace
 fn clip_start(line: &str) -> (Indentation, TrimmedLine) {
-    for (i, c) in line.char_indices().into_iter() {
+    let mut counter = 0;
+    for c in line.chars().into_iter() {
         if c == ' ' || c == '\t' {
+            counter += 1;
             continue;
         }
-        return (Indentation(i), TrimmedLine::from(&line[i..]));
+        return (Indentation(counter), TrimmedLine::from(&line[counter..]));
     }
-    (Indentation(0), TrimmedLine::from(line))
+    (Indentation(counter), TrimmedLine::from(&line[counter..]))
 }
 
 enum LineType {
