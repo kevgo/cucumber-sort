@@ -1,5 +1,7 @@
 # cucumber-sort
 
+![build status](https://github.com/kevgo/cucumber-sort/actions/workflows/ci.yml/badge.svg)
+
 - checks that steps are in the right order
 - checks that scenarios don't contain duplicate steps?
 - enforces the steps only within `Given`, `When`, and `Then` blocks
