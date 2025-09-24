@@ -1,16 +1,15 @@
 mod check;
 mod config;
+mod domain;
 mod find;
 mod parse;
 mod prelude;
 
 use check::Issue;
 use prelude::*;
-use std::fs::{self, read};
-use std::io::{BufRead, BufReader};
+use std::fs;
+use std::io::BufReader;
 use std::process::ExitCode;
-
-use crate::parse::gherkin;
 
 fn main() -> ExitCode {
     match inner() {

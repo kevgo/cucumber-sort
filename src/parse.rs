@@ -1,19 +1,10 @@
+use crate::domain::{self, Block};
 use crate::prelude::*;
 use std::io::BufRead;
 
 const STEP_STARTS: &[&str] = &["Given", "When", "Then", "And"];
 
-pub struct File {
-    blocks: Vec<Block>,
-}
-
-#[derive(Default)]
-pub struct Block {
-    start: usize,
-    lines: Vec<String>,
-}
-
-pub fn gherkin(text: impl BufRead) -> Result<File> {
+pub fn gherkin(text: impl BufRead) -> Result<domain::File> {
     let mut blocks = Vec::<Block>::new();
     let mut current_block = Block::default();
     for (number, line) in text.lines().into_iter().enumerate() {
@@ -33,7 +24,7 @@ pub fn gherkin(text: impl BufRead) -> Result<File> {
     if !current_block.lines.is_empty() {
         blocks.push(current_block);
     }
-    Ok(File { blocks })
+    Ok(domain::File { blocks })
 }
 
 fn is_step(line: &str) -> bool {
