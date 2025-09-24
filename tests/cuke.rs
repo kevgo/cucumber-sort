@@ -21,7 +21,7 @@ async fn check_output(world: &mut MyWorld, expected: String) {
     assert_eq!(world.output.trim(), expected);
 }
 
-#[tokio::test]
-async fn run_cucumber_tests() {
+#[tokio::main(flavor = "current_thread")]
+async fn main() {
     MyWorld::run("features").await;
 }
