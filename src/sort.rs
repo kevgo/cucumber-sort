@@ -8,7 +8,10 @@ pub fn file(file: domain::File, config: &Config, issues: &mut Vec<Issue>) -> dom
     for file_block in file.blocks {
         new_blocks.push(block(file_block, config, issues));
     }
-    domain::File { blocks: new_blocks }
+    domain::File {
+        blocks: new_blocks,
+        initial_lines: file.initial_lines,
+    }
 }
 
 /// provides the given block with all steps sorted according to the given configuration

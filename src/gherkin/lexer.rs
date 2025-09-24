@@ -1,10 +1,10 @@
 use std::io::BufRead;
 
 // the words that lines which start a block can start with
-pub const BLOCK_STARTS: &[&str] = &["Background", "Scenario", "Scenario Outline"];
+pub const BLOCK_STARTERS: &[&str] = &["Background", "Scenario", "Scenario Outline"];
 
 /// the words that lines which start a step can start with
-pub const STEP_STARTS: &[&str] = &["Given", "When", "Then", "And"];
+pub const STEP_STARTERS: &[&str] = &["Given", "When", "Then", "And"];
 
 /// lexes the given file content
 fn file(text: impl BufRead) -> Vec<Line> {
@@ -15,7 +15,7 @@ fn file(text: impl BufRead) -> Vec<Line> {
         .collect()
 }
 
-struct Line {
+pub struct Line {
     /// the line number in the file
     number: usize,
     /// complete text of the line, as it is in the file
@@ -41,6 +41,17 @@ impl Line {
     }
 }
 
+/// provides the number of leading whitespace characters and the text without that leading whitespace
+fn clip_start(line: &str) -> (Indentation, TrimmedLine) {
+    for (i, c) in line.char_indices().into_iter() {
+        if c == ' ' || c == '\t' {
+            continue;
+        }
+        return (Indentation(i), TrimmedLine::from(&line[i..]));
+    }
+    (Indentation(0), TrimmedLine::from(line))
+}
+
 enum LineType {
     /// this line starts a block, i.e. "Background", "Scenario", etc
     BlockStart,
@@ -57,12 +68,6 @@ struct Indentation(usize);
 #[derive(Debug, Eq, PartialEq)]
 struct TrimmedLine(String);
 
-impl From<&str> for TrimmedLine {
-    fn from(value: &str) -> Self {
-        TrimmedLine(value.to_string())
-    }
-}
-
 impl TrimmedLine {
     fn line_type(&self) -> LineType {
         if self.is_block_start() {
@@ -75,10 +80,16 @@ impl TrimmedLine {
     }
 
     fn is_block_start(&self) -> bool {
-        BLOCK_STARTS.iter().any(|word| self.0.starts_with(word))
+        BLOCK_STARTERS.iter().any(|word| self.0.starts_with(word))
     }
     fn is_step_start(&self) -> bool {
-        STEP_STARTS.iter().any(|word| self.0.starts_with(word))
+        STEP_STARTERS.iter().any(|word| self.0.starts_with(word))
+    }
+}
+
+impl From<&str> for TrimmedLine {
+    fn from(value: &str) -> Self {
+        TrimmedLine(value.to_string())
     }
 }
 
@@ -86,16 +97,6 @@ impl PartialEq<&str> for TrimmedLine {
     fn eq(&self, other: &&str) -> bool {
         &self.0 == other
     }
-}
-
-fn clip_start(line: &str) -> (Indentation, TrimmedLine) {
-    for (i, c) in line.char_indices().into_iter() {
-        if c == ' ' || c == '\t' {
-            continue;
-        }
-        return (Indentation(i), TrimmedLine::from(&line[i..]));
-    }
-    (Indentation(0), TrimmedLine::from(line))
 }
 
 #[cfg(test)]

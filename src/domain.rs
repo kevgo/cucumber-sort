@@ -1,4 +1,5 @@
 pub struct File {
+    pub initial_lines: Vec<String>,
     pub blocks: Vec<Block>,
 }
 
