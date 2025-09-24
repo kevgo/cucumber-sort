@@ -172,12 +172,18 @@ Feature: test
 
   Background:
     Given step 1
-    And step 2
+    And step 2:
+      """
+      docstring line 1
+      docstring line 2
+      """
     When step 3
 
   Scenario: result
-    Then step 4
-    And step 5
+    Then step 4:
+      | HEADING 1 | HEADING 2 |
+      | line 1a   | line 1b   |
+      | line 2a   | line 2b   |
 "#;
         let bufread = BufReader::new(give[1..].as_bytes());
         let have = lexer::file(bufread);
@@ -226,45 +232,87 @@ Feature: test
             },
             Line {
                 number: 6,
-                full_text: S("    And step 2"),
+                full_text: S("    And step 2:"),
                 indent: Indentation(4),
-                trimmed_text: TrimmedLine::from("And step 2"),
+                trimmed_text: TrimmedLine::from("And step 2:"),
                 line_type: LineType::StepStart,
             },
             Line {
                 number: 7,
+                full_text: S(r#"      """"#),
+                indent: Indentation(6),
+                trimmed_text: TrimmedLine::from(r#"""""#),
+                line_type: LineType::Other,
+            },
+            Line {
+                number: 8,
+                full_text: S("      docstring line 1"),
+                indent: Indentation(6),
+                trimmed_text: TrimmedLine::from("docstring line 1"),
+                line_type: LineType::Other,
+            },
+            Line {
+                number: 9,
+                full_text: S("      docstring line 2"),
+                indent: Indentation(6),
+                trimmed_text: TrimmedLine::from("docstring line 2"),
+                line_type: LineType::Other,
+            },
+            Line {
+                number: 10,
+                full_text: S(r#"      """"#),
+                indent: Indentation(6),
+                trimmed_text: TrimmedLine::from(r#"""""#),
+                line_type: LineType::Other,
+            },
+            Line {
+                number: 11,
                 full_text: S("    When step 3"),
                 indent: Indentation(4),
                 trimmed_text: TrimmedLine::from("When step 3"),
                 line_type: LineType::StepStart,
             },
             Line {
-                number: 8,
+                number: 12,
                 full_text: S(""),
                 indent: Indentation(0),
                 trimmed_text: TrimmedLine::from(""),
                 line_type: LineType::Other,
             },
             Line {
-                number: 9,
+                number: 13,
                 full_text: S("  Scenario: result"),
                 indent: Indentation(2),
                 trimmed_text: TrimmedLine::from("Scenario: result"),
                 line_type: LineType::BlockStart,
             },
             Line {
-                number: 10,
-                full_text: S("    Then step 4"),
+                number: 14,
+                full_text: S("    Then step 4:"),
                 indent: Indentation(4),
-                trimmed_text: TrimmedLine::from("Then step 4"),
+                trimmed_text: TrimmedLine::from("Then step 4:"),
                 line_type: LineType::StepStart,
             },
             Line {
-                number: 11,
-                full_text: S("    And step 5"),
-                indent: Indentation(4),
-                trimmed_text: TrimmedLine::from("And step 5"),
-                line_type: LineType::StepStart,
+                number: 15,
+                full_text: S("      | HEADING 1 | HEADING 2 |"),
+                indent: Indentation(6),
+                trimmed_text: TrimmedLine::from("| HEADING 1 | HEADING 2 |"),
+                line_type: LineType::Other,
+            },
+            Line {
+                number: 16,
+                full_text: S("      | line 1a   | line 1b   |"),
+                indent: Indentation(6),
+                trimmed_text: TrimmedLine::from("| line 1a   | line 1b   |"),
+                line_type: LineType::Other,
+            },
+            Line {
+                number: 17,
+                full_text: S("      | line 2a   | line 2b   |"),
+                indent: Indentation(6),
+                trimmed_text: TrimmedLine::from("| line 2a   | line 2b   |"),
+                line_type: LineType::Other,
             },
         ];
         pretty::assert_eq!(have, want);
