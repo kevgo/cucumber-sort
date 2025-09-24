@@ -1,10 +1,14 @@
-use cucumber::{World, then, when};
+use cucumber::gherkin::Step;
+use cucumber::{World, given, then, when};
 use std::process::Command;
 
 #[derive(Debug, Default, World)]
 pub struct MyWorld {
     output: String,
 }
+
+#[given(expr = "file {string}:")]
+async fn file(world: &mut MyWorld, step: &Step, filename: String) {}
 
 #[when("I run cucumber-sort")]
 async fn run_binary(world: &mut MyWorld) {
