@@ -1,5 +1,4 @@
 use crate::config::Config;
-use crate::domain;
 use crate::gherkin;
 use camino::Utf8PathBuf;
 
