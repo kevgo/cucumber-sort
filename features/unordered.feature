@@ -5,25 +5,17 @@ Feature: ordered steps
       """
       step 1
       step 2
-      step 3
-      step 4
-      step 5
       """
     And file "feature/one.feature":
       """
       Feature: example
       
-        Background:
-          Given step 1
-          And step 2
-          When step 3
-      
         Scenario: result
-          Then step 4
-          And step 5
+          Then step 2
+          And step 1
       """
     When I run cucumber-sort
     Then it prints:
       """
-      All steps are ordered.
+      feature/one.feature:5  "step 1" should not come after "step 2"
       """
