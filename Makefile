@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-cuke:
+cuke:  # runs the end-to-end tests
 	@cargo test --test cuke
 
 help:  # prints all available targets
