@@ -1,3 +1,5 @@
 fn main() {
-    println!("All steps are ordered.");
+    // find all files with the extension ".feature"
+
+    // read the content of the file into a Vec of lines.
 }
