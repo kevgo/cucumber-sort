@@ -98,6 +98,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "big_s"
+version = "1.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "199edb7b90631283b10c2422e6a0bc8b7d987bf732995ba1de53b576c97e51a8"
+
+[[package]]
 name = "bitflags"
 version = "2.9.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -295,6 +301,7 @@ dependencies = [
 name = "cucumber-sort"
 version = "0.1.0"
 dependencies = [
+ "big_s",
  "camino",
  "camino-tempfile",
  "cucumber",

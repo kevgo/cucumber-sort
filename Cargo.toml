@@ -7,6 +7,7 @@ edition = "2024"
 camino = "1.1"
 
 [dev-dependencies]
+big_s = "1.0.2"
 camino-tempfile = "1.4.1"
 cucumber = "0.21"
 tokio = { version = "1.0", features = ["fs","macros", "process", "rt"] }

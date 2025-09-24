@@ -1,12 +1,12 @@
-mod check;
 mod config;
 mod domain;
 mod find;
-mod parse;
+mod gherkin;
 mod prelude;
+mod sort;
 
-use check::Issue;
 use prelude::*;
+use sort::Issue;
 use std::fs;
 use std::io::BufReader;
 use std::process::ExitCode;
@@ -35,8 +35,8 @@ fn inner() -> Result<usize> {
             filename: file,
             reason: e.to_string(),
         })?;
-        let gherkin = parse::gherkin(BufReader::new(file))?;
-        check::file(gherkin, &config, &mut issues);
+        // let gherkin = gherkin::file(BufReader::new(file))?;
+        // sort::file(gherkin, &config, &mut issues);
     }
     for issue in &issues {
         println!("{}:{}  {}", issue.file, issue.line, issue.problem);
