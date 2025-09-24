@@ -72,7 +72,7 @@ pub enum LineType {
 
 /// describes how much a line is indented
 #[derive(Debug, Eq, PartialEq)]
-struct Indentation(usize);
+pub struct Indentation(usize);
 
 /// a line without the initial whitespace
 #[derive(Debug, Eq, PartialEq)]
