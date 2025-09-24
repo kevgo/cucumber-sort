@@ -8,10 +8,9 @@
 ### Configuration file
 
 ```
-[[one-of-these]]  # ensures exactly one of the nested expression is contained
-  a Git repo with origin
-  a local Git repo
-  I am outside a Git repo
+a Git repo with origin
+a local Git repo
+I am outside a Git repo
 the branches
 the local branch is {string}
 the commits
