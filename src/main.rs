@@ -35,7 +35,7 @@ fn inner() -> Result<usize> {
             filename: filepath,
             reason: e.to_string(),
         })?;
-        let gherkin = gherkin::file(BufReader::new(file_content))?;
+        let gherkin = gherkin::file(BufReader::new(file_content));
         let sorted_file = sort::file(gherkin, &config, &mut issues);
     }
     for issue in &issues {

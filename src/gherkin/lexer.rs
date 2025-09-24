@@ -7,7 +7,7 @@ pub const BLOCK_STARTERS: &[&str] = &["Background", "Scenario", "Scenario Outlin
 pub const STEP_STARTERS: &[&str] = &["Given", "When", "Then", "And"];
 
 /// lexes the given file content
-fn file(text: impl BufRead) -> Vec<Line> {
+pub fn file(text: impl BufRead) -> Vec<Line> {
     text.lines()
         .into_iter()
         .enumerate()

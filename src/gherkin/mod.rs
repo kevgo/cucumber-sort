@@ -2,14 +2,11 @@ mod lexer;
 mod parser;
 
 use crate::domain;
-use crate::prelude::*;
 use std::io::BufRead;
 
-pub fn file(text: impl BufRead) -> Result<domain::File> {
-    Ok(domain::File {
-        initial_lines: vec![],
-        blocks: vec![],
-    })
+pub fn file(text: impl BufRead) -> domain::File {
+    let lines = lexer::file(text);
+    parser::file(lines)
 }
 
 /*
