@@ -7,6 +7,10 @@ use core::fmt::Display;
 /// and which the app should therefore display to them
 #[derive(Eq, Debug, PartialEq)]
 pub enum UserError {
+    CannotReadConfigFile {
+        filename: Utf8PathBuf,
+        reason: String,
+    },
     CannotReadFile {
         filename: Utf8PathBuf,
         reason: String,
@@ -16,6 +20,9 @@ pub enum UserError {
 impl Display for UserError {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
+            UserError::CannotReadConfigFile { filename, reason } => {
+                write!(f, "cannot read configuration file ({filename}): {reason}")
+            }
             UserError::CannotReadFile { filename, reason } => {
                 write!(f, "cannot read file {}: {}", filename, reason)
             }

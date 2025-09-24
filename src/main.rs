@@ -1,10 +1,16 @@
+mod check;
+mod config;
+mod find;
+mod parse;
 mod prelude;
 
-use camino::{Utf8Path, Utf8PathBuf};
+use check::Issue;
 use prelude::*;
-use std::fs;
+use std::fs::{self, read};
 use std::io::{BufRead, BufReader};
 use std::process::ExitCode;
+
+use crate::parse::gherkin;
 
 fn main() -> ExitCode {
     match inner() {
@@ -17,38 +23,17 @@ fn main() -> ExitCode {
 }
 
 fn inner() -> Result<()> {
-    // find all files in all subfolders that have the extension ".feature"
-    let mut feature_files = vec![];
-    find_feature_files(".", &mut feature_files)?;
-    for file in feature_files {
-        println!("Processing: {}", &file);
-
-        // read the content of the file into a Vec of lines.
+    let config = config::load()?;
+    let mut issues = Vec::<Issue>::new();
+    for file in find::all()? {
         let file = fs::File::open(&file).map_err(|e| UserError::CannotReadFile {
             filename: file,
             reason: e.to_string(),
         })?;
-        let reader = BufReader::new(file);
-        let lines = reader.lines();
-        for (i, line) in lines.into_iter().enumerate() {
-            let line = line.unwrap();
-            println!("{}: {}", i + 1, line);
-        }
-        println!();
+        let f2 = parse::gherkin(BufReader::new(file))?;
     }
-    Ok(())
-}
-
-fn find_feature_files(dir: impl AsRef<Utf8Path>, files: &mut Vec<Utf8PathBuf>) -> Result<()> {
-    for entry in fs::read_dir(dir.as_ref()).unwrap() {
-        let entry = entry.unwrap();
-        let entry_path = entry.path();
-        let path = Utf8Path::from_path(&entry_path).unwrap();
-        if path.is_dir() {
-            find_feature_files(&path, files)?;
-        } else if path.extension() == Some("feature") {
-            files.push(path.to_path_buf());
-        }
+    for issue in issues {
+        println!("{}:{}  {}", issue.file, issue.line, issue.problem);
     }
     Ok(())
 }
