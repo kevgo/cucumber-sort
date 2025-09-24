@@ -12,7 +12,6 @@ async fn run_binary(world: &mut MyWorld) {
         .args(&["run", "--bin", "cucumber-sort"])
         .output()
         .unwrap();
-
     world.output = String::from_utf8(output.stdout).unwrap();
 }
 
