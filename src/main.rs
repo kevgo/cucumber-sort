@@ -13,7 +13,13 @@ use std::process::ExitCode;
 
 fn main() -> ExitCode {
     match inner() {
-        Ok(_) => ExitCode::SUCCESS,
+        Ok(count) => {
+            if count == 0 {
+                ExitCode::SUCCESS
+            } else {
+                ExitCode::FAILURE
+            }
+        }
         Err(err) => {
             println!("{}", err);
             ExitCode::FAILURE
@@ -21,7 +27,7 @@ fn main() -> ExitCode {
     }
 }
 
-fn inner() -> Result<()> {
+fn inner() -> Result<usize> {
     let config = config::load()?;
     let mut issues = Vec::<Issue>::new();
     for file in find::all()? {
@@ -29,10 +35,11 @@ fn inner() -> Result<()> {
             filename: file,
             reason: e.to_string(),
         })?;
-        let f2 = parse::gherkin(BufReader::new(file))?;
+        let gherkin = parse::gherkin(BufReader::new(file))?;
+        check::file(gherkin, &config, &mut issues);
     }
-    for issue in issues {
+    for issue in &issues {
         println!("{}:{}  {}", issue.file, issue.line, issue.problem);
     }
-    Ok(())
+    Ok(issues.len())
 }

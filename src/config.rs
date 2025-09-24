@@ -1,6 +1,5 @@
+use crate::prelude::*;
 use camino::Utf8PathBuf;
-
-use crate::{Issue, prelude::*};
 use std::fs;
 use std::io::{BufRead, BufReader};
 
