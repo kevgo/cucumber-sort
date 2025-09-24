@@ -1,6 +1,6 @@
 Feature: ordered steps
 
-  Scenario:
+  Scenario: unordered step in a scenario
     Given file ".cucumbersortrc":
       """
       step 1
@@ -10,7 +10,7 @@ Feature: ordered steps
       """
       Feature: example
       
-        Scenario: result
+        Scenario: steps out of order
           Then step 2
           And step 1
       """
