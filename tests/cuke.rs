@@ -15,7 +15,7 @@ async fn run_binary(world: &mut MyWorld) {
     world.output = String::from_utf8(output.stdout).unwrap();
 }
 
-#[then(expr = r#"it prints {string}"#)]
+#[then(expr = "it prints {string}")]
 async fn check_output(world: &mut MyWorld, expected: String) {
     assert_eq!(world.output.trim(), expected);
 }
