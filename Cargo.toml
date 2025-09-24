@@ -7,4 +7,4 @@ edition = "2024"
 
 [dev-dependencies]
 cucumber = "0.21"
-tokio = { version = "1.0", features = ["macros", "rt-multi-thread"] }
+tokio = { version = "1.0", features = ["macros", "rt"] }
