@@ -1,6 +1,17 @@
 mod lexer;
 mod parser;
 
+use crate::domain;
+use crate::prelude::*;
+use std::io::BufRead;
+
+pub fn file(text: impl BufRead) -> Result<domain::File> {
+    Ok(domain::File {
+        initial_lines: vec![],
+        blocks: vec![],
+    })
+}
+
 /*
 parsing Gherkin happens in several steps:
 
