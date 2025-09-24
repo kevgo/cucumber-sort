@@ -41,12 +41,13 @@ async fn run_binary(world: &mut MyWorld) {
     world.output = Some(String::from_utf8(output.stdout).unwrap());
 }
 
-#[then(expr = "it prints {string}")]
-async fn check_output(world: &mut MyWorld, expected: String) {
-    let Some(output) = world.output.take() else {
+#[then(expr = "it prints:")]
+async fn check_output(world: &mut MyWorld, step: &Step) {
+    let want = step.docstring.as_ref().unwrap();
+    let Some(have) = world.output.take() else {
         panic!("no output captured");
     };
-    assert_eq!(output.trim(), expected);
+    assert_eq!(have.trim(), want.trim());
 }
 
 #[tokio::test]

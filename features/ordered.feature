@@ -19,4 +19,7 @@ Feature: ordered steps
           And step 5
       """
     When I run cucumber-sort
-    Then it prints "Hello, world!"
+    Then it prints:
+      """
+      Hello, world!
+      """
