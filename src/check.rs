@@ -8,8 +8,8 @@ pub fn file(file: domain::File, config: &Config, issues: &mut Vec<Issue>) {
     }
 }
 
-fn check_block(block: &domain::Block, config: &Config, issues: &mut Vec<Issue>) {
-    // ensure the lines in block have the same order as the ones in config
+fn ordered_block(block: domain::Block, config: &Config, issues: &mut Vec<Issue>) -> domain.Block{
+    // order the lines in block the same order as the ones in config
 }
 
 pub struct Issue {
