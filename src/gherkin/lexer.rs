@@ -159,17 +159,16 @@ mod tests {
         }
     }
 
-    mod file {
-        use crate::gherkin::lexer::{self, Indentation, Line, LineType, TrimmedLine};
-        use big_s::S;
-        use std::io::BufReader;
+    use crate::gherkin::lexer::{self, Indentation, Line, LineType, TrimmedLine};
+    use big_s::S;
+    use std::io::BufReader;
 
-        #[test]
-        fn normal() {
-            let give = r#"
+    #[test]
+    fn file() {
+        let give = r#"
 Feature: test
 
-  A simple example feature file.
+  An example feature file.
 
   Background:
     Given step 1
@@ -180,95 +179,94 @@ Feature: test
     Then step 4
     And step 5
 "#;
-            let bufread = BufReader::new(give[1..].as_bytes());
-            let have = lexer::file(bufread);
-            let want = vec![
-                Line {
-                    number: 0,
-                    full_text: S("Feature: test"),
-                    indent: Indentation(0),
-                    trimmed_text: TrimmedLine::from("Feature: test"),
-                    line_type: LineType::Other,
-                },
-                Line {
-                    number: 1,
-                    full_text: S(""),
-                    indent: Indentation(0),
-                    trimmed_text: TrimmedLine::from(""),
-                    line_type: LineType::Other,
-                },
-                Line {
-                    number: 2,
-                    full_text: S("  A simple example feature file."),
-                    indent: Indentation(2),
-                    trimmed_text: TrimmedLine::from("A simple example feature file."),
-                    line_type: LineType::Other,
-                },
-                Line {
-                    number: 3,
-                    full_text: S(""),
-                    indent: Indentation(0),
-                    trimmed_text: TrimmedLine::from(""),
-                    line_type: LineType::Other,
-                },
-                Line {
-                    number: 4,
-                    full_text: S("  Background:"),
-                    indent: Indentation(2),
-                    trimmed_text: TrimmedLine::from("Background:"),
-                    line_type: LineType::BlockStart,
-                },
-                Line {
-                    number: 5,
-                    full_text: S("    Given step 1"),
-                    indent: Indentation(4),
-                    trimmed_text: TrimmedLine::from("Given step 1"),
-                    line_type: LineType::StepStart,
-                },
-                Line {
-                    number: 6,
-                    full_text: S("    And step 2"),
-                    indent: Indentation(4),
-                    trimmed_text: TrimmedLine::from("And step 2"),
-                    line_type: LineType::StepStart,
-                },
-                Line {
-                    number: 7,
-                    full_text: S("    When step 3"),
-                    indent: Indentation(4),
-                    trimmed_text: TrimmedLine::from("When step 3"),
-                    line_type: LineType::StepStart,
-                },
-                Line {
-                    number: 8,
-                    full_text: S(""),
-                    indent: Indentation(0),
-                    trimmed_text: TrimmedLine::from(""),
-                    line_type: LineType::Other,
-                },
-                Line {
-                    number: 9,
-                    full_text: S("  Scenario: result"),
-                    indent: Indentation(2),
-                    trimmed_text: TrimmedLine::from("Scenario: result"),
-                    line_type: LineType::BlockStart,
-                },
-                Line {
-                    number: 10,
-                    full_text: S("    Then step 4"),
-                    indent: Indentation(4),
-                    trimmed_text: TrimmedLine::from("Then step 4"),
-                    line_type: LineType::StepStart,
-                },
-                Line {
-                    number: 11,
-                    full_text: S("    And step 5"),
-                    indent: Indentation(4),
-                    trimmed_text: TrimmedLine::from("And step 5"),
-                    line_type: LineType::StepStart,
-                },
-            ];
-            pretty::assert_eq!(have, want);
-        }
+        let bufread = BufReader::new(give[1..].as_bytes());
+        let have = lexer::file(bufread);
+        let want = vec![
+            Line {
+                number: 0,
+                full_text: S("Feature: test"),
+                indent: Indentation(0),
+                trimmed_text: TrimmedLine::from("Feature: test"),
+                line_type: LineType::Other,
+            },
+            Line {
+                number: 1,
+                full_text: S(""),
+                indent: Indentation(0),
+                trimmed_text: TrimmedLine::from(""),
+                line_type: LineType::Other,
+            },
+            Line {
+                number: 2,
+                full_text: S("  An example feature file."),
+                indent: Indentation(2),
+                trimmed_text: TrimmedLine::from("An example feature file."),
+                line_type: LineType::Other,
+            },
+            Line {
+                number: 3,
+                full_text: S(""),
+                indent: Indentation(0),
+                trimmed_text: TrimmedLine::from(""),
+                line_type: LineType::Other,
+            },
+            Line {
+                number: 4,
+                full_text: S("  Background:"),
+                indent: Indentation(2),
+                trimmed_text: TrimmedLine::from("Background:"),
+                line_type: LineType::BlockStart,
+            },
+            Line {
+                number: 5,
+                full_text: S("    Given step 1"),
+                indent: Indentation(4),
+                trimmed_text: TrimmedLine::from("Given step 1"),
+                line_type: LineType::StepStart,
+            },
+            Line {
+                number: 6,
+                full_text: S("    And step 2"),
+                indent: Indentation(4),
+                trimmed_text: TrimmedLine::from("And step 2"),
+                line_type: LineType::StepStart,
+            },
+            Line {
+                number: 7,
+                full_text: S("    When step 3"),
+                indent: Indentation(4),
+                trimmed_text: TrimmedLine::from("When step 3"),
+                line_type: LineType::StepStart,
+            },
+            Line {
+                number: 8,
+                full_text: S(""),
+                indent: Indentation(0),
+                trimmed_text: TrimmedLine::from(""),
+                line_type: LineType::Other,
+            },
+            Line {
+                number: 9,
+                full_text: S("  Scenario: result"),
+                indent: Indentation(2),
+                trimmed_text: TrimmedLine::from("Scenario: result"),
+                line_type: LineType::BlockStart,
+            },
+            Line {
+                number: 10,
+                full_text: S("    Then step 4"),
+                indent: Indentation(4),
+                trimmed_text: TrimmedLine::from("Then step 4"),
+                line_type: LineType::StepStart,
+            },
+            Line {
+                number: 11,
+                full_text: S("    And step 5"),
+                indent: Indentation(4),
+                trimmed_text: TrimmedLine::from("And step 5"),
+                line_type: LineType::StepStart,
+            },
+        ];
+        pretty::assert_eq!(have, want);
     }
 }
