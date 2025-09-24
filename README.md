@@ -15,9 +15,9 @@
 the branches
 the local branch is {string}
 the commits
-I ran ".*"
-I run ".*"
-I run ".*" and enter into the dialog
+I ran {string}
+I run {string}
+I run {string} and enter into the dialog
 ```
 
 ### Challenges:
