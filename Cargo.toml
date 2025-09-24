@@ -11,3 +11,8 @@ big_s = "1.0.2"
 camino-tempfile = "1.4.1"
 cucumber = "0.21"
 tokio = { version = "1.0", features = ["fs","macros", "process", "rt"] }
+
+[[test]]
+name = "cuke"
+harness = false # Allows Cucumber to print output instead of libtest
+test = false

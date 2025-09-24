@@ -50,7 +50,7 @@ async fn check_output(world: &mut MyWorld, step: &Step) {
     assert_eq!(have.trim(), want.trim());
 }
 
-#[tokio::test]
-async fn run_cucumber_tests() {
+#[tokio::main(flavor = "current_thread")]
+async fn main() {
     MyWorld::run("features").await;
 }
