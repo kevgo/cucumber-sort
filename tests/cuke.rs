@@ -6,7 +6,7 @@ pub struct MyWorld {
     output: String,
 }
 
-#[when("I run the cucumber-sort binary")]
+#[when("I run cucumber-sort")]
 async fn run_binary(world: &mut MyWorld) {
     let output = Command::new("cargo")
         .args(&["run", "--bin", "cucumber-sort"])
