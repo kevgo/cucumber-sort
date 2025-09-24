@@ -8,21 +8,20 @@
 ### Configuration file
 
 ```
-Given
-  exactly-one:
-    a Git repo with origin
-    a local Git repo
-    I am outside a Git repo
-  zero-or-more:
-    the branches
-    the local branch is {string}
-    the commits
-  one-or-more
-    I run ".*"
-    I run ".*" and enter into the dialog
+[[one-of-these]]  # ensures exactly one of the nested expression is contained
+  a Git repo with origin
+  a local Git repo
+  I am outside a Git repo
+the branches
+the local branch is {string}
+the commits
+I ran ".*"
+I run ".*"
+I run ".*" and enter into the dialog
 ```
 
 ### Challenges:
 
 - duplication of step definition regexes: once in the step definition, and again in the config file for this tool
+  - that's probably okay, this is a linter
 - creating the config file
