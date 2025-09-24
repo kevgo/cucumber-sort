@@ -1,7 +1,7 @@
 Feature: ordered steps
 
-  Background:
-    Given file ".cucumbersortrc:
+  Scenario:
+    Given file ".cucumbersortrc":
       """
       one
       """
@@ -18,3 +18,5 @@ Feature: ordered steps
           Then step 4
           And step 5
       """
+    When I run cucumber-sort
+    Then it prints "Hello, world!"

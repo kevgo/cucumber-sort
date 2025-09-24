@@ -6,5 +6,6 @@ edition = "2024"
 [dependencies]
 
 [dev-dependencies]
+camino-tempfile = "1.4.1"
 cucumber = "0.21"
-tokio = { version = "1.0", features = ["macros", "process", "rt"] }
+tokio = { version = "1.0", features = ["fs","macros", "process", "rt"] }
