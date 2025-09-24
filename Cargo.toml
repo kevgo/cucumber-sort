@@ -10,6 +10,7 @@ camino = "1.1"
 big_s = "1.0.2"
 camino-tempfile = "1.4.1"
 cucumber = "0.21"
+pretty = { package = "pretty_assertions", version = "1.4.1" }
 tokio = { version = "1.0", features = ["fs","macros", "process", "rt"] }
 
 [[test]]
