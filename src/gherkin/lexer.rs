@@ -15,6 +15,7 @@ pub fn file(text: impl BufRead) -> Vec<Line> {
         .collect()
 }
 
+#[derive(Debug, Eq, PartialEq)]
 pub struct Line {
     /// the line number in the file
     number: usize,
@@ -31,12 +32,13 @@ pub struct Line {
 impl Line {
     fn new(text: String, number: usize) -> Line {
         let (indent, trimmed) = clip_start(&text);
+        let line_type = trimmed.line_type();
         Line {
             number,
             full_text: text,
             trimmed_text: trimmed,
             indent: indent,
-            line_type: todo!(),
+            line_type,
         }
     }
 }
@@ -54,6 +56,7 @@ fn clip_start(line: &str) -> (Indentation, TrimmedLine) {
     (Indentation(counter), TrimmedLine::from(&line[counter..]))
 }
 
+#[derive(Debug, Eq, PartialEq)]
 enum LineType {
     /// this line starts a block, i.e. "Background", "Scenario", etc
     BlockStart,
@@ -64,6 +67,7 @@ enum LineType {
 }
 
 /// describes how much a line is indented
+#[derive(Debug, Eq, PartialEq)]
 struct Indentation(usize);
 
 /// a line without the initial whitespace
@@ -133,6 +137,34 @@ mod tests {
             let (indent, clipped) = clip_start("    ");
             assert_eq!(indent.0, 4);
             assert_eq!(clipped, "");
+        }
+    }
+
+    mod file {
+        use std::io::BufReader;
+
+        use crate::gherkin::lexer;
+
+        #[test]
+        fn normal() {
+            let give = r#"
+Feature: test
+
+  A simple example feature file.
+
+  Background:
+    Given step 1
+    And step 2
+    When step 3
+
+  Scenario: result
+    Then step 4
+    And step 5
+"#;
+            let bufread = BufReader::new(give.as_bytes());
+            let have = lexer::file(bufread);
+            let want = vec![];
+            assert_eq!(have, want);
         }
     }
 }
