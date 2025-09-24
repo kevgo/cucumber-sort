@@ -21,10 +21,13 @@ fn inner() -> Result<()> {
     let mut feature_files = vec![];
     find_feature_files(".", &mut feature_files)?;
     for file in feature_files {
-        println!("Processing: {}", file);
+        println!("Processing: {}", &file);
 
         // read the content of the file into a Vec of lines.
-        let file = fs::File::open(file).unwrap();
+        let file = fs::File::open(&file).map_err(|e| UserError::CannotReadFile {
+            filename: file,
+            reason: e.to_string(),
+        })?;
         let reader = BufReader::new(file);
         let lines = reader.lines();
         for (i, line) in lines.into_iter().enumerate() {
