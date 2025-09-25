@@ -101,6 +101,7 @@ impl From<Vec<gherkin::Step>> for Steps {
     }
 }
 
+#[derive(Debug, Eq, PartialEq)]
 pub struct Issue {
     pub file: Utf8PathBuf,
     pub line: usize,
@@ -113,6 +114,7 @@ mod tests {
     mod sort_steps {
         use crate::config::Config;
         use crate::gherkin::ExecutableBlock;
+        use crate::sort::Issue;
         use crate::{gherkin, sort};
         use big_s::S;
 
@@ -201,7 +203,55 @@ mod tests {
 
         #[test]
         fn unknown_step() {
-            // TODO
+            let config = Config {
+                steps: vec![S("step 1"), S("step 2")],
+            };
+            let give_block = gherkin::Block::Executable(ExecutableBlock {
+                title: S("Scenario: test"),
+                line_no: 3,
+                steps: vec![
+                    gherkin::Step {
+                        title: S("step 2"),
+                        lines: vec![],
+                        line_no: 0,
+                    },
+                    gherkin::Step {
+                        title: S("step 3"),
+                        lines: vec![],
+                        line_no: 1,
+                    },
+                    gherkin::Step {
+                        title: S("step 1"),
+                        lines: vec![],
+                        line_no: 2,
+                    },
+                ],
+            });
+            let want_block = gherkin::Block::Executable(ExecutableBlock {
+                title: S("Scenario: test"),
+                line_no: 3,
+                steps: vec![
+                    gherkin::Step {
+                        title: S("step 1"),
+                        lines: vec![],
+                        line_no: 2,
+                    },
+                    gherkin::Step {
+                        title: S("step 2"),
+                        lines: vec![],
+                        line_no: 0,
+                    },
+                ],
+            });
+            let mut issues = vec![];
+            let have_block = sort::block(give_block, &config, "file.feature".into(), &mut issues);
+            pretty::assert_eq!(have_block, want_block);
+            let want_issues = vec![Issue {
+                file: "file.feature".into(),
+                line: 1,
+                problem: S("unknown step: step 3"),
+            }];
+            pretty::assert_eq!(want_issues, issues);
         }
     }
 }
