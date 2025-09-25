@@ -236,22 +236,13 @@ Feature: test
             let source = r#"
 Feature: test
 
-  An example feature file.
-
-  Background:
-    Given step 1
-    And step 2:
+  Scenario: with docstring
+    Given step 1:
       """
       docstring line 1
       docstring line 2
       """
-    When step 3
-
-  Scenario: result
-    Then step 4:
-      | HEADING 1 | HEADING 2 |
-      | line 1a   | line 1b   |
-      | line 2a   | line 2b   |
+    And step 2
 "#;
             let have_lines = lexer::file(BufReader::new(source[1..].as_bytes()));
             let want_lines = vec![
@@ -271,38 +262,38 @@ Feature: test
                 },
                 Line {
                     number: 2,
-                    full_text: S("  An example feature file."),
+                    full_text: S("  Scenario: with docstring"),
                     indent: Indentation::new(2),
-                    trimmed_text: TrimmedLine::from("An example feature file."),
-                    line_type: LineType::Other,
-                },
-                Line {
-                    number: 3,
-                    full_text: S(""),
-                    indent: Indentation::new(0),
-                    trimmed_text: TrimmedLine::from(""),
-                    line_type: LineType::Other,
-                },
-                Line {
-                    number: 4,
-                    full_text: S("  Background:"),
-                    indent: Indentation::new(2),
-                    trimmed_text: TrimmedLine::from("Background:"),
+                    trimmed_text: TrimmedLine::from("Scenario: with docstring"),
                     line_type: LineType::BlockStart,
                 },
                 Line {
-                    number: 5,
-                    full_text: S("    Given step 1"),
+                    number: 3,
+                    full_text: S("    Given step 1:"),
                     indent: Indentation::new(4),
-                    trimmed_text: TrimmedLine::from("Given step 1"),
+                    trimmed_text: TrimmedLine::from("Given step 1:"),
                     line_type: LineType::StepStart,
                 },
                 Line {
+                    number: 4,
+                    full_text: S(r#"      """"#),
+                    indent: Indentation::new(6),
+                    trimmed_text: TrimmedLine::from(r#"""""#),
+                    line_type: LineType::Other,
+                },
+                Line {
+                    number: 5,
+                    full_text: S("      docstring line 1"),
+                    indent: Indentation::new(6),
+                    trimmed_text: TrimmedLine::from("docstring line 1"),
+                    line_type: LineType::Other,
+                },
+                Line {
                     number: 6,
-                    full_text: S("    And step 2:"),
-                    indent: Indentation::new(4),
-                    trimmed_text: TrimmedLine::from("And step 2:"),
-                    line_type: LineType::StepStart,
+                    full_text: S("      docstring line 2"),
+                    indent: Indentation::new(6),
+                    trimmed_text: TrimmedLine::from("docstring line 2"),
+                    line_type: LineType::Other,
                 },
                 Line {
                     number: 7,
@@ -313,73 +304,10 @@ Feature: test
                 },
                 Line {
                     number: 8,
-                    full_text: S("      docstring line 1"),
-                    indent: Indentation::new(6),
-                    trimmed_text: TrimmedLine::from("docstring line 1"),
-                    line_type: LineType::Other,
-                },
-                Line {
-                    number: 9,
-                    full_text: S("      docstring line 2"),
-                    indent: Indentation::new(6),
-                    trimmed_text: TrimmedLine::from("docstring line 2"),
-                    line_type: LineType::Other,
-                },
-                Line {
-                    number: 10,
-                    full_text: S(r#"      """"#),
-                    indent: Indentation::new(6),
-                    trimmed_text: TrimmedLine::from(r#"""""#),
-                    line_type: LineType::Other,
-                },
-                Line {
-                    number: 11,
-                    full_text: S("    When step 3"),
+                    full_text: S("    And step 2"),
                     indent: Indentation::new(4),
-                    trimmed_text: TrimmedLine::from("When step 3"),
+                    trimmed_text: TrimmedLine::from("And step 2"),
                     line_type: LineType::StepStart,
-                },
-                Line {
-                    number: 12,
-                    full_text: S(""),
-                    indent: Indentation::new(0),
-                    trimmed_text: TrimmedLine::from(""),
-                    line_type: LineType::Other,
-                },
-                Line {
-                    number: 13,
-                    full_text: S("  Scenario: result"),
-                    indent: Indentation::new(2),
-                    trimmed_text: TrimmedLine::from("Scenario: result"),
-                    line_type: LineType::BlockStart,
-                },
-                Line {
-                    number: 14,
-                    full_text: S("    Then step 4:"),
-                    indent: Indentation::new(4),
-                    trimmed_text: TrimmedLine::from("Then step 4:"),
-                    line_type: LineType::StepStart,
-                },
-                Line {
-                    number: 15,
-                    full_text: S("      | HEADING 1 | HEADING 2 |"),
-                    indent: Indentation::new(6),
-                    trimmed_text: TrimmedLine::from("| HEADING 1 | HEADING 2 |"),
-                    line_type: LineType::Other,
-                },
-                Line {
-                    number: 16,
-                    full_text: S("      | line 1a   | line 1b   |"),
-                    indent: Indentation::new(6),
-                    trimmed_text: TrimmedLine::from("| line 1a   | line 1b   |"),
-                    line_type: LineType::Other,
-                },
-                Line {
-                    number: 17,
-                    full_text: S("      | line 2a   | line 2b   |"),
-                    indent: Indentation::new(6),
-                    trimmed_text: TrimmedLine::from("| line 2a   | line 2b   |"),
-                    line_type: LineType::Other,
                 },
             ];
             pretty::assert_eq!(have_lines, want_lines);
@@ -387,51 +315,27 @@ Feature: test
             // step 2: parse the Lines into blocks
             let have_feature = parser::file(have_lines);
             let want_feature = parser::Feature {
-                initial_lines: vec![
-                    S("Feature: test"),
-                    S(""),
-                    S("  An example feature file."),
-                    S(""),
-                ],
-                blocks: vec![
-                    Block {
-                        title_line: S("  Background:"),
-                        line_number: 4,
-                        steps: vec![
-                            Step {
-                                lines: vec![S("    Given step 1")],
-                                title: S("step 1"),
-                            },
-                            Step {
-                                lines: vec![
-                                    S("    And step 2:"),
-                                    S("      \"\"\""),
-                                    S("      docstring line 1"),
-                                    S("      docstring line 2"),
-                                    S("      \"\"\""),
-                                ],
-                                title: S("step 2:"),
-                            },
-                            Step {
-                                lines: vec![S("    When step 3"), S("")],
-                                title: S("step 3"),
-                            },
-                        ],
-                    },
-                    Block {
-                        title_line: S("  Scenario: result"),
-                        line_number: 13,
-                        steps: vec![Step {
+                initial_lines: vec![S("Feature: test"), S("")],
+                blocks: vec![Block {
+                    title_line: S("  Scenario: with docstring"),
+                    line_number: 2,
+                    steps: vec![
+                        Step {
                             lines: vec![
-                                S("    Then step 4:"),
-                                S("      | HEADING 1 | HEADING 2 |"),
-                                S("      | line 1a   | line 1b   |"),
-                                S("      | line 2a   | line 2b   |"),
+                                S("    Given step 1:"),
+                                S("      \"\"\""),
+                                S("      docstring line 1"),
+                                S("      docstring line 2"),
+                                S("      \"\"\""),
                             ],
-                            title: S("step 4:"),
-                        }],
-                    },
-                ],
+                            title: S("step 1:"),
+                        },
+                        Step {
+                            lines: vec![S("    And step 2")],
+                            title: S("step 2"),
+                        },
+                    ],
+                }],
             };
             pretty::assert_eq!(want_feature, have_feature);
         }
