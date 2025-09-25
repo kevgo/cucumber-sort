@@ -169,6 +169,16 @@ mod tests {
             assert!(TrimmedLine::from("Background:").is_block_start());
             assert!(TrimmedLine::from("Scenario: result").is_block_start());
             assert!(TrimmedLine::from("Scenario Outline: test").is_block_start());
+            assert!(!TrimmedLine::from("Examples:").is_block_start());
+        }
+
+        #[test]
+        fn is_step_start() {
+            assert!(TrimmedLine::from("Given a cucumber").is_step_start());
+            assert!(TrimmedLine::from("When I eat it").is_step_start());
+            assert!(TrimmedLine::from("Then its gone").is_step_start());
+            assert!(TrimmedLine::from("And I am happy").is_step_start());
+            assert!(!TrimmedLine::from("Other text").is_step_start());
         }
     }
 
