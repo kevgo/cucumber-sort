@@ -24,8 +24,8 @@ fn main() -> ExitCode {
 
 fn inner() -> Result<ExitCode> {
   match cli::load(env::args())? {
-    Check => cmd::check(),
-    Format => cmd::format(),
+    Check { file } => cmd::check(file),
+    Format { file } => cmd::format(file),
     Help => cmd::help(),
   }
 }
