@@ -8,7 +8,7 @@ pub fn file(lines: Vec<lexer::Line>) -> Feature {
     for line in lines {
         match line.line_type {
             LineType::BlockStart => {
-                if let Some(mut block) = current_block {
+                if let Some(mut block) = current_block.take() {
                     if let Some(step) = current_step.take() {
                         block.steps.push(step);
                     }
@@ -23,7 +23,7 @@ pub fn file(lines: Vec<lexer::Line>) -> Feature {
             }
             LineType::StepStart => {
                 if let Some(step) = current_step.take() {
-                    if let Some(mut block) = current_block {
+                    if let Some(mut block) = current_block.take() {
                         block.steps.push(step);
                         current_block = Some(block);
                     }
@@ -43,7 +43,7 @@ pub fn file(lines: Vec<lexer::Line>) -> Feature {
             }
         }
     }
-    if let Some(step) = current_step {
+    if let Some(step) = current_step.take() {
         if let Some(mut block) = current_block.take() {
             block.steps.push(step);
             current_block = Some(block);
