@@ -1,12 +1,46 @@
-.DEFAULT_GOAL := help
+# dev tooling and versions
+RUN_THAT_APP_VERSION = 0.18.0
 
 cuke:  # runs the end-to-end tests
 	@cargo test --locked --test cuke
 
+fix: tools/rta@${RUN_THAT_APP_VERSION}  # auto-corrects issues
+	tools/rta dprint fmt
+	cargo +nightly fmt
+	cargo clippy --all-targets --all-features -- --deny=warnings
+	cargo +nightly fix --allow-dirty
+
 help:  # prints all available targets
 	@grep -h -E '^[a-zA-Z_-]+:.*?# .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?# "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+
+lint: tools/rta@${RUN_THAT_APP_VERSION}  # checks formatting
+	tools/rta dprint check
+	cargo clippy --all-targets --all-features -- --deny=warnings
+	cargo +nightly fmt -- --check
+	git diff --check
+	tools/rta actionlint
+	cargo machete
+
+setup: setup-ci  # install development dependencies on this computer
+	cargo install cargo-edit cargo-upgrades --locked
+
+setup-ci:  # prepares the CI server
+	rustup toolchain add nightly
+	rustup component add rustfmt --toolchain nightly
+	cargo install cargo-machete --locked
 
 test: unit cuke  # runs all tests
 
 unit:  # runs the unit tests
 	cargo test --locked
+
+# --- HELPER TARGETS --------------------------------------------------------------------------------------------------------------------------------
+
+tools/rta@${RUN_THAT_APP_VERSION}:
+	@rm -f tools/rta* tools/rta
+	@(cd tools && curl https://raw.githubusercontent.com/kevgo/run-that-app/main/download.sh | sh)
+	@mv tools/rta tools/rta@${RUN_THAT_APP_VERSION}
+	@ln -s rta@${RUN_THAT_APP_VERSION} tools/rta
+
+.SILENT:
+.DEFAULT_GOAL := help
