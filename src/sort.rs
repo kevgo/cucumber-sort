@@ -77,7 +77,7 @@ impl Steps {
                 if matches_config_step(&entry, config_step) {
                     extracted.push(entry);
                 } else {
-                    entry_opt.insert(entry);
+                    let _ = entry_opt.insert(entry);
                 }
             }
         }
