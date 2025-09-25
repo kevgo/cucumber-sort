@@ -99,7 +99,7 @@ impl<'a> From<&'a str> for TrimmedLine<'a> {
 
 impl<'a> PartialEq<&str> for TrimmedLine<'a> {
     fn eq(&self, other: &&str) -> bool {
-        &self.0 == other
+        self.0 == *other
     }
 }
 
