@@ -31,7 +31,7 @@ fn main() -> ExitCode {
 fn inner() -> Result<usize> {
     match cli::load(env::args())? {
         Check => cmd::check(),
-        Format => todo!(),
-        Help => todo!(),
+        Format => cmd::format(),
+        Help => cmd::help(),
     }
 }

@@ -3,4 +3,5 @@ mod format;
 mod help;
 
 pub use check::check;
-pub use help::available_commands;
+pub use format::format;
+pub use help::{available_commands, help};

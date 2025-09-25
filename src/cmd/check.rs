@@ -1,6 +1,3 @@
-use std::fs;
-use std::io::BufReader;
-
 use crate::sort::{self, Issue};
 use crate::{config, find, gherkin, prelude::*};
 
