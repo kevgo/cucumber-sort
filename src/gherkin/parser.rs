@@ -1,9 +1,6 @@
-use std::num::FpCategory;
-
-use camino::Utf8PathBuf;
-
 use crate::gherkin::lexer::{self, LineType};
 use crate::prelude::*;
+use camino::Utf8PathBuf;
 
 pub fn file(lines: Vec<lexer::Line>, filepath: Utf8PathBuf) -> Result<Feature> {
     let mut blocks: Vec<Block> = vec![];
@@ -154,8 +151,8 @@ mod tests {
     #[test]
     fn cut_first_word_after_trim() {
         assert_eq!(
-            parser::cut_first_word_after_trim("    Given a cucumber", 4),
             "a cucumber",
-        )
+            parser::cut_first_word_after_trim("    Given a cucumber", 4)
+        );
     }
 }
