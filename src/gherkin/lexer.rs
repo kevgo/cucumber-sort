@@ -25,7 +25,7 @@ pub struct Line {
     pub text: String,
 
     /// how much the line is indented
-    pub indent: Indentation,
+    pub indent: usize,
 
     /// whether this is a Given/When/Then line or not
     pub line_type: LineType,
@@ -45,16 +45,16 @@ impl Line {
 }
 
 /// provides the number of leading whitespace characters and the text without that leading whitespace
-fn trim_whitespace_start(line: &str) -> (Indentation, TrimmedLine) {
+fn trim_whitespace_start(line: &str) -> (usize, TrimmedLine) {
     let mut counter = 0;
     for c in line.chars().into_iter() {
         if c == ' ' || c == '\t' {
             counter += 1;
             continue;
         }
-        return (Indentation(counter), TrimmedLine::from(&line[counter..]));
+        return (counter, TrimmedLine::from(&line[counter..]));
     }
-    (Indentation(counter), TrimmedLine::from(&line[counter..]))
+    (counter, TrimmedLine::from(&line[counter..]))
 }
 
 #[derive(Debug, Eq, PartialEq)]
@@ -65,23 +65,6 @@ pub enum LineType {
     StepStart,
     /// this line is neither a block or step start
     Other,
-}
-
-/// describes how much a line is indented
-#[derive(Debug, Eq, PartialEq)]
-pub struct Indentation(usize);
-
-impl Indentation {
-    #[cfg(test)]
-    pub fn new(value: usize) -> Indentation {
-        Indentation(value)
-    }
-}
-
-impl Into<usize> for Indentation {
-    fn into(self) -> usize {
-        self.0
-    }
 }
 
 /// a line without the initial whitespace
@@ -129,28 +112,28 @@ mod tests {
         #[test]
         fn no_indent() {
             let (indent, clipped) = trim_whitespace_start("text");
-            assert_eq!(indent.0, 0);
+            assert_eq!(indent, 0);
             assert_eq!(clipped, "text");
         }
 
         #[test]
         fn two() {
             let (indent, clipped) = trim_whitespace_start("  text");
-            assert_eq!(indent.0, 2);
+            assert_eq!(indent, 2);
             assert_eq!(clipped, "text");
         }
 
         #[test]
         fn four() {
             let (indent, clipped) = trim_whitespace_start("    text");
-            assert_eq!(indent.0, 4);
+            assert_eq!(indent, 4);
             assert_eq!(clipped, "text");
         }
 
         #[test]
         fn only_spaces() {
             let (indent, clipped) = trim_whitespace_start("    ");
-            assert_eq!(indent.0, 4);
+            assert_eq!(indent, 4);
             assert_eq!(clipped, "");
         }
     }
@@ -193,7 +176,7 @@ mod tests {
     }
 
     mod line_new {
-        use crate::gherkin::lexer::{Indentation, Line, LineType};
+        use crate::gherkin::lexer::{Line, LineType};
         use big_s::S;
 
         #[test]
@@ -203,7 +186,7 @@ mod tests {
             let want = Line {
                 number: 12,
                 text: S("  Some documentation"),
-                indent: Indentation(2),
+                indent: 2,
                 line_type: LineType::Other,
             };
             pretty::assert_eq!(have, want);
