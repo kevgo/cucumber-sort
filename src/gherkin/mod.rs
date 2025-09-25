@@ -417,7 +417,7 @@ Feature: test
                             Step {
                                 lines: vec![S("    And step 2")],
                                 title: S("step 2"),
-                                line_no: 4,
+                                line_no: 7,
                             },
                         ],
                     }),
