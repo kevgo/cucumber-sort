@@ -63,7 +63,48 @@ mod tests {
 
         #[test]
         fn unordered() {
-            // TODO
+            let config = Config {
+                steps: vec![S("step 1"), S("step 2"), S("step 3")],
+            };
+            let give_block = gherkin::Block::Executable(ExecutableBlock {
+                title: S("Scenario: test"),
+                line_no: 3,
+                steps: vec![
+                    gherkin::Step {
+                        title: S("step 3"),
+                        lines: vec![],
+                    },
+                    gherkin::Step {
+                        title: S("step 2"),
+                        lines: vec![],
+                    },
+                    gherkin::Step {
+                        title: S("step 1"),
+                        lines: vec![],
+                    },
+                ],
+            });
+            let want_block = gherkin::Block::Executable(ExecutableBlock {
+                title: S("Scenario: test"),
+                line_no: 3,
+                steps: vec![
+                    gherkin::Step {
+                        title: S("step 1"),
+                        lines: vec![],
+                    },
+                    gherkin::Step {
+                        title: S("step 2"),
+                        lines: vec![],
+                    },
+                    gherkin::Step {
+                        title: S("step 3"),
+                        lines: vec![],
+                    },
+                ],
+            });
+            let mut issues = vec![];
+            let have_block = sort::block(give_block, &config, &mut issues);
+            pretty::assert_eq!(have_block, want_block);
         }
 
         #[test]
