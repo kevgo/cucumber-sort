@@ -29,6 +29,11 @@ pub fn file(lines: Vec<lexer::Line>, filepath: Utf8PathBuf) -> Result<Feature> {
                         if let Block::Executable(executable_block) = &mut block {
                             executable_block.steps.push(step);
                         }
+                        current_step = Some(Step {
+                            title: cut_first_word_after_trim(&line.text, line.indent.into())
+                                .to_string(),
+                            lines: vec![line.text],
+                        });
                     } else {
                         return Err(UserError::StepOutsideOfBlock {
                             file: filepath,
@@ -70,11 +75,6 @@ pub fn file(lines: Vec<lexer::Line>, filepath: Utf8PathBuf) -> Result<Feature> {
         }
     }
 
-    println!(
-        "1111111111111111111111111111111111111111111111111111 {} {}",
-        current_block.is_some(),
-        current_step.is_some(),
-    );
     if let Some(step) = current_step {
         if let Some(mut block) = current_block.as_mut() {
             match &mut block {
@@ -92,10 +92,6 @@ pub fn file(lines: Vec<lexer::Line>, filepath: Utf8PathBuf) -> Result<Feature> {
     }
 
     if let Some(block) = current_block {
-        println!(
-            "2222222222222222222222222222222222222222222222222222 {:?}",
-            block
-        );
         blocks.push(block);
     }
     Ok(Feature { blocks })
