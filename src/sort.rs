@@ -32,7 +32,11 @@ fn steps(
     config_steps: &[String],
     issues: &mut Vec<Issue>,
 ) -> Vec<gherkin::Step> {
-    have_steps
+    let mut ordered = Vec::<gherkin::Step>::with_capacity(have_steps.len());
+    for config_step in config_steps {
+        //
+    }
+    ordered
 }
 
 pub struct Issue {
