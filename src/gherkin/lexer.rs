@@ -180,6 +180,14 @@ mod tests {
             assert!(TrimmedLine::from("And I am happy").is_step_start());
             assert!(!TrimmedLine::from("Other text").is_step_start());
         }
+
+        #[test]
+        fn without_first_word() {
+            assert_eq!(
+                TrimmedLine::from("Given a cucumber").without_first_word(),
+                "a cucumber",
+            )
+        }
     }
 
     mod line_new {
