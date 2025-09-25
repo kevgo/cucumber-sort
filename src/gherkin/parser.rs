@@ -33,6 +33,7 @@ pub fn file(lines: Vec<lexer::Line>, filepath: Utf8PathBuf) -> Result<Feature> {
                             title: cut_first_word_after_trim(&line.text, line.indent.into())
                                 .to_string(),
                             lines: vec![line.text],
+                            line_no: line.number,
                         });
                     } else {
                         return Err(UserError::StepOutsideOfBlock {
@@ -45,6 +46,7 @@ pub fn file(lines: Vec<lexer::Line>, filepath: Utf8PathBuf) -> Result<Feature> {
                         title: cut_first_word_after_trim(&line.text, line.indent.into())
                             .to_string(),
                         lines: vec![line.text],
+                        line_no: line.number,
                     })
                 }
             }
@@ -138,6 +140,8 @@ pub struct Step {
 
     /// the textual lines making up this step
     pub lines: Vec<String>,
+
+    pub line_no: usize,
 }
 
 #[cfg(test)]

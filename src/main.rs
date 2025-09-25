@@ -35,8 +35,8 @@ fn inner() -> Result<usize> {
             file: filepath.clone(),
             reason: e.to_string(),
         })?;
-        let gherkin = gherkin::file(BufReader::new(file_content), filepath)?;
-        let sorted_file = sort::file(gherkin, &config, &mut issues);
+        let gherkin = gherkin::file(BufReader::new(file_content), filepath.clone())?;
+        let sorted_file = sort::file(gherkin, &config, &filepath, &mut issues);
     }
     for issue in &issues {
         println!("{}:{}  {}", issue.file, issue.line, issue.problem);

@@ -167,14 +167,17 @@ Feature: test
                             Step {
                                 lines: vec![S("    Given step 1")],
                                 title: S("step 1"),
+                                line_no: 5,
                             },
                             Step {
                                 lines: vec![S("    And step 2")],
                                 title: S("step 2"),
+                                line_no: 6,
                             },
                             Step {
                                 lines: vec![S("    When step 3"), S("")],
                                 title: S("step 3"),
+                                line_no: 7,
                             },
                         ],
                     }),
@@ -185,10 +188,12 @@ Feature: test
                             Step {
                                 lines: vec![S("    Then step 4")],
                                 title: S("step 4"),
+                                line_no: 10,
                             },
                             Step {
                                 lines: vec![S("    And step 5"), S("")],
                                 title: S("step 5"),
+                                line_no: 11,
                             },
                         ],
                     }),
@@ -199,10 +204,12 @@ Feature: test
                             Step {
                                 lines: vec![S("    When step 6")],
                                 title: S("step 6"),
+                                line_no: 14,
                             },
                             Step {
                                 lines: vec![S("    Then step 7")],
                                 title: S("step 7"),
+                                line_no: 15,
                             },
                         ],
                     }),
@@ -305,10 +312,12 @@ Feature: test
                                     S("      docstring line 2"),
                                     S("      \"\"\""),
                                 ],
+                                line_no: 3,
                             },
                             Step {
                                 title: S("step 2"),
                                 lines: vec![S("    And step 2")],
+                                line_no: 8,
                             },
                         ],
                     }),
@@ -403,10 +412,12 @@ Feature: test
                                     S("      | row 2A | row 2B |"),
                                 ],
                                 title: S("step 1:"),
+                                line_no: 3,
                             },
                             Step {
                                 lines: vec![S("    And step 2")],
                                 title: S("step 2"),
+                                line_no: 4,
                             },
                         ],
                     }),

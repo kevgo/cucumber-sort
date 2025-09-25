@@ -1,24 +1,34 @@
 use crate::config::Config;
 use crate::gherkin;
-use camino::Utf8PathBuf;
+use camino::{Utf8Path, Utf8PathBuf};
 
 /// provides a copy of the given File with all Gherkin steps sorted the same way as the given configuration
-pub fn file(file: gherkin::Feature, config: &Config, issues: &mut Vec<Issue>) -> gherkin::Feature {
+pub fn file(
+    file: gherkin::Feature,
+    config: &Config,
+    filepath: &Utf8Path,
+    issues: &mut Vec<Issue>,
+) -> gherkin::Feature {
     let mut new_blocks = Vec::<gherkin::Block>::new();
     for file_block in file.blocks {
-        new_blocks.push(block(file_block, config, issues));
+        new_blocks.push(block(file_block, config, filepath, issues));
     }
     gherkin::Feature { blocks: new_blocks }
 }
 
 /// provides the given block with all steps sorted according to the given configuration
-fn block(block: gherkin::Block, config: &Config, issues: &mut Vec<Issue>) -> gherkin::Block {
+fn block(
+    block: gherkin::Block,
+    config: &Config,
+    filepath: &Utf8Path,
+    issues: &mut Vec<Issue>,
+) -> gherkin::Block {
     match block {
         gherkin::Block::Executable(executable_block) => {
             gherkin::Block::Executable(gherkin::ExecutableBlock {
                 title: executable_block.title,
                 line_no: executable_block.line_no,
-                steps: steps(executable_block.steps, &config.steps, issues),
+                steps: steps(executable_block.steps, &config.steps, filepath, issues),
             })
         }
         gherkin::Block::NonExecutable(non_executable_block) => {
@@ -27,16 +37,68 @@ fn block(block: gherkin::Block, config: &Config, issues: &mut Vec<Issue>) -> ghe
     }
 }
 
+/// orders the given have_steps to follow the same order as the given config_steps
 fn steps(
     have_steps: Vec<gherkin::Step>,
     config_steps: &[String],
+    filepath: &Utf8Path,
     issues: &mut Vec<Issue>,
 ) -> Vec<gherkin::Step> {
     let mut ordered = Vec::<gherkin::Step>::with_capacity(have_steps.len());
+    let mut steps = Steps::from(have_steps);
     for config_step in config_steps {
-        //
+        let mut extracted = steps.extract(config_step);
+        ordered.append(&mut extracted);
+    }
+    // report unknown steps
+    for step in steps.elements() {
+        issues.push(Issue {
+            file: filepath.to_path_buf(),
+            line: step.line_no,
+            problem: format!("unknown step: {}", step.title),
+        });
     }
     ordered
+}
+
+fn matches_config_step(gherkin_step: &gherkin::Step, config_step: &str) -> bool {
+    gherkin_step.title.starts_with(config_step)
+}
+
+struct Steps(Vec<Option<gherkin::Step>>);
+
+impl Steps {
+    /// provides all steps from self that match the given config_step
+    /// and removes those steps from self
+    fn extract(&mut self, config_step: &str) -> Vec<gherkin::Step> {
+        let mut extracted = Vec::<gherkin::Step>::new();
+        for entry_opt in self.0.iter_mut() {
+            if let Some(entry) = entry_opt.take() {
+                if matches_config_step(&entry, config_step) {
+                    extracted.push(entry);
+                } else {
+                    entry_opt.insert(entry);
+                }
+            }
+        }
+        extracted
+    }
+
+    fn elements(self) -> Vec<gherkin::Step> {
+        let mut result = vec![];
+        for element in self.0 {
+            if let Some(element) = element {
+                result.push(element);
+            }
+        }
+        result
+    }
+}
+
+impl From<Vec<gherkin::Step>> for Steps {
+    fn from(value: Vec<gherkin::Step>) -> Self {
+        Steps(value.into_iter().map(|step| Some(step)).collect())
+    }
 }
 
 pub struct Issue {
@@ -61,19 +123,27 @@ mod tests {
                 gherkin::Step {
                     title: S("step 1"),
                     lines: vec![],
+                    line_no: 0,
                 },
                 gherkin::Step {
                     title: S("step 2"),
                     lines: vec![],
+                    line_no: 1,
                 },
                 gherkin::Step {
                     title: S("step 3"),
                     lines: vec![],
+                    line_no: 2,
                 },
             ];
             let want_steps = give_steps.clone();
             let mut issues = vec![];
-            let have_steps = sort::steps(give_steps, &config_steps, &mut issues);
+            let have_steps = sort::steps(
+                give_steps,
+                &config_steps,
+                "file.feature".into(),
+                &mut issues,
+            );
             assert_eq!(want_steps, have_steps);
         }
 
@@ -89,14 +159,17 @@ mod tests {
                     gherkin::Step {
                         title: S("step 3"),
                         lines: vec![],
+                        line_no: 0,
                     },
                     gherkin::Step {
                         title: S("step 2"),
                         lines: vec![],
+                        line_no: 1,
                     },
                     gherkin::Step {
                         title: S("step 1"),
                         lines: vec![],
+                        line_no: 2,
                     },
                 ],
             });
@@ -107,19 +180,22 @@ mod tests {
                     gherkin::Step {
                         title: S("step 1"),
                         lines: vec![],
+                        line_no: 0,
                     },
                     gherkin::Step {
                         title: S("step 2"),
                         lines: vec![],
+                        line_no: 1,
                     },
                     gherkin::Step {
                         title: S("step 3"),
                         lines: vec![],
+                        line_no: 2,
                     },
                 ],
             });
             let mut issues = vec![];
-            let have_block = sort::block(give_block, &config, &mut issues);
+            let have_block = sort::block(give_block, &config, "file.feature".into(), &mut issues);
             pretty::assert_eq!(have_block, want_block);
         }
 
