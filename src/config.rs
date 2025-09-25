@@ -11,7 +11,7 @@ pub struct Config {
 
 pub fn load() -> Result<Config> {
     let file = fs::File::open(FILE_NAME).map_err(|e| UserError::CannotReadFile {
-        filename: Utf8PathBuf::from(FILE_NAME),
+        file: Utf8PathBuf::from(FILE_NAME),
         reason: e.to_string(),
     })?;
     let reader = BufReader::new(file);

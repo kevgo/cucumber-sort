@@ -7,24 +7,38 @@ use core::fmt::Display;
 /// and which the app should therefore display to them
 #[derive(Eq, Debug, PartialEq)]
 pub enum UserError {
-    CannotReadConfigFile {
-        filename: Utf8PathBuf,
-        reason: String,
-    },
-    CannotReadFile {
-        filename: Utf8PathBuf,
-        reason: String,
-    },
+    CannotReadConfigFile { file: Utf8PathBuf, reason: String },
+    CannotReadFile { file: Utf8PathBuf, reason: String },
+    GherkinBlockContainsNonExecutableLine { file: Utf8PathBuf, line: usize },
+    StepOutsideOfBlock { file: Utf8PathBuf, line: usize },
 }
 
 impl Display for UserError {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
-            UserError::CannotReadConfigFile { filename, reason } => {
+            UserError::CannotReadConfigFile {
+                file: filename,
+                reason,
+            } => {
                 write!(f, "cannot read configuration file ({filename}): {reason}")
             }
-            UserError::CannotReadFile { filename, reason } => {
+            UserError::CannotReadFile {
+                file: filename,
+                reason,
+            } => {
                 write!(f, "cannot read file {}: {}", filename, reason)
+            }
+            UserError::GherkinBlockContainsNonExecutableLine {
+                file: filename,
+                line,
+            } => {
+                write!(
+                    f,
+                    "{filename}:{line}  Gherkin block contains non-executable line",
+                )
+            }
+            UserError::StepOutsideOfBlock { file, line } => {
+                write!(f, "{file}:{line}  Gherkin step outside of a block")
             }
         }
     }

@@ -32,10 +32,10 @@ fn inner() -> Result<usize> {
     let mut issues = Vec::<Issue>::new();
     for filepath in find::all()? {
         let file_content = fs::File::open(&filepath).map_err(|e| UserError::CannotReadFile {
-            filename: filepath,
+            file: filepath.clone(),
             reason: e.to_string(),
         })?;
-        let gherkin = gherkin::file(BufReader::new(file_content));
+        let gherkin = gherkin::file(BufReader::new(file_content), filepath)?;
         let sorted_file = sort::file(gherkin, &config, &mut issues);
     }
     for issue in &issues {

@@ -8,10 +8,7 @@ pub fn file(file: gherkin::Feature, config: &Config, issues: &mut Vec<Issue>) ->
     for file_block in file.blocks {
         new_blocks.push(block(file_block, config, issues));
     }
-    gherkin::Feature {
-        blocks: new_blocks,
-        initial_lines: file.initial_lines,
-    }
+    gherkin::Feature { blocks: new_blocks }
 }
 
 /// provides the given block with all steps sorted according to the given configuration
@@ -31,6 +28,7 @@ mod tests {
 
     mod block {
         use crate::config::Config;
+        use crate::gherkin::ExecutableBlock;
         use crate::{gherkin, sort};
         use big_s::S;
 
@@ -39,9 +37,9 @@ mod tests {
             let config = Config {
                 steps: vec![S("step 1"), S("step 2"), S("step 3")],
             };
-            let give_block = gherkin::Block {
-                title_line: S("Scenario: test"),
-                line_number: 3,
+            let give_block = gherkin::Block::Executable(ExecutableBlock {
+                title: S("Scenario: test"),
+                line_no: 3,
                 steps: vec![
                     gherkin::Step {
                         title: S("step 1"),
@@ -56,7 +54,7 @@ mod tests {
                         lines: vec![],
                     },
                 ],
-            };
+            });
             let want_block = give_block.clone();
             let mut issues = vec![];
             let have_block = sort::block(give_block, &config, &mut issues);
