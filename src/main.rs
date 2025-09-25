@@ -14,13 +14,7 @@ use std::process::ExitCode;
 
 fn main() -> ExitCode {
     match inner() {
-        Ok(count) => {
-            if count == 0 {
-                ExitCode::SUCCESS
-            } else {
-                ExitCode::FAILURE
-            }
-        }
+        Ok(exit_code) => exit_code,
         Err(err) => {
             println!("{}", err);
             ExitCode::FAILURE
@@ -28,7 +22,7 @@ fn main() -> ExitCode {
     }
 }
 
-fn inner() -> Result<usize> {
+fn inner() -> Result<ExitCode> {
     match cli::load(env::args())? {
         Check => cmd::check(),
         Format => cmd::format(),

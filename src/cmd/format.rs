@@ -1,5 +1,7 @@
+use std::process::ExitCode;
+
 use crate::prelude::*;
 
-pub fn format() -> Result<usize> {
-    Ok(0)
+pub fn format() -> Result<ExitCode> {
+    Ok(ExitCode::SUCCESS)
 }

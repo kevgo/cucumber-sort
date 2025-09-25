@@ -1,9 +1,11 @@
+use std::process::ExitCode;
+
 use crate::prelude::*;
 
-pub fn help() -> Result<usize> {
+pub fn help() -> Result<ExitCode> {
     println!("Sorts steps in Gherkin files to match the order in cucumbersortrc.");
     println!("{}", available_commands());
-    Ok(0)
+    Ok(ExitCode::SUCCESS)
 }
 
 pub fn available_commands() -> &'static str {
