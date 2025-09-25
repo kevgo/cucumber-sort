@@ -10,10 +10,10 @@ pub fn file(lines: Vec<lexer::Line>, filepath: &Utf8Path) -> Result<Feature> {
     match line.line_type {
       LineType::BlockStart => {
         if let Some(mut block) = current_block.take() {
-          if let Block::Executable(executable_block) = &mut block {
-            if let Some(step) = current_step.take() {
-              executable_block.steps.push(step);
-            }
+          if let Block::Executable(executable_block) = &mut block
+            && let Some(step) = current_step.take()
+          {
+            executable_block.steps.push(step);
           }
           blocks.push(block);
         }
