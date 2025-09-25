@@ -40,7 +40,8 @@ mod tests {
                 steps: vec![S("step 1"), S("step 2"), S("step 3")],
             };
             let give_block = gherkin::Block {
-                start_line: 3,
+                title_line: S("Scenario: test"),
+                line_number: 3,
                 steps: vec![
                     gherkin::Step {
                         title: S("step 1"),

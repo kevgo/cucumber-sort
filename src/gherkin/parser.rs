@@ -15,13 +15,11 @@ pub fn file(lines: Vec<lexer::Line>) -> Feature {
                     blocks.push(block);
                 }
                 current_block = Some(Block {
-                    start_line: line.number,
+                    title_line: line.full_text,
+                    line_number: line.number,
                     steps: vec![],
                 });
-                current_step = Some(Step {
-                    lines: vec![line.full_text],
-                    title: line.trimmed_text.into(),
-                });
+                current_step = None;
             }
             LineType::StepStart => {
                 if let Some(step) = current_step {
@@ -49,8 +47,8 @@ pub fn file(lines: Vec<lexer::Line>) -> Feature {
         blocks.push(block);
     }
     Feature {
-        initial_lines: initial_lines,
-        blocks: blocks,
+        initial_lines,
+        blocks,
     }
 }
 
@@ -62,7 +60,8 @@ pub struct Feature {
 
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct Block {
-    pub start_line: usize,
+    pub title_line: String,
+    pub line_number: usize,
     pub steps: Vec<Step>,
 }
 

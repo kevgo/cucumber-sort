@@ -196,12 +196,9 @@ Feature: test
                 ],
                 blocks: vec![
                     Block {
-                        start_line: 4,
+                        title_line: S("  Background:"),
+                        line_number: 4,
                         steps: vec![
-                            Step {
-                                lines: vec![S("  Background:")],
-                                title: S("Background:"),
-                            },
                             Step {
                                 lines: vec![S("    Given step 1")],
                                 title: S("Given step 1"),
@@ -223,11 +220,9 @@ Feature: test
                         ],
                     },
                     Block {
-                        start_line: 13,
-                        steps: vec![Step {
-                            lines: vec![S("  Scenario: result")],
-                            title: S("Scenario: result"),
-                        }],
+                        title_line: S("  Scenario: result"),
+                        line_number: 13,
+                        steps: vec![],
                     },
                 ],
             };
