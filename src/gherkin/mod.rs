@@ -32,7 +32,160 @@ mod tests {
         use std::io::BufReader;
 
         #[test]
-        fn simple() {
+        fn multiple_scenarios() {
+            // step 1: lex Gherkin source into tokens (in our case Lines)
+            let source = r#"
+Feature: test
+
+  An example feature file.
+
+  Background:
+    Given step 1
+    And step 2
+    When step 3
+
+  Scenario: result
+    Then step 4
+    And step 5
+"#;
+            let have_lines = lexer::file(BufReader::new(source[1..].as_bytes()));
+            let want_lines = vec![
+                Line {
+                    number: 0,
+                    full_text: S("Feature: test"),
+                    indent: Indentation::new(0),
+                    trimmed_text: TrimmedLine::from("Feature: test"),
+                    line_type: LineType::Other,
+                },
+                Line {
+                    number: 1,
+                    full_text: S(""),
+                    indent: Indentation::new(0),
+                    trimmed_text: TrimmedLine::from(""),
+                    line_type: LineType::Other,
+                },
+                Line {
+                    number: 2,
+                    full_text: S("  An example feature file."),
+                    indent: Indentation::new(2),
+                    trimmed_text: TrimmedLine::from("An example feature file."),
+                    line_type: LineType::Other,
+                },
+                Line {
+                    number: 3,
+                    full_text: S(""),
+                    indent: Indentation::new(0),
+                    trimmed_text: TrimmedLine::from(""),
+                    line_type: LineType::Other,
+                },
+                Line {
+                    number: 4,
+                    full_text: S("  Background:"),
+                    indent: Indentation::new(2),
+                    trimmed_text: TrimmedLine::from("Background:"),
+                    line_type: LineType::BlockStart,
+                },
+                Line {
+                    number: 5,
+                    full_text: S("    Given step 1"),
+                    indent: Indentation::new(4),
+                    trimmed_text: TrimmedLine::from("Given step 1"),
+                    line_type: LineType::StepStart,
+                },
+                Line {
+                    number: 6,
+                    full_text: S("    And step 2"),
+                    indent: Indentation::new(4),
+                    trimmed_text: TrimmedLine::from("And step 2"),
+                    line_type: LineType::StepStart,
+                },
+                Line {
+                    number: 7,
+                    full_text: S("    When step 3"),
+                    indent: Indentation::new(4),
+                    trimmed_text: TrimmedLine::from("When step 3"),
+                    line_type: LineType::StepStart,
+                },
+                Line {
+                    number: 8,
+                    full_text: S(""),
+                    indent: Indentation::new(0),
+                    trimmed_text: TrimmedLine::from(""),
+                    line_type: LineType::Other,
+                },
+                Line {
+                    number: 9,
+                    full_text: S("  Scenario: result"),
+                    indent: Indentation::new(2),
+                    trimmed_text: TrimmedLine::from("Scenario: result"),
+                    line_type: LineType::BlockStart,
+                },
+                Line {
+                    number: 10,
+                    full_text: S("    Then step 4"),
+                    indent: Indentation::new(4),
+                    trimmed_text: TrimmedLine::from("Then step 4"),
+                    line_type: LineType::StepStart,
+                },
+                Line {
+                    number: 11,
+                    full_text: S("    And step 5"),
+                    indent: Indentation::new(4),
+                    trimmed_text: TrimmedLine::from("And step 5"),
+                    line_type: LineType::StepStart,
+                },
+            ];
+            pretty::assert_eq!(have_lines, want_lines);
+
+            // step 2: parse the Lines into blocks
+            let have_feature = parser::file(have_lines);
+            let want_feature = parser::Feature {
+                initial_lines: vec![
+                    S("Feature: test"),
+                    S(""),
+                    S("  An example feature file."),
+                    S(""),
+                ],
+                blocks: vec![
+                    Block {
+                        title_line: S("  Background:"),
+                        line_number: 4,
+                        steps: vec![
+                            Step {
+                                lines: vec![S("    Given step 1")],
+                                title: S("step 1"),
+                            },
+                            Step {
+                                lines: vec![S("    And step 2")],
+                                title: S("step 2"),
+                            },
+                            Step {
+                                lines: vec![S("    When step 3"), S("")],
+                                title: S("step 3"),
+                            },
+                        ],
+                    },
+                    Block {
+                        title_line: S("  Scenario: result"),
+                        line_number: 9,
+                        steps: vec![
+                            Step {
+                                lines: vec![S("    Then step 4")],
+                                title: S("step 4"),
+                            },
+                            Step {
+                                lines: vec![S("    And step 5")],
+                                title: S("step 5"),
+                            },
+                        ],
+                    },
+                ],
+            };
+            pretty::assert_eq!(want_feature, have_feature);
+        }
+
+        #[test]
+        fn docstrings() {
             // step 1: lex Gherkin source into tokens (in our case Lines)
             let source = r#"
 Feature: test
