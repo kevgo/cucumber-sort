@@ -27,7 +27,7 @@ pub fn file(lines: Vec<lexer::Line>) -> Feature {
                     }
                 }
                 current_step = Some(Step {
-                    title: first_word_after_trim(&line.text, line.indent.into()).to_string(),
+                    title: cut_first_word_after_trim(&line.text, line.indent.into()).to_string(),
                     lines: vec![line.text],
                 })
             }
@@ -55,7 +55,7 @@ pub fn file(lines: Vec<lexer::Line>) -> Feature {
     }
 }
 
-fn first_word_after_trim(text: &str, indentation: usize) -> &str {
+fn cut_first_word_after_trim(text: &str, indentation: usize) -> &str {
     if let Some((_first_word, remainder)) = text[indentation..].split_once(" ") {
         remainder
     } else {
@@ -87,12 +87,12 @@ pub struct Step {
 
 #[cfg(test)]
 mod tests {
-    use crate::gherkin::parser::first_word_after_trim;
+    use crate::gherkin::parser;
 
     #[test]
-    fn without_first_word() {
+    fn cut_first_word_after_trim() {
         assert_eq!(
-            first_word_after_trim("    Given a cucumber", 4),
+            parser::cut_first_word_after_trim("    Given a cucumber", 4),
             "a cucumber",
         )
     }
