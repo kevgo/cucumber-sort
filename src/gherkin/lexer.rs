@@ -33,7 +33,7 @@ pub struct Line {
 
 impl Line {
     fn new(text: String, number: usize) -> Line {
-        let (indent, trimmed) = trim_whitespace_start(&text);
+        let (indent, trimmed) = trim_initial_whitespace(&text);
         let line_type = trimmed.line_type();
         Line {
             number,
@@ -45,7 +45,7 @@ impl Line {
 }
 
 /// provides the number of leading whitespace characters and the text without that leading whitespace
-fn trim_whitespace_start<'a>(line: &'a str) -> (usize, TrimmedLine<'a>) {
+fn trim_initial_whitespace<'a>(line: &'a str) -> (usize, TrimmedLine<'a>) {
     let mut counter = 0;
     for c in line.chars().into_iter() {
         if c == ' ' || c == '\t' {
@@ -107,32 +107,32 @@ impl<'a> PartialEq<&str> for TrimmedLine<'a> {
 mod tests {
 
     mod trim_whitespace_start {
-        use crate::gherkin::lexer::trim_whitespace_start;
+        use crate::gherkin::lexer::trim_initial_whitespace;
 
         #[test]
         fn no_indent() {
-            let (indent, clipped) = trim_whitespace_start("text");
+            let (indent, clipped) = trim_initial_whitespace("text");
             assert_eq!(indent, 0);
             assert_eq!(clipped, "text");
         }
 
         #[test]
         fn two() {
-            let (indent, clipped) = trim_whitespace_start("  text");
+            let (indent, clipped) = trim_initial_whitespace("  text");
             assert_eq!(indent, 2);
             assert_eq!(clipped, "text");
         }
 
         #[test]
         fn four() {
-            let (indent, clipped) = trim_whitespace_start("    text");
+            let (indent, clipped) = trim_initial_whitespace("    text");
             assert_eq!(indent, 4);
             assert_eq!(clipped, "text");
         }
 
         #[test]
         fn only_spaces() {
-            let (indent, clipped) = trim_whitespace_start("    ");
+            let (indent, clipped) = trim_initial_whitespace("    ");
             assert_eq!(indent, 4);
             assert_eq!(clipped, "");
         }
