@@ -30,7 +30,7 @@ pub fn file(lines: Vec<lexer::Line>, filepath: &Utf8Path) -> Result<Feature> {
               executable_block.steps.push(step);
             }
             current_step = Some(Step {
-              title: cut_first_word_after_trim(&line.text, line.indent.into()).to_string(),
+              title: cut_first_word_after_trim(&line.text, line.indent).to_string(),
               lines: vec![line.text],
               line_no: line.number,
             });
@@ -42,7 +42,7 @@ pub fn file(lines: Vec<lexer::Line>, filepath: &Utf8Path) -> Result<Feature> {
           }
         } else {
           current_step = Some(Step {
-            title: cut_first_word_after_trim(&line.text, line.indent.into()).to_string(),
+            title: cut_first_word_after_trim(&line.text, line.indent).to_string(),
             lines: vec![line.text],
             line_no: line.number,
           })
@@ -75,18 +75,18 @@ pub fn file(lines: Vec<lexer::Line>, filepath: &Utf8Path) -> Result<Feature> {
     }
   }
 
-  if let Some(step) = current_step {
-    if let Some(mut block) = current_block.as_mut() {
-      match &mut block {
-        Block::Executable(executable_block) => {
-          executable_block.steps.push(step);
-        }
-        Block::NonExecutable(non_executable_block) => {
-          return Err(UserError::GherkinBlockContainsNonExecutableLine {
-            file: filepath.to_path_buf(),
-            line: non_executable_block.line_no,
-          });
-        }
+  if let Some(step) = current_step
+    && let Some(mut block) = current_block.as_mut()
+  {
+    match &mut block {
+      Block::Executable(executable_block) => {
+        executable_block.steps.push(step);
+      }
+      Block::NonExecutable(non_executable_block) => {
+        return Err(UserError::GherkinBlockContainsNonExecutableLine {
+          file: filepath.to_path_buf(),
+          line: non_executable_block.line_no,
+        });
       }
     }
   }

@@ -21,7 +21,7 @@ fn block(block: gherkin::Block, config: &Config, issues: &mut Vec<Issue>) -> ghe
       })
     }
     gherkin::Block::NonExecutable(non_executable_block) => {
-      return gherkin::Block::NonExecutable(non_executable_block);
+      gherkin::Block::NonExecutable(non_executable_block)
     }
   }
 }

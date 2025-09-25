@@ -1,5 +1,4 @@
 use std::io::BufRead;
-use std::usize;
 
 // the words that lines which start a block can start with
 pub const BLOCK_STARTERS: &[&str] = &["Background:", "Scenario:", "Scenario Outline:"];
@@ -11,7 +10,6 @@ pub const STEP_STARTERS: &[&str] = &["Given ", "When ", "Then ", "And "];
 pub fn file(text: impl BufRead) -> Vec<Line> {
   text
     .lines()
-    .into_iter()
     .enumerate()
     .map(|(number, line)| Line::new(line.unwrap(), number))
     .collect()
@@ -39,7 +37,7 @@ impl Line {
     Line {
       number,
       text,
-      indent: indent,
+      indent,
       line_type,
     }
   }
@@ -48,7 +46,7 @@ impl Line {
 /// provides the number of leading whitespace characters and the text without that leading whitespace
 fn trim_initial_whitespace<'a>(line: &'a str) -> (usize, TrimmedLine<'a>) {
   let mut counter = 0;
-  for c in line.chars().into_iter() {
+  for c in line.chars() {
     if c == ' ' || c == '\t' {
       counter += 1;
       continue;
