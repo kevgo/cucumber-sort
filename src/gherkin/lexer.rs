@@ -2,10 +2,10 @@ use std::io::BufRead;
 use std::usize;
 
 // the words that lines which start a block can start with
-pub const BLOCK_STARTERS: &[&str] = &["Background", "Scenario", "Scenario Outline"];
+pub const BLOCK_STARTERS: &[&str] = &["Background:", "Scenario:", "Scenario Outline:"];
 
 /// the words that lines which start a step can start with
-pub const STEP_STARTERS: &[&str] = &["Given", "When", "Then", "And"];
+pub const STEP_STARTERS: &[&str] = &["Given ", "When ", "Then ", "And "];
 
 /// lexes the given file content
 pub fn file(text: impl BufRead) -> Vec<Line> {
@@ -36,7 +36,7 @@ pub struct Line {
 
 impl Line {
     fn new(text: String, number: usize) -> Line {
-        let (indent, trimmed) = clip_start(&text);
+        let (indent, trimmed) = trim_whitespace_start(&text);
         let line_type = trimmed.line_type();
         Line {
             number,
@@ -49,7 +49,7 @@ impl Line {
 }
 
 /// provides the number of leading whitespace characters and the text without that leading whitespace
-fn clip_start(line: &str) -> (Indentation, TrimmedLine) {
+fn trim_whitespace_start(line: &str) -> (Indentation, TrimmedLine) {
     let mut counter = 0;
     for c in line.chars().into_iter() {
         if c == ' ' || c == '\t' {
@@ -106,10 +106,10 @@ impl TrimmedLine {
     }
 
     pub fn without_first_word(&self) -> &str {
-        if let Some((_word, remainder)) = self.0.split_once(" ") {
+        if let Some((_first_word, remainder)) = self.0.split_once(" ") {
             remainder
         } else {
-            &self.0
+            ""
         }
     }
 }
@@ -117,12 +117,6 @@ impl TrimmedLine {
 impl From<&str> for TrimmedLine {
     fn from(value: &str) -> Self {
         TrimmedLine(value.to_string())
-    }
-}
-
-impl Into<String> for TrimmedLine {
-    fn into(self) -> String {
-        self.0
     }
 }
 
@@ -135,35 +129,46 @@ impl PartialEq<&str> for TrimmedLine {
 #[cfg(test)]
 mod tests {
 
-    mod clip_start {
-        use crate::gherkin::lexer::clip_start;
+    mod trim_whitespace_start {
+        use crate::gherkin::lexer::trim_whitespace_start;
 
         #[test]
         fn no_indent() {
-            let (indent, clipped) = clip_start("text");
+            let (indent, clipped) = trim_whitespace_start("text");
             assert_eq!(indent.0, 0);
             assert_eq!(clipped, "text");
         }
 
         #[test]
         fn two() {
-            let (indent, clipped) = clip_start("  text");
+            let (indent, clipped) = trim_whitespace_start("  text");
             assert_eq!(indent.0, 2);
             assert_eq!(clipped, "text");
         }
 
         #[test]
         fn four() {
-            let (indent, clipped) = clip_start("    text");
+            let (indent, clipped) = trim_whitespace_start("    text");
             assert_eq!(indent.0, 4);
             assert_eq!(clipped, "text");
         }
 
         #[test]
         fn only_spaces() {
-            let (indent, clipped) = clip_start("    ");
+            let (indent, clipped) = trim_whitespace_start("    ");
             assert_eq!(indent.0, 4);
             assert_eq!(clipped, "");
+        }
+    }
+
+    mod trimmed_line {
+        use crate::gherkin::lexer::TrimmedLine;
+
+        #[test]
+        fn is_block_start() {
+            assert!(TrimmedLine::from("Background:").is_block_start());
+            assert!(TrimmedLine::from("Scenario: result").is_block_start());
+            assert!(TrimmedLine::from("Scenario Outline: test").is_block_start());
         }
     }
 
