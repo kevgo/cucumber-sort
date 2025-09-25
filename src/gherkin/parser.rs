@@ -15,7 +15,7 @@ pub fn file(lines: Vec<lexer::Line>) -> Feature {
                     blocks.push(block);
                 }
                 current_block = Some(Block {
-                    title_line: line.full_text,
+                    title_line: line.text,
                     line_number: line.number,
                     steps: vec![],
                 });
@@ -27,15 +27,15 @@ pub fn file(lines: Vec<lexer::Line>) -> Feature {
                     }
                 }
                 current_step = Some(Step {
-                    title: first_word_after_trim(&line.full_text, line.indent.into()).to_string(),
-                    lines: vec![line.full_text],
+                    title: first_word_after_trim(&line.text, line.indent.into()).to_string(),
+                    lines: vec![line.text],
                 })
             }
             LineType::Other => {
                 if let Some(step) = current_step.as_mut() {
-                    step.lines.push(line.full_text);
+                    step.lines.push(line.text);
                 } else {
-                    initial_lines.push(line.full_text);
+                    initial_lines.push(line.text);
                 }
             }
         }
@@ -83,4 +83,17 @@ pub struct Step {
 
     /// the relevant title of the step (without Given/When/Then)
     pub title: String,
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::gherkin::parser::first_word_after_trim;
+
+    #[test]
+    fn without_first_word() {
+        assert_eq!(
+            first_word_after_trim("    Given a cucumber", 4),
+            "a cucumber",
+        )
+    }
 }

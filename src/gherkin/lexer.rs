@@ -22,7 +22,7 @@ pub struct Line {
     pub number: usize,
 
     /// complete text of the line, as it is in the file
-    pub full_text: String,
+    pub text: String,
 
     /// how much the line is indented
     pub indent: Indentation,
@@ -37,7 +37,7 @@ impl Line {
         let line_type = trimmed.line_type();
         Line {
             number,
-            full_text: text,
+            text,
             indent: indent,
             line_type,
         }
@@ -105,14 +105,6 @@ impl TrimmedLine {
 
     fn is_step_start(&self) -> bool {
         STEP_STARTERS.iter().any(|word| self.0.starts_with(word))
-    }
-
-    pub fn without_first_word(&self) -> &str {
-        if let Some((_first_word, remainder)) = self.0.split_once(" ") {
-            remainder
-        } else {
-            ""
-        }
     }
 }
 
@@ -198,14 +190,6 @@ mod tests {
                 LineType::Other
             );
         }
-
-        #[test]
-        fn without_first_word() {
-            assert_eq!(
-                TrimmedLine::from("Given a cucumber").without_first_word(),
-                "a cucumber",
-            )
-        }
     }
 
     mod line_new {
@@ -218,7 +202,7 @@ mod tests {
             let have = Line::new(S(give), 12);
             let want = Line {
                 number: 12,
-                full_text: S("  Some documentation"),
+                text: S("  Some documentation"),
                 indent: Indentation(2),
                 line_type: LineType::Other,
             };
