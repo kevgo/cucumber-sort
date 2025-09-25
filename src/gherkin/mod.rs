@@ -201,7 +201,7 @@ Feature: test
                         steps: vec![
                             Step {
                                 lines: vec![S("    Given step 1")],
-                                title: S("Given step 1"),
+                                title: S("step 1"),
                             },
                             Step {
                                 lines: vec![
@@ -211,11 +211,11 @@ Feature: test
                                     S("      docstring line 2"),
                                     S("      \"\"\""),
                                 ],
-                                title: S("And step 2:"),
+                                title: S("step 2:"),
                             },
                             Step {
                                 lines: vec![S("    When step 3"), S("")],
-                                title: S("When step 3"),
+                                title: S("step 3"),
                             },
                         ],
                     },
@@ -229,7 +229,7 @@ Feature: test
                                 S("      | line 1a   | line 1b   |"),
                                 S("      | line 2a   | line 2b   |"),
                             ],
-                            title: S("Then step 4:"),
+                            title: S("step 4:"),
                         }],
                     },
                 ],

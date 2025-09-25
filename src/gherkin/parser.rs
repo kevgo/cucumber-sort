@@ -29,7 +29,7 @@ pub fn file(lines: Vec<lexer::Line>) -> Feature {
                     }
                 }
                 current_step = Some(Step {
-                    title: line.trimmed_text.into(),
+                    title: line.trimmed_text.without_first_word().to_string(),
                     lines: vec![line.full_text],
                 })
             }

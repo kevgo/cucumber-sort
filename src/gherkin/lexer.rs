@@ -76,6 +76,7 @@ pub enum LineType {
 pub struct Indentation(usize);
 
 impl Indentation {
+    #[cfg(test)]
     pub fn new(value: usize) -> Indentation {
         Indentation(value)
     }
@@ -99,8 +100,17 @@ impl TrimmedLine {
     fn is_block_start(&self) -> bool {
         BLOCK_STARTERS.iter().any(|word| self.0.starts_with(word))
     }
+
     fn is_step_start(&self) -> bool {
         STEP_STARTERS.iter().any(|word| self.0.starts_with(word))
+    }
+
+    pub fn without_first_word(&self) -> &str {
+        if let Some((_word, remainder)) = self.0.split_once(" ") {
+            remainder
+        } else {
+            &self.0
+        }
     }
 }
 
