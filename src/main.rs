@@ -13,19 +13,19 @@ use std::env;
 use std::process::ExitCode;
 
 fn main() -> ExitCode {
-    match inner() {
-        Ok(exit_code) => exit_code,
-        Err(err) => {
-            println!("{}", err);
-            ExitCode::FAILURE
-        }
+  match inner() {
+    Ok(exit_code) => exit_code,
+    Err(err) => {
+      println!("{}", err);
+      ExitCode::FAILURE
     }
+  }
 }
 
 fn inner() -> Result<ExitCode> {
-    match cli::load(env::args())? {
-        Check => cmd::check(),
-        Format => cmd::format(),
-        Help => cmd::help(),
-    }
+  match cli::load(env::args())? {
+    Check => cmd::check(),
+    Format => cmd::format(),
+    Help => cmd::help(),
+  }
 }
