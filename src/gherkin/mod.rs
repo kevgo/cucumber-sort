@@ -47,6 +47,10 @@ Feature: test
   Scenario: result
     Then step 4
     And step 5
+
+  Scenario: undo
+    When step 6
+    Then step 7
 "#;
             let have_lines = lexer::file(BufReader::new(source[1..].as_bytes()));
             let want_lines = vec![
@@ -134,6 +138,34 @@ Feature: test
                     trimmed_text: TrimmedLine::from("And step 5"),
                     line_type: LineType::StepStart,
                 },
+                Line {
+                    number: 12,
+                    full_text: S(""),
+                    indent: Indentation::new(0),
+                    trimmed_text: TrimmedLine::from(""),
+                    line_type: LineType::Other,
+                },
+                Line {
+                    number: 13,
+                    full_text: S("  Scenario: undo"),
+                    indent: Indentation::new(2),
+                    trimmed_text: TrimmedLine::from("Scenario: undo"),
+                    line_type: LineType::BlockStart,
+                },
+                Line {
+                    number: 14,
+                    full_text: S("    When step 6"),
+                    indent: Indentation::new(4),
+                    trimmed_text: TrimmedLine::from("When step 6"),
+                    line_type: LineType::StepStart,
+                },
+                Line {
+                    number: 15,
+                    full_text: S("    Then step 7"),
+                    indent: Indentation::new(4),
+                    trimmed_text: TrimmedLine::from("Then step 7"),
+                    line_type: LineType::StepStart,
+                },
             ];
             pretty::assert_eq!(have_lines, want_lines);
 
@@ -174,8 +206,22 @@ Feature: test
                                 title: S("step 4"),
                             },
                             Step {
-                                lines: vec![S("    And step 5")],
+                                lines: vec![S("    And step 5"), S("")],
                                 title: S("step 5"),
+                            },
+                        ],
+                    },
+                    Block {
+                        title_line: S("  Scenario: undo"),
+                        line_number: 13,
+                        steps: vec![
+                            Step {
+                                lines: vec![S("    When step 6")],
+                                title: S("step 6"),
+                            },
+                            Step {
+                                lines: vec![S("    Then step 7")],
+                                title: S("step 7"),
                             },
                         ],
                     },
