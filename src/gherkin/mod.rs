@@ -222,7 +222,15 @@ Feature: test
                     Block {
                         title_line: S("  Scenario: result"),
                         line_number: 13,
-                        steps: vec![],
+                        steps: vec![Step {
+                            lines: vec![
+                                S("    Then step 4:"),
+                                S("      | HEADING 1 | HEADING 2 |"),
+                                S("      | line 1a   | line 1b   |"),
+                                S("      | line 2a   | line 2b   |"),
+                            ],
+                            title: S("Then step 4:"),
+                        }],
                     },
                 ],
             };

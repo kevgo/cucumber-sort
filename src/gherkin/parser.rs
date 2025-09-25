@@ -43,6 +43,13 @@ pub fn file(lines: Vec<lexer::Line>) -> Feature {
             }
         }
     }
+    if let Some(step) = current_step {
+        if let Some(mut block) = current_block {
+            block.steps.push(step);
+            current_block = Some(block);
+        }
+    }
+
     if let Some(block) = current_block {
         blocks.push(block);
     }
