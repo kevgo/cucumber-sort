@@ -45,7 +45,7 @@ impl Line {
 }
 
 /// provides the number of leading whitespace characters and the text without that leading whitespace
-fn trim_whitespace_start(line: &str) -> (usize, TrimmedLine) {
+fn trim_whitespace_start<'a>(line: &'a str) -> (usize, TrimmedLine<'a>) {
     let mut counter = 0;
     for c in line.chars().into_iter() {
         if c == ' ' || c == '\t' {
@@ -69,9 +69,9 @@ pub enum LineType {
 
 /// a line without the initial whitespace
 #[derive(Debug, Eq, PartialEq)]
-pub struct TrimmedLine(String);
+pub struct TrimmedLine<'a>(&'a str);
 
-impl TrimmedLine {
+impl<'a> TrimmedLine<'a> {
     fn line_type(&self) -> LineType {
         if self.is_block_start() {
             LineType::BlockStart
@@ -91,13 +91,13 @@ impl TrimmedLine {
     }
 }
 
-impl From<&str> for TrimmedLine {
-    fn from(value: &str) -> Self {
-        TrimmedLine(value.to_string())
+impl<'a> From<&'a str> for TrimmedLine<'a> {
+    fn from(value: &'a str) -> Self {
+        TrimmedLine(value)
     }
 }
 
-impl PartialEq<&str> for TrimmedLine {
+impl<'a> PartialEq<&str> for TrimmedLine<'a> {
     fn eq(&self, other: &&str) -> bool {
         &self.0 == other
     }
