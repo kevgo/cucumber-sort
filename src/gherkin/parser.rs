@@ -1,6 +1,6 @@
 use crate::gherkin::lexer::{self, LineType};
 
-pub fn file(lines: Vec<lexer::Line>) -> File {
+pub fn file(lines: Vec<lexer::Line>) -> Feature {
     let mut current_block: Option<Block> = None;
     let mut current_step: Option<Step> = None;
     let mut blocks: Vec<Block> = vec![];
@@ -15,7 +15,7 @@ pub fn file(lines: Vec<lexer::Line>) -> File {
                     blocks.push(block);
                 }
                 current_block = Some(Block {
-                    start: line.number,
+                    start_line: line.number,
                     steps: vec![],
                 });
                 current_step = None
@@ -45,28 +45,29 @@ pub fn file(lines: Vec<lexer::Line>) -> File {
     if let Some(block) = current_block {
         blocks.push(block);
     }
-    File {
+    Feature {
         initial_lines: initial_lines,
         blocks: blocks,
     }
 }
 
-pub struct File {
+#[derive(Debug, Eq, PartialEq)]
+pub struct Feature {
     pub initial_lines: Vec<String>,
     pub blocks: Vec<Block>,
 }
 
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct Block {
-    pub start: usize,
+    pub start_line: usize,
     pub steps: Vec<Step>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Step {
-    /// just the relevant title of the step
-    pub title: String,
-
     /// the textual lines making up this step
     pub lines: Vec<String>,
+
+    /// the relevant title of the step (without Given/When/Then)
+    pub title: String,
 }

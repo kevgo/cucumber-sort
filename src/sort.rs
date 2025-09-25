@@ -3,12 +3,12 @@ use crate::gherkin;
 use camino::Utf8PathBuf;
 
 /// provides a copy of the given File with all Gherkin steps sorted the same way as the given configuration
-pub fn file(file: gherkin::File, config: &Config, issues: &mut Vec<Issue>) -> gherkin::File {
+pub fn file(file: gherkin::Feature, config: &Config, issues: &mut Vec<Issue>) -> gherkin::Feature {
     let mut new_blocks = Vec::<gherkin::Block>::new();
     for file_block in file.blocks {
         new_blocks.push(block(file_block, config, issues));
     }
-    gherkin::File {
+    gherkin::Feature {
         blocks: new_blocks,
         initial_lines: file.initial_lines,
     }
@@ -29,11 +29,10 @@ pub struct Issue {
 #[cfg(test)]
 mod tests {
 
-    mod ordered_block {
-        use big_s::S;
-
+    mod block {
         use crate::config::Config;
         use crate::{gherkin, sort};
+        use big_s::S;
 
         #[test]
         fn already_ordered() {
@@ -41,7 +40,7 @@ mod tests {
                 steps: vec![S("step 1"), S("step 2"), S("step 3")],
             };
             let give_block = gherkin::Block {
-                start: 3,
+                start_line: 3,
                 steps: vec![
                     gherkin::Step {
                         title: S("step 1"),
