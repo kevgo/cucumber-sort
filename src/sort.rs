@@ -13,8 +13,22 @@ pub fn file(file: gherkin::Feature, config: &Config, issues: &mut Vec<Issue>) ->
 
 /// provides the given block with all steps sorted according to the given configuration
 fn block(block: gherkin::Block, config: &Config, issues: &mut Vec<Issue>) -> gherkin::Block {
-    // order the lines in block the same order as the ones in config
-    block
+    match block {
+        gherkin::Block::Executable(executable_block) => {
+            gherkin::Block::Executable(gherkin::ExecutableBlock {
+                title: executable_block.title,
+                line_no: executable_block.line_no,
+                steps: sort_steps(executable_block.steps, &config.steps),
+            })
+        }
+        gherkin::Block::NonExecutable(non_executable_block) => {
+            return gherkin::Block::NonExecutable(non_executable_block);
+        }
+    }
+}
+
+fn sort_steps(have_steps: Vec<gherkin::Step>, config_steps: &[String]) -> Vec<gherkin::Step> {
+    have_steps
 }
 
 pub struct Issue {

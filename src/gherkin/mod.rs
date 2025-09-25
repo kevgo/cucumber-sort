@@ -3,11 +3,7 @@ mod parser;
 
 use crate::prelude::*;
 use camino::Utf8PathBuf;
-#[cfg(test)]
-pub use parser::ExecutableBlock;
-#[cfg(test)]
-pub use parser::Step;
-pub use parser::{Block, Feature};
+pub use parser::{Block, ExecutableBlock, Feature, Step};
 
 use std::io::BufRead;
 
