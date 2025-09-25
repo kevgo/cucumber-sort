@@ -180,7 +180,7 @@ mod tests {
                     gherkin::Step {
                         title: S("step 1"),
                         lines: vec![],
-                        line_no: 0,
+                        line_no: 2,
                     },
                     gherkin::Step {
                         title: S("step 2"),
@@ -190,7 +190,7 @@ mod tests {
                     gherkin::Step {
                         title: S("step 3"),
                         lines: vec![],
-                        line_no: 2,
+                        line_no: 0,
                     },
                 ],
             });
