@@ -1,7 +1,9 @@
 mod lexer;
 mod parser;
 
-pub use parser::{Block, Feature, Step};
+#[cfg(test)]
+pub use parser::Step;
+pub use parser::{Block, Feature};
 
 use std::io::BufRead;
 
@@ -26,7 +28,7 @@ Parsing: group lines into steps
 mod tests {
 
     mod lex_and_parse {
-        use crate::gherkin::lexer::{self, Indentation, Line, LineType, TrimmedLine};
+        use crate::gherkin::lexer::{self, Indentation, Line, LineType};
         use crate::gherkin::{Block, Step, parser};
         use big_s::S;
         use std::io::BufReader;
