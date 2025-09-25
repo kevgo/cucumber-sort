@@ -73,10 +73,8 @@ impl Steps {
 
   fn elements(self) -> Vec<gherkin::Step> {
     let mut result = vec![];
-    for element in self.0 {
-      if let Some(element) = element {
-        result.push(element);
-      }
+    for element in self.0.into_iter().flatten() {
+      result.push(element);
     }
     result
   }
