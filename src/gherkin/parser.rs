@@ -19,13 +19,11 @@ pub fn file(lines: Vec<lexer::Line>) -> Feature {
                     line_number: line.number,
                     steps: vec![],
                 });
-                current_step = None;
             }
             LineType::StepStart => {
                 if let Some(step) = current_step.take() {
-                    if let Some(mut block) = current_block.take() {
+                    if let Some(block) = current_block.as_mut() {
                         block.steps.push(step);
-                        current_block = Some(block);
                     }
                 }
                 current_step = Some(Step {
@@ -34,9 +32,8 @@ pub fn file(lines: Vec<lexer::Line>) -> Feature {
                 })
             }
             LineType::Other => {
-                if let Some(mut step) = current_step.take() {
+                if let Some(step) = current_step.as_mut() {
                     step.lines.push(line.full_text);
-                    current_step = Some(step);
                 } else {
                     initial_lines.push(line.full_text);
                 }
@@ -44,13 +41,12 @@ pub fn file(lines: Vec<lexer::Line>) -> Feature {
         }
     }
     if let Some(step) = current_step.take() {
-        if let Some(mut block) = current_block.take() {
+        if let Some(block) = current_block.as_mut() {
             block.steps.push(step);
-            current_block = Some(block);
         }
     }
 
-    if let Some(block) = current_block {
+    if let Some(block) = current_block.take() {
         blocks.push(block);
     }
     Feature {
