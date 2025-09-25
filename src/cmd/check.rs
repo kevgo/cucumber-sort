@@ -31,11 +31,10 @@ fn check_file(filepath: Utf8PathBuf, config: &config::Config) -> Result<ExitCode
     }
   }
   sort::sort_issues(&mut issues);
-  for issue in &issues {
+  for issue in issues {
     exit_code = ExitCode::FAILURE;
     println!("{filepath}:{}  {}", issue.line, issue.problem);
   }
-  issues.clear();
   Ok(exit_code)
 }
 
