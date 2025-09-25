@@ -72,11 +72,7 @@ impl Steps {
   }
 
   fn elements(self) -> Vec<gherkin::Step> {
-    let mut result = vec![];
-    for element in self.0.into_iter().flatten() {
-      result.push(element);
-    }
-    result
+    self.0.into_iter().flatten().collect()
   }
 }
 
@@ -234,6 +230,33 @@ mod tests {
         problem: S("unknown step: step 3"),
       }];
       pretty::assert_eq!(want_issues, issues);
+    }
+  }
+
+  mod steps_collect {
+    use crate::gherkin::Step;
+    use crate::sort::Steps;
+    use big_s::S;
+
+    #[test]
+    fn some_none() {
+      let step_1 = Step {
+        title: S("title"),
+        lines: vec![],
+        line_no: 1,
+      };
+      let give = Steps(vec![None, Some(step_1.clone())]);
+      let have = give.elements();
+      let want = vec![step_1];
+      assert_eq!(want, have);
+    }
+
+    #[test]
+    fn all_none() {
+      let give = Steps(vec![None, None]);
+      let have = give.elements();
+      let want = Vec::<Step>::new();
+      assert_eq!(want, have);
     }
   }
 }
