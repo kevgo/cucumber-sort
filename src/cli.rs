@@ -1,6 +1,5 @@
-use camino::Utf8PathBuf;
-
 use crate::prelude::*;
+use camino::Utf8PathBuf;
 use std::env;
 
 pub fn load(mut args: env::Args) -> Result<Command> {
