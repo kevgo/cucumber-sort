@@ -1,34 +1,23 @@
 use crate::config::Config;
 use crate::gherkin;
-use camino::{Utf8Path, Utf8PathBuf};
 
 /// provides a copy of the given File with all Gherkin steps sorted the same way as the given configuration
-pub fn file(
-    file: gherkin::Feature,
-    config: &Config,
-    filepath: &Utf8Path,
-    issues: &mut Vec<Issue>,
-) -> gherkin::Feature {
+pub fn file(file: gherkin::Feature, config: &Config, issues: &mut Vec<Issue>) -> gherkin::Feature {
     let mut new_blocks = Vec::<gherkin::Block>::new();
     for file_block in file.blocks {
-        new_blocks.push(block(file_block, config, filepath, issues));
+        new_blocks.push(block(file_block, config, issues));
     }
     gherkin::Feature { blocks: new_blocks }
 }
 
 /// provides the given block with all steps sorted according to the given configuration
-fn block(
-    block: gherkin::Block,
-    config: &Config,
-    filepath: &Utf8Path,
-    issues: &mut Vec<Issue>,
-) -> gherkin::Block {
+fn block(block: gherkin::Block, config: &Config, issues: &mut Vec<Issue>) -> gherkin::Block {
     match block {
         gherkin::Block::Executable(executable_block) => {
             gherkin::Block::Executable(gherkin::ExecutableBlock {
                 title: executable_block.title,
                 line_no: executable_block.line_no,
-                steps: steps(executable_block.steps, &config.steps, filepath, issues),
+                steps: steps(executable_block.steps, &config.steps, issues),
             })
         }
         gherkin::Block::NonExecutable(non_executable_block) => {
@@ -41,7 +30,6 @@ fn block(
 fn steps(
     have_steps: Vec<gherkin::Step>,
     config_steps: &[String],
-    filepath: &Utf8Path,
     issues: &mut Vec<Issue>,
 ) -> Vec<gherkin::Step> {
     let mut ordered = Vec::<gherkin::Step>::with_capacity(have_steps.len());
@@ -53,7 +41,6 @@ fn steps(
     // report unknown steps
     for step in steps.elements() {
         issues.push(Issue {
-            file: filepath.to_path_buf(),
             line: step.line_no,
             problem: format!("unknown step: {}", step.title),
         });
@@ -103,9 +90,12 @@ impl From<Vec<gherkin::Step>> for Steps {
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct Issue {
-    pub file: Utf8PathBuf,
     pub line: usize,
     pub problem: String,
+}
+
+pub fn sort_issues(issues: &mut Vec<Issue>) {
+    issues.sort_by_key(|issue| issue.line);
 }
 
 #[cfg(test)]
@@ -140,12 +130,7 @@ mod tests {
             ];
             let want_steps = give_steps.clone();
             let mut issues = vec![];
-            let have_steps = sort::steps(
-                give_steps,
-                &config_steps,
-                "file.feature".into(),
-                &mut issues,
-            );
+            let have_steps = sort::steps(give_steps, &config_steps, &mut issues);
             assert_eq!(want_steps, have_steps);
         }
 
@@ -197,7 +182,7 @@ mod tests {
                 ],
             });
             let mut issues = vec![];
-            let have_block = sort::block(give_block, &config, "file.feature".into(), &mut issues);
+            let have_block = sort::block(give_block, &config, &mut issues);
             pretty::assert_eq!(have_block, want_block);
         }
 
@@ -244,10 +229,9 @@ mod tests {
                 ],
             });
             let mut issues = vec![];
-            let have_block = sort::block(give_block, &config, "file.feature".into(), &mut issues);
+            let have_block = sort::block(give_block, &config, &mut issues);
             pretty::assert_eq!(have_block, want_block);
             let want_issues = vec![Issue {
-                file: "file.feature".into(),
                 line: 1,
                 problem: S("unknown step: step 3"),
             }];

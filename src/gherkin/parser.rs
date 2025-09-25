@@ -107,9 +107,38 @@ fn cut_first_word_after_trim(text: &str, indentation: usize) -> &str {
     }
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Feature {
     pub blocks: Vec<Block>,
+}
+
+impl Feature {
+    pub fn lines(self) -> Vec<(usize, String)> {
+        let mut result = vec![];
+        for block in self.blocks {
+            match block {
+                Block::Executable(executable_block) => {
+                    for step in executable_block.steps {
+                        let mut line_no = step.line_no;
+                        result.push((line_no, step.title));
+                        line_no += 1;
+                        for line in step.lines {
+                            result.push((line_no, line));
+                            line_no += 1;
+                        }
+                    }
+                }
+                Block::NonExecutable(non_executable_block) => {
+                    let mut line_no = non_executable_block.line_no;
+                    for line in non_executable_block.text {
+                        result.push((line_no, line));
+                        line_no += 1;
+                    }
+                }
+            }
+        }
+        result
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
