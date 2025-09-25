@@ -27,7 +27,7 @@ pub fn file(lines: Vec<lexer::Line>) -> Feature {
                     }
                 }
                 current_step = Some(Step {
-                    title: line.trimmed_text.without_first_word().to_string(),
+                    title: first_word_after_trim(&line.full_text, line.indent.into()).to_string(),
                     lines: vec![line.full_text],
                 })
             }
@@ -52,6 +52,14 @@ pub fn file(lines: Vec<lexer::Line>) -> Feature {
     Feature {
         initial_lines,
         blocks,
+    }
+}
+
+fn first_word_after_trim(text: &str, indentation: usize) -> &str {
+    if let Some((_first_word, remainder)) = text[indentation..].split_once(" ") {
+        remainder
+    } else {
+        ""
     }
 }
 

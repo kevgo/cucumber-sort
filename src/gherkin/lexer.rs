@@ -27,9 +27,6 @@ pub struct Line {
     /// how much the line is indented
     pub indent: Indentation,
 
-    /// line text without preceding whitespace
-    pub trimmed_text: TrimmedLine,
-
     /// whether this is a Given/When/Then line or not
     pub line_type: LineType,
 }
@@ -41,7 +38,6 @@ impl Line {
         Line {
             number,
             full_text: text,
-            trimmed_text: trimmed,
             indent: indent,
             line_type,
         }
@@ -79,6 +75,12 @@ impl Indentation {
     #[cfg(test)]
     pub fn new(value: usize) -> Indentation {
         Indentation(value)
+    }
+}
+
+impl Into<usize> for Indentation {
+    fn into(self) -> usize {
+        self.0
     }
 }
 
@@ -207,7 +209,7 @@ mod tests {
     }
 
     mod line_new {
-        use crate::gherkin::lexer::{Indentation, Line, LineType, TrimmedLine};
+        use crate::gherkin::lexer::{Indentation, Line, LineType};
         use big_s::S;
 
         #[test]
@@ -218,7 +220,6 @@ mod tests {
                 number: 12,
                 full_text: S("  Some documentation"),
                 indent: Indentation(2),
-                trimmed_text: TrimmedLine::from("Some documentation"),
                 line_type: LineType::Other,
             };
             pretty::assert_eq!(have, want);
