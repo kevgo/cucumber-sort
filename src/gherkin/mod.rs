@@ -341,6 +341,107 @@ Feature: test
         }
 
         #[test]
+        fn tables() {
+            // step 1: lex Gherkin source into tokens (in our case Lines)
+            let source = r#"
+Feature: test
+
+  Scenario: with table
+    Given step 1:
+      | HEAD A | HEAD B |
+      | row 1A | row 1B |
+      | row 2A | row 2B |
+    And step 2
+"#;
+            let have_lines = lexer::file(BufReader::new(source[1..].as_bytes()));
+            let want_lines = vec![
+                Line {
+                    number: 0,
+                    full_text: S("Feature: test"),
+                    indent: Indentation::new(0),
+                    trimmed_text: TrimmedLine::from("Feature: test"),
+                    line_type: LineType::Other,
+                },
+                Line {
+                    number: 1,
+                    full_text: S(""),
+                    indent: Indentation::new(0),
+                    trimmed_text: TrimmedLine::from(""),
+                    line_type: LineType::Other,
+                },
+                Line {
+                    number: 2,
+                    full_text: S("  Scenario: with table"),
+                    indent: Indentation::new(2),
+                    trimmed_text: TrimmedLine::from("Scenario: with table"),
+                    line_type: LineType::BlockStart,
+                },
+                Line {
+                    number: 3,
+                    full_text: S("    Given step 1:"),
+                    indent: Indentation::new(4),
+                    trimmed_text: TrimmedLine::from("Given step 1:"),
+                    line_type: LineType::StepStart,
+                },
+                Line {
+                    number: 4,
+                    full_text: S("      | HEAD A | HEAD B |"),
+                    indent: Indentation::new(6),
+                    trimmed_text: TrimmedLine::from("| HEAD A | HEAD B |"),
+                    line_type: LineType::Other,
+                },
+                Line {
+                    number: 5,
+                    full_text: S("      | row 1A | row 1B |"),
+                    indent: Indentation::new(6),
+                    trimmed_text: TrimmedLine::from("| row 1A | row 1B |"),
+                    line_type: LineType::Other,
+                },
+                Line {
+                    number: 6,
+                    full_text: S("      | row 2A | row 2B |"),
+                    indent: Indentation::new(6),
+                    trimmed_text: TrimmedLine::from("| row 2A | row 2B |"),
+                    line_type: LineType::Other,
+                },
+                Line {
+                    number: 7,
+                    full_text: S("    And step 2"),
+                    indent: Indentation::new(4),
+                    trimmed_text: TrimmedLine::from("And step 2"),
+                    line_type: LineType::StepStart,
+                },
+            ];
+            pretty::assert_eq!(have_lines, want_lines);
+
+            // step 2: parse the Lines into blocks
+            let have_feature = parser::file(have_lines);
+            let want_feature = parser::Feature {
+                initial_lines: vec![S("Feature: test"), S("")],
+                blocks: vec![Block {
+                    title_line: S("  Scenario: with table"),
+                    line_number: 2,
+                    steps: vec![
+                        Step {
+                            lines: vec![
+                                S("    Given step 1:"),
+                                S("      | HEAD A | HEAD B |"),
+                                S("      | row 1A | row 1B |"),
+                                S("      | row 2A | row 2B |"),
+                            ],
+                            title: S("step 1:"),
+                        },
+                        Step {
+                            lines: vec![S("    And step 2")],
+                            title: S("step 2"),
+                        },
+                    ],
+                }],
+            };
+            pretty::assert_eq!(want_feature, have_feature);
+        }
+
+        #[test]
         fn scenario_outline() {
             let give = r#"
 Feature: test
