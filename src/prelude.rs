@@ -1,5 +1,6 @@
 //! stuff that is used in pretty much every file of this crate
 
+use crate::cmd::available_commands;
 use camino::Utf8PathBuf;
 use core::fmt::Display;
 
@@ -11,6 +12,7 @@ pub enum UserError {
     CannotReadFile { file: Utf8PathBuf, reason: String },
     GherkinBlockContainsNonExecutableLine { file: Utf8PathBuf, line: usize },
     StepOutsideOfBlock { file: Utf8PathBuf, line: usize },
+    UnknownCommand(String),
 }
 
 impl Display for UserError {
@@ -39,6 +41,9 @@ impl Display for UserError {
             }
             UserError::StepOutsideOfBlock { file, line } => {
                 write!(f, "{file}:{line}  Gherkin step outside of a block")
+            }
+            UserError::UnknownCommand(cmd) => {
+                write!(f, "unknown command: {cmd}\n\n{}", available_commands())
             }
         }
     }

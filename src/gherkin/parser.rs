@@ -1,8 +1,8 @@
 use crate::gherkin::lexer::{self, LineType};
 use crate::prelude::*;
-use camino::Utf8PathBuf;
+use camino::Utf8Path;
 
-pub fn file(lines: Vec<lexer::Line>, filepath: Utf8PathBuf) -> Result<Feature> {
+pub fn file(lines: Vec<lexer::Line>, filepath: &Utf8Path) -> Result<Feature> {
     let mut blocks: Vec<Block> = vec![];
     let mut current_block: Option<Block> = None;
     let mut current_step: Option<Step> = None;
@@ -37,7 +37,7 @@ pub fn file(lines: Vec<lexer::Line>, filepath: Utf8PathBuf) -> Result<Feature> {
                         });
                     } else {
                         return Err(UserError::StepOutsideOfBlock {
-                            file: filepath,
+                            file: filepath.to_path_buf(),
                             line: line.number,
                         });
                     }
@@ -58,7 +58,7 @@ pub fn file(lines: Vec<lexer::Line>, filepath: Utf8PathBuf) -> Result<Feature> {
                                 step.lines.push(line.text);
                             } else {
                                 return Err(UserError::GherkinBlockContainsNonExecutableLine {
-                                    file: filepath,
+                                    file: filepath.to_path_buf(),
                                     line: line.number,
                                 });
                             }
@@ -85,7 +85,7 @@ pub fn file(lines: Vec<lexer::Line>, filepath: Utf8PathBuf) -> Result<Feature> {
                 }
                 Block::NonExecutable(non_executable_block) => {
                     return Err(UserError::GherkinBlockContainsNonExecutableLine {
-                        file: filepath,
+                        file: filepath.to_path_buf(),
                         line: non_executable_block.line_no,
                     });
                 }

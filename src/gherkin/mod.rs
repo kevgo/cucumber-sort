@@ -2,13 +2,22 @@ mod lexer;
 mod parser;
 
 use crate::prelude::*;
-use camino::Utf8PathBuf;
+use camino::Utf8Path;
 pub use parser::{Block, ExecutableBlock, Feature, Step};
 
-use std::io::BufRead;
+use std::fs;
+use std::io::{BufRead, BufReader};
+
+pub fn load(filepath: &Utf8Path) -> Result<parser::Feature> {
+    let file_content = fs::File::open(&filepath).map_err(|e| UserError::CannotReadFile {
+        file: filepath.to_path_buf(),
+        reason: e.to_string(),
+    })?;
+    file(BufReader::new(file_content), filepath)
+}
 
 /// parses the given file content into Gherkin
-pub fn file(text: impl BufRead, filepath: Utf8PathBuf) -> Result<parser::Feature> {
+pub fn file(text: impl BufRead, filepath: &Utf8Path) -> Result<parser::Feature> {
     // step 1: lex the file content into token (lines)
     let lines = lexer::file(text);
     // step 2: parse the tokens (lines) into Gherkin data structures
