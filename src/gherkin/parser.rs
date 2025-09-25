@@ -1,3 +1,5 @@
+use std::num::FpCategory;
+
 use camino::Utf8PathBuf;
 
 use crate::gherkin::lexer::{self, LineType};
@@ -70,7 +72,13 @@ pub fn file(lines: Vec<lexer::Line>, filepath: Utf8PathBuf) -> Result<Feature> {
             }
         }
     }
-    if let Some(step) = current_step.take() {
+
+    println!(
+        "1111111111111111111111111111111111111111111111111111 {} {}",
+        current_block.is_some(),
+        current_step.is_some(),
+    );
+    if let Some(step) = current_step {
         if let Some(mut block) = current_block.as_mut() {
             match &mut block {
                 Block::Executable(executable_block) => {
@@ -86,20 +94,11 @@ pub fn file(lines: Vec<lexer::Line>, filepath: Utf8PathBuf) -> Result<Feature> {
         }
     }
 
-    if let Some(step) = current_step.take() {
-        if let Some(mut block) = current_block.as_mut() {
-            if let Block::Executable(executable_block) = &mut block {
-                executable_block.steps.push(step);
-            }
-        } else {
-            return Err(UserError::StepOutsideOfBlock {
-                file: filepath,
-                line: 0,
-            });
-        }
-    }
-
-    if let Some(block) = current_block.take() {
+    if let Some(block) = current_block {
+        println!(
+            "2222222222222222222222222222222222222222222222222222 {:?}",
+            block
+        );
         blocks.push(block);
     }
     Ok(Feature { blocks })
@@ -141,11 +140,11 @@ pub struct NonExecutableBlock {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Step {
-    /// the textual lines making up this step
-    pub lines: Vec<String>,
-
     /// the relevant title of the step (without Given/When/Then)
     pub title: String,
+
+    /// the textual lines making up this step
+    pub lines: Vec<String>,
 }
 
 #[cfg(test)]
