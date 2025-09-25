@@ -27,7 +27,7 @@ mod tests {
 
     mod lex_and_parse {
         use crate::gherkin::lexer::{self, Indentation, Line, LineType, TrimmedLine};
-        use crate::gherkin::parser;
+        use crate::gherkin::{Block, Step, parser};
         use big_s::S;
         use std::io::BufReader;
 
@@ -195,14 +195,18 @@ Feature: test
                     S(""),
                 ],
                 blocks: vec![
-                    parser::Block {
+                    Block {
                         start_line: 4,
                         steps: vec![
-                            parser::Step {
+                            Step {
+                                lines: vec![S("  Background:")],
+                                title: S("Background:"),
+                            },
+                            Step {
                                 lines: vec![S("    Given step 1")],
                                 title: S("Given step 1"),
                             },
-                            parser::Step {
+                            Step {
                                 lines: vec![
                                     S("    And step 2:"),
                                     S("      \"\"\""),
@@ -212,19 +216,22 @@ Feature: test
                                 ],
                                 title: S("And step 2:"),
                             },
-                            parser::Step {
+                            Step {
                                 lines: vec![S("    When step 3"), S("")],
                                 title: S("When step 3"),
                             },
                         ],
                     },
-                    parser::Block {
+                    Block {
                         start_line: 13,
-                        steps: vec![],
+                        steps: vec![Step {
+                            lines: vec![S("  Scenario: result")],
+                            title: S("Scenario: result"),
+                        }],
                     },
                 ],
             };
-            pretty::assert_eq!(have_feature, want_feature);
+            pretty::assert_eq!(want_feature, have_feature);
         }
 
         #[test]
@@ -307,7 +314,7 @@ Feature: test
                     line_type: LineType::Other,
                 },
             ];
-            pretty::assert_eq!(have, want);
+            pretty::assert_eq!(want, have);
         }
     }
 }

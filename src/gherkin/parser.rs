@@ -18,7 +18,10 @@ pub fn file(lines: Vec<lexer::Line>) -> Feature {
                     start_line: line.number,
                     steps: vec![],
                 });
-                current_step = None
+                current_step = Some(Step {
+                    lines: vec![line.full_text],
+                    title: line.trimmed_text.into(),
+                });
             }
             LineType::StepStart => {
                 if let Some(step) = current_step {
