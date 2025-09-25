@@ -162,7 +162,7 @@ mod tests {
     }
 
     mod trimmed_line {
-        use crate::gherkin::lexer::TrimmedLine;
+        use crate::gherkin::lexer::{LineType, TrimmedLine};
 
         #[test]
         fn is_block_start() {
@@ -179,6 +179,22 @@ mod tests {
             assert!(TrimmedLine::from("Then its gone").is_step_start());
             assert!(TrimmedLine::from("And I am happy").is_step_start());
             assert!(!TrimmedLine::from("Other text").is_step_start());
+        }
+
+        #[test]
+        fn line_type() {
+            assert_eq!(
+                TrimmedLine::from("Given a cucumber").line_type(),
+                LineType::StepStart
+            );
+            assert_eq!(
+                TrimmedLine::from("Scenario: test").line_type(),
+                LineType::BlockStart
+            );
+            assert_eq!(
+                TrimmedLine::from("Feature: test").line_type(),
+                LineType::Other
+            );
         }
 
         #[test]
