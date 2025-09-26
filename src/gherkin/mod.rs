@@ -224,6 +224,32 @@ Feature: test
         ],
       };
       pretty::assert_eq!(want_feature, have_feature);
+
+      // step 3: serialize the block back into lines
+      let have_lines = have_feature.lines();
+      let want_lines = vec![
+        (0, S("Feature: test")),
+        (1, S("")),
+        (2, S("  An example feature file.")),
+        (3, S("")),
+        (5, S("step 1")),
+        (6, S("    Given step 1")),
+        (6, S("step 2")),
+        (7, S("    And step 2")),
+        (7, S("step 3")),
+        (8, S("    When step 3")),
+        (9, S("")),
+        (10, S("step 4")),
+        (11, S("    Then step 4")),
+        (11, S("step 5")),
+        (12, S("    And step 5")),
+        (13, S("")),
+        (14, S("step 6")),
+        (15, S("    When step 6")),
+        (15, S("step 7")),
+        (16, S("    Then step 7")),
+      ];
+      pretty::assert_eq!(want_lines, have_lines);
     }
 
     #[test]

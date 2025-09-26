@@ -18,11 +18,14 @@ fn check_file(filepath: Utf8PathBuf, config: &config::Config) -> Result<ExitCode
   let gherkin = gherkin::load(&filepath)?;
   let sorted_file = sort::file(gherkin.clone(), config, &mut issues);
   let sorted_lines = sorted_file.lines();
+  println!("SORTED LINES: {:?}", sorted_lines);
   let original_lines = gherkin.lines();
+  println!("ORIGINAL LINES: {:?}", sorted_lines);
   let mut exit_code = ExitCode::SUCCESS;
   for ((original_line, original_text), (_, sorted_text)) in
     original_lines.into_iter().zip(sorted_lines.into_iter())
   {
+    println!("line: {} {}", original_text, sorted_text);
     if original_text != *sorted_text {
       issues.push(Issue {
         line: original_line,
