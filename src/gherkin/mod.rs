@@ -270,7 +270,7 @@ Feature: test
           number: 4,
           text: S(r#"      """"#),
           indent: 6,
-          line_type: LineType::Other,
+          line_type: LineType::CommentStartStop,
         },
         Line {
           number: 5,
@@ -288,7 +288,7 @@ Feature: test
           number: 7,
           text: S(r#"      """"#),
           indent: 6,
-          line_type: LineType::Other,
+          line_type: LineType::CommentStartStop,
         },
         Line {
           number: 8,
@@ -503,6 +503,80 @@ Feature: test
           text: S("      | one   | two  |"),
           indent: 6,
           line_type: LineType::Other,
+        },
+      ];
+      pretty::assert_eq!(want, have);
+    }
+
+    #[test]
+    fn cucumber_in_docstring() {
+      let give = r#"
+Feature: test
+
+  Scenario: gherkin in docstring
+    Given file "foo":
+      """
+      Scenario: embedded
+        Given step 1
+      """
+    When step 2
+"#;
+      let bufread = BufReader::new(&give.as_bytes()[1..]);
+      let have = lexer::file(bufread);
+      let want = vec![
+        Line {
+          number: 0,
+          text: S("Feature: test"),
+          indent: 0,
+          line_type: LineType::Other,
+        },
+        Line {
+          number: 1,
+          text: S(""),
+          indent: 0,
+          line_type: LineType::Other,
+        },
+        Line {
+          number: 2,
+          text: S("  Scenario: gherkin in docstring"),
+          indent: 2,
+          line_type: LineType::BlockStart,
+        },
+        Line {
+          number: 3,
+          text: S("    Given file \"foo\":"),
+          indent: 4,
+          line_type: LineType::StepStart,
+        },
+        Line {
+          number: 4,
+          text: S(r#"      """"#),
+          indent: 6,
+          line_type: LineType::CommentStartStop,
+        },
+        Line {
+          number: 5,
+          text: S("      Scenario: embedded"),
+          indent: 6,
+          line_type: LineType::Other,
+        },
+        Line {
+          number: 6,
+          text: S("        Given step 1"),
+          indent: 8,
+          line_type: LineType::Other,
+        },
+        Line {
+          number: 7,
+          text: S("      \"\"\""),
+          indent: 6,
+          line_type: LineType::CommentStartStop,
+        },
+        Line {
+          number: 8,
+          text: S("    When step 2"),
+          indent: 4,
+          line_type: LineType::StepStart,
         },
       ];
       pretty::assert_eq!(want, have);

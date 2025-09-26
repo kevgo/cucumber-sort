@@ -48,7 +48,7 @@ pub fn file(lines: Vec<lexer::Line>, filepath: &Utf8Path) -> Result<Feature> {
           })
         }
       }
-      LineType::Other => {
+      LineType::Other | LineType::CommentStartStop => {
         if let Some(block) = &mut current_block {
           match block {
             Block::Executable(_) => {

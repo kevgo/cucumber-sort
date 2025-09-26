@@ -8,11 +8,23 @@ pub const STEP_STARTERS: &[&str] = &["Given ", "When ", "Then ", "And "];
 
 /// lexes the given file content
 pub fn file(text: impl BufRead) -> Vec<Line> {
-  text
-    .lines()
-    .enumerate()
-    .map(|(number, line)| Line::new(line.unwrap(), number))
-    .collect()
+  let mut result = vec![];
+  let mut docstring_indentation = None;
+  for (i, text_line) in text.lines().enumerate() {
+    let mut line = Line::new(text_line.unwrap(), i);
+    if docstring_indentation.is_none() && line.line_type == LineType::CommentStartStop {
+      docstring_indentation = Some(line.indent);
+    } else if let Some(indentation) = &docstring_indentation
+      && line.line_type == LineType::CommentStartStop
+      && line.indent == *indentation
+    {
+      docstring_indentation = None
+    } else if docstring_indentation.is_some() {
+      line.line_type = LineType::Other;
+    }
+    result.push(line);
+  }
+  result
 }
 
 #[derive(Debug, Eq, PartialEq)]
@@ -60,6 +72,8 @@ fn trim_initial_whitespace<'a>(line: &'a str) -> (usize, TrimmedLine<'a>) {
 pub enum LineType {
   /// this line starts a block, i.e. "Background", "Scenario", etc
   BlockStart,
+  /// this line starts or stops a comment
+  CommentStartStop,
   /// this line starts a step, i.e. "Given", "When", "Then", etc
   StepStart,
   /// this line is neither a block or step start
@@ -72,7 +86,9 @@ pub struct TrimmedLine<'a>(&'a str);
 
 impl<'a> TrimmedLine<'a> {
   fn line_type(&self) -> LineType {
-    if self.is_block_start() {
+    if self.is_docstring_start() {
+      LineType::CommentStartStop
+    } else if self.is_block_start() {
       LineType::BlockStart
     } else if self.is_step_start() {
       LineType::StepStart
@@ -83,6 +99,10 @@ impl<'a> TrimmedLine<'a> {
 
   fn is_block_start(&self) -> bool {
     BLOCK_STARTERS.iter().any(|word| self.0.starts_with(word))
+  }
+
+  fn is_docstring_start(&self) -> bool {
+    self.0 == "\"\"\""
   }
 
   fn is_step_start(&self) -> bool {

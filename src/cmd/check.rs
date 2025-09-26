@@ -19,8 +19,9 @@ fn check_file(filepath: Utf8PathBuf, config: &config::Config) -> Result<ExitCode
   let sorted_lines = sorted_file.lines();
   let original_lines = gherkin.lines();
   let mut exit_code = ExitCode::SUCCESS;
-  for (original_line, original_text) in original_lines.into_iter() {
-    let (_, sorted_text) = &sorted_lines[original_line];
+  for ((original_line, original_text), (_, sorted_text)) in
+    original_lines.into_iter().zip(sorted_lines.into_iter())
+  {
     if original_text != *sorted_text {
       issues.push(Issue {
         line: original_line,
