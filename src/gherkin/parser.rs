@@ -10,10 +10,21 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Feature> {
   let mut open_block: Option<Block> = None;
   let mut open_step: Option<Step> = None;
   for line in lines {
+    println!("LINE: {}", line.text);
     let new_open_block: Option<Block>;
     let new_open_step: Option<Step>;
     match (&line.line_type, open_block, open_step) {
       (LineType::StepStart, None, None) => {
+        new_open_block = Some(Block::Steps(vec![]));
+        new_open_step = Some(Step {
+          title: line.title().to_string(),
+          lines: vec![line.text],
+          indent: line.indent,
+          line_no: line.number,
+        });
+      }
+      (LineType::StepStart, Some(Block::Text(lines)), None) => {
+        blocks.push(Block::Text(lines));
         new_open_block = Some(Block::Steps(vec![]));
         new_open_step = Some(Step {
           title: line.title().to_string(),
@@ -55,7 +66,7 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Feature> {
       (LineType::StepStart, None, Some(_step)) => {
         panic!("shouldn't have a current_step without a current_block")
       }
-      (LineType::StepStart, Some(_block), None) => {
+      (LineType::StepStart, Some(Block::Steps(_steps)), None) => {
         panic!("shouldn't have an open steps block without a current step")
       }
       (LineType::StepStart, Some(Block::Text(_lines)), Some(_step)) => {
