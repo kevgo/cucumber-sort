@@ -37,10 +37,12 @@ async fn file(world: &mut MyWorld, step: &Step, filename: String) {
   fs::write(filepath, content).await.unwrap();
 }
 
-#[when("I run cucumber-sort")]
-async fn run_binary(world: &mut MyWorld) {
+#[when(expr = "I run {string}")]
+async fn run_binary(world: &mut MyWorld, command: String) {
   let output = Command::new("cargo")
-    .args(&["run", "--bin", "cucumber-sort", "check"])
+    .arg("run")
+    .arg("--bin")
+    .args(command.split(' '))
     .output()
     .await
     .unwrap();

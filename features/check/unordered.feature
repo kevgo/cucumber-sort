@@ -14,7 +14,7 @@ Feature: ordered steps
           Then step 2
           And step 1
       """
-    When I run cucumber-sort
+    When I run "cucumber-sort check"
     Then it prints:
       """
       feature/one.feature:5  "step 1" should not come after "step 2"

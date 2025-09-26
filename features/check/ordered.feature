@@ -22,5 +22,5 @@ Feature: ordered steps
           Then step 4
           And step 5
       """
-    When I run cucumber-sort
+    When I run "cucumber-sort check"
     Then it prints nothing
