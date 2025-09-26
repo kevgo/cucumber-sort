@@ -10,6 +10,7 @@ use core::fmt::Display;
 pub enum UserError {
   CannotReadConfigFile { file: Utf8PathBuf, reason: String },
   CannotReadFile { file: Utf8PathBuf, reason: String },
+  CannotWriteFile { file: Utf8PathBuf, reason: String },
   GherkinBlockContainsNonExecutableLine { file: Utf8PathBuf, line: usize },
   StepOutsideOfBlock { file: Utf8PathBuf, line: usize },
   UnknownCommand(String),
@@ -24,19 +25,16 @@ impl Display for UserError {
       } => {
         write!(f, "cannot read configuration file ({filename}): {reason}")
       }
-      UserError::CannotReadFile {
-        file: filename,
-        reason,
-      } => {
-        write!(f, "cannot read file {}: {}", filename, reason)
+      UserError::CannotReadFile { file, reason } => {
+        write!(f, "cannot read file {file}: {reason}")
       }
-      UserError::GherkinBlockContainsNonExecutableLine {
-        file: filename,
-        line,
-      } => {
+      UserError::CannotWriteFile { file, reason } => {
+        write!(f, "cannot write file {file}: {reason}")
+      }
+      UserError::GherkinBlockContainsNonExecutableLine { file, line } => {
         write!(
           f,
-          "{filename}:{line}  Gherkin block contains non-executable line",
+          "{file}:{line}  Gherkin block contains non-executable line",
         )
       }
       UserError::StepOutsideOfBlock { file, line } => {

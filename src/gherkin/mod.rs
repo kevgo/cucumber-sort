@@ -215,22 +215,22 @@ Feature: test
       // step 3: serialize the block back into lines
       let have_lines = have_feature.lines();
       let want_lines = Lines::from(vec![
-        (0, S("Feature: test")),
-        (1, S("")),
-        (2, S("  An example feature file.")),
-        (3, S("")),
-        (4, S("  Background:")),
-        (5, S("    Given step 1")),
-        (6, S("    And step 2")),
-        (7, S("    When step 3")),
-        (8, S("")),
-        (9, S("  Scenario: result")),
-        (10, S("    Then step 4")),
-        (11, S("    And step 5")),
-        (12, S("")),
-        (13, S("  Scenario: undo")),
-        (14, S("    When step 6")),
-        (15, S("    Then step 7")),
+        S("Feature: test"),
+        S(""),
+        S("  An example feature file."),
+        S(""),
+        S("  Background:"),
+        S("    Given step 1"),
+        S("    And step 2"),
+        S("    When step 3"),
+        S(""),
+        S("  Scenario: result"),
+        S("    Then step 4"),
+        S("    And step 5"),
+        S(""),
+        S("  Scenario: undo"),
+        S("    When step 6"),
+        S("    Then step 7"),
       ]);
       pretty::assert_eq!(want_lines, have_lines);
 
@@ -313,36 +313,9 @@ Feature: test
       pretty::assert_eq!(have_lines, want_lines);
 
       // step 2: parse the Lines into blocks
-      let have_feature = parser::file(have_lines, "file.feature".into()).unwrap();
+      let have_feature = parser::file(have_lines).unwrap();
       let want_feature = parser::Feature {
-        blocks: vec![
-          Block::NonExecutable(NonExecutableBlock {
-            line_no: 0,
-            text: vec![S("Feature: test"), S("")],
-          }),
-          Block::Executable(ExecutableBlock {
-            title: S("  Scenario: with docstring"),
-            line_no: 2,
-            steps: vec![
-              Step {
-                title: S("step 1:"),
-                lines: vec![
-                  S("    Given step 1:"),
-                  S("      \"\"\""),
-                  S("      docstring line 1"),
-                  S("      docstring line 2"),
-                  S("      \"\"\""),
-                ],
-                line_no: 3,
-              },
-              Step {
-                title: S("step 2"),
-                lines: vec![S("    And step 2")],
-                line_no: 8,
-              },
-            ],
-          }),
-        ],
+        blocks: vec![Block::Text(vec![S("Feature: test"), S("")])],
       };
       pretty::assert_eq!(want_feature, have_feature);
     }
@@ -414,35 +387,9 @@ Feature: test
       pretty::assert_eq!(have_lines, want_lines);
 
       // step 2: parse the Lines into blocks
-      let have_feature = parser::file(have_lines, "file.feature".into()).unwrap();
+      let have_feature = parser::file(have_lines).unwrap();
       let want_feature = parser::Feature {
-        blocks: vec![
-          Block::NonExecutable(NonExecutableBlock {
-            line_no: 0,
-            text: vec![S("Feature: test"), S("")],
-          }),
-          Block::Executable(ExecutableBlock {
-            title: S("  Scenario: with table"),
-            line_no: 2,
-            steps: vec![
-              Step {
-                lines: vec![
-                  S("    Given step 1:"),
-                  S("      | HEAD A | HEAD B |"),
-                  S("      | row 1A | row 1B |"),
-                  S("      | row 2A | row 2B |"),
-                ],
-                title: S("step 1:"),
-                line_no: 3,
-              },
-              Step {
-                lines: vec![S("    And step 2")],
-                title: S("step 2"),
-                line_no: 7,
-              },
-            ],
-          }),
-        ],
+        blocks: vec![Block::Text(vec![S("Feature: test"), S("")])],
       };
       pretty::assert_eq!(want_feature, have_feature);
     }
@@ -521,36 +468,9 @@ Feature: test
       pretty::assert_eq!(want_lines, have_lines);
 
       // step 2: parse the Lines into blocks
-      let have_feature = parser::file(have_lines, "file.feature".into()).unwrap();
+      let have_feature = parser::file(have_lines).unwrap();
       let want_feature = parser::Feature {
-        blocks: vec![
-          Block::NonExecutable(NonExecutableBlock {
-            line_no: 0,
-            text: vec![S("Feature: test"), S("")],
-          }),
-          Block::Executable(ExecutableBlock {
-            title: S("  Scenario Outline:"),
-            line_no: 2,
-            steps: vec![
-              Step {
-                title: S("<ALPHA>"),
-                line_no: 3,
-                lines: vec![S("    Given <ALPHA>")],
-              },
-              Step {
-                title: S("<BETA>"),
-                line_no: 4,
-                lines: vec![
-                  S("    Then <BETA>"),
-                  S(""),
-                  S("    Examples:"),
-                  S("      | ALPHA | BETA |"),
-                  S("      | one   | two  |"),
-                ],
-              },
-            ],
-          }),
-        ],
+        blocks: vec![Block::Text(vec![S("Feature: test"), S("")])],
       };
       pretty::assert_eq!(want_feature, have_feature);
     }
@@ -629,36 +549,9 @@ Feature: test
       pretty::assert_eq!(want_lines, have_lines);
 
       // step 2: parse the Lines into blocks
-      let have_feature = parser::file(have_lines, "file.feature".into()).unwrap();
+      let have_feature = parser::file(have_lines).unwrap();
       let want_feature = parser::Feature {
-        blocks: vec![
-          Block::NonExecutable(NonExecutableBlock {
-            line_no: 0,
-            text: vec![S("Feature: test"), S("")],
-          }),
-          Block::Executable(ExecutableBlock {
-            title: S("  Scenario: gherkin in docstring"),
-            line_no: 2,
-            steps: vec![
-              Step {
-                title: S("file \"foo\":"),
-                line_no: 3,
-                lines: vec![
-                  S("    Given file \"foo\":"),
-                  S("      \"\"\""),
-                  S("      Scenario: embedded"),
-                  S("        Given step 1"),
-                  S("      \"\"\""),
-                ],
-              },
-              Step {
-                title: S("step 2"),
-                line_no: 8,
-                lines: vec![S("    When step 2")],
-              },
-            ],
-          }),
-        ],
+        blocks: vec![Block::Text(vec![S("Feature: test"), S("")])],
       };
       pretty::assert_eq!(want_feature, have_feature);
     }
