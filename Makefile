@@ -1,11 +1,9 @@
 # dev tooling and versions
 RUN_THAT_APP_VERSION = 0.18.0
 
-build:  # builds the executable
-	cargo build --release
-
-cuke: build  # runs the end-to-end tests
-	@cargo test --locked --test cuke
+cuke:  # runs the end-to-end tests
+	@cargo build --quiet
+	@cargo test --quiet --locked --test cuke
 
 fix: tools/rta@${RUN_THAT_APP_VERSION}  # auto-corrects issues
 	tools/rta dprint fmt

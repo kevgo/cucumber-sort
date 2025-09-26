@@ -47,7 +47,7 @@ async fn run_binary(world: &mut MyWorld, command: String) {
   let mut executable = PathBuf::from(cmd_parts.next().unwrap().to_string());
   if executable.to_string_lossy() == "cucumber-sort" {
     let cwd = env::current_dir().unwrap();
-    executable = cwd.join("target").join("release").join("cucumber-sort");
+    executable = cwd.join("target").join("debug").join("cucumber-sort");
   }
   let output = Command::new(executable)
     .args(cmd_parts)
