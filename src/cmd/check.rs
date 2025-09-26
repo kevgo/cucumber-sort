@@ -1,7 +1,6 @@
 use crate::prelude::*;
 use crate::sort::{self, Issue};
 use crate::{config, find, gherkin};
-use ansi_term::Color::{Cyan, Red};
 use camino::Utf8PathBuf;
 use std::process::ExitCode;
 
@@ -22,21 +21,7 @@ fn check_file(filepath: Utf8PathBuf, config: &config::Config) -> Result<ExitCode
   let original_lines = gherkin.lines();
   println!("ORIGINAL LINES: {:?}", sorted_lines);
   let mut exit_code = ExitCode::SUCCESS;
-  for ((original_line, original_text), (_, sorted_text)) in
-    original_lines.into_iter().zip(sorted_lines.into_iter())
-  {
-    println!("line: {} {}", original_text, sorted_text);
-    if original_text != *sorted_text {
-      issues.push(Issue {
-        line: original_line,
-        problem: format!(
-          "{filepath}:{original_line}  expected {} but found {}",
-          Cyan.paint(sorted_text.trim()),
-          Red.paint(original_text.trim())
-        ),
-      });
-    }
-  }
+  original_lines.find_mismatching(&sorted_lines, &filepath, &mut issues);
   sort::sort_issues(&mut issues);
   for issue in issues {
     exit_code = ExitCode::FAILURE;

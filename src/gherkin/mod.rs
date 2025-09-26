@@ -28,7 +28,7 @@ mod tests {
 
   mod lex_and_parse {
     use crate::gherkin::lexer::{self, Line, LineType};
-    use crate::gherkin::parser::{ExecutableBlock, NonExecutableBlock};
+    use crate::gherkin::parser::{ExecutableBlock, Lines, NonExecutableBlock};
     use crate::gherkin::{Block, Step, parser};
     use big_s::S;
     use std::io::BufReader;
@@ -84,7 +84,7 @@ Feature: test
           number: 4,
           text: S("  Background:"),
           indent: 2,
-          line_type: LineType::BlockStart,
+          line_type: LineType::Other,
         },
         Line {
           number: 5,
@@ -114,7 +114,7 @@ Feature: test
           number: 9,
           text: S("  Scenario: result"),
           indent: 2,
-          line_type: LineType::BlockStart,
+          line_type: LineType::Other,
         },
         Line {
           number: 10,
@@ -138,7 +138,7 @@ Feature: test
           number: 13,
           text: S("  Scenario: undo"),
           indent: 2,
-          line_type: LineType::BlockStart,
+          line_type: LineType::Other,
         },
         Line {
           number: 14,
@@ -227,7 +227,7 @@ Feature: test
 
       // step 3: serialize the block back into lines
       let have_lines = have_feature.lines();
-      let want_lines = vec![
+      let want_lines = Lines::from(vec![
         (0, S("Feature: test")),
         (1, S("")),
         (2, S("  An example feature file.")),
@@ -244,8 +244,12 @@ Feature: test
         (13, S("  Scenario: undo")),
         (14, S("    When step 6")),
         (15, S("    Then step 7")),
-      ];
+      ]);
       pretty::assert_eq!(want_lines, have_lines);
+
+      // step 4: serialize back into the original string
+      let have_text = have_lines.to_string();
+      pretty::assert_eq!(source, have_text);
     }
 
     #[test]
@@ -280,7 +284,7 @@ Feature: test
           number: 2,
           text: S("  Scenario: with docstring"),
           indent: 2,
-          line_type: LineType::BlockStart,
+          line_type: LineType::Other,
         },
         Line {
           number: 3,
@@ -387,7 +391,7 @@ Feature: test
           number: 2,
           text: S("  Scenario: with table"),
           indent: 2,
-          line_type: LineType::BlockStart,
+          line_type: LineType::Other,
         },
         Line {
           number: 3,
@@ -488,7 +492,7 @@ Feature: test
           number: 2,
           text: S("  Scenario Outline:"),
           indent: 2,
-          line_type: LineType::BlockStart,
+          line_type: LineType::Other,
         },
         Line {
           number: 3,
@@ -596,7 +600,7 @@ Feature: test
           number: 2,
           text: S("  Scenario: gherkin in docstring"),
           indent: 2,
-          line_type: LineType::BlockStart,
+          line_type: LineType::Other,
         },
         Line {
           number: 3,
