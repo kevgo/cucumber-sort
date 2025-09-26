@@ -1,6 +1,7 @@
 use crate::prelude::*;
 use crate::sort::{self, Issue};
 use crate::{config, find, gherkin};
+use ansi_term::Color::{Cyan, Red};
 use camino::Utf8PathBuf;
 use std::process::ExitCode;
 
@@ -26,7 +27,9 @@ fn check_file(filepath: Utf8PathBuf, config: &config::Config) -> Result<ExitCode
       issues.push(Issue {
         line: original_line,
         problem: format!(
-          "{filepath}:{original_line}  expected \"{sorted_text}\" but found \"{original_text}\""
+          "{filepath}:{original_line}  expected \"{}\" but found \"{}\"",
+          Cyan.paint(sorted_text),
+          Red.paint(original_text)
         ),
       });
     }
