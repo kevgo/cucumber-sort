@@ -13,16 +13,10 @@ pub fn file(file: gherkin::Feature, config: &Config, issues: &mut Vec<Issue>) ->
 /// provides the given block with all steps sorted according to the given configuration
 fn block(block: gherkin::Block, config: &Config, issues: &mut Vec<Issue>) -> gherkin::Block {
   match block {
-    gherkin::Block::Executable(executable_block) => {
-      gherkin::Block::Executable(gherkin::ExecutableBlock {
-        title: executable_block.title,
-        line_no: executable_block.line_no,
-        steps: steps(executable_block.steps, &config.steps, issues),
-      })
+    gherkin::Block::Steps(steps) => {
+      gherkin::Block::Steps(crate::sort::steps(steps, &config.steps, issues))
     }
-    gherkin::Block::NonExecutable(non_executable_block) => {
-      gherkin::Block::NonExecutable(non_executable_block)
-    }
+    gherkin::Block::Text(lines) => gherkin::Block::Text(lines),
   }
 }
 
@@ -97,7 +91,6 @@ mod tests {
 
   mod sort_steps {
     use crate::config::Config;
-    use crate::gherkin::ExecutableBlock;
     use crate::sort::Issue;
     use crate::{gherkin, sort};
     use big_s::S;
@@ -110,16 +103,19 @@ mod tests {
           title: S("step 1"),
           lines: vec![],
           line_no: 0,
+          indent: 0,
         },
         gherkin::Step {
           title: S("step 2"),
           lines: vec![],
           line_no: 1,
+          indent: 0,
         },
         gherkin::Step {
           title: S("step 3"),
           lines: vec![],
           line_no: 2,
+          indent: 0,
         },
       ];
       let want_steps = give_steps.clone();
@@ -133,48 +129,46 @@ mod tests {
       let config = Config {
         steps: vec![S("step 1"), S("step 2"), S("step 3")],
       };
-      let give_block = gherkin::Block::Executable(ExecutableBlock {
-        title: S("Scenario: test"),
-        line_no: 3,
-        steps: vec![
-          gherkin::Step {
-            title: S("step 3"),
-            lines: vec![],
-            line_no: 0,
-          },
-          gherkin::Step {
-            title: S("step 2"),
-            lines: vec![],
-            line_no: 1,
-          },
-          gherkin::Step {
-            title: S("step 1"),
-            lines: vec![],
-            line_no: 2,
-          },
-        ],
-      });
-      let want_block = gherkin::Block::Executable(ExecutableBlock {
-        title: S("Scenario: test"),
-        line_no: 3,
-        steps: vec![
-          gherkin::Step {
-            title: S("step 1"),
-            lines: vec![],
-            line_no: 2,
-          },
-          gherkin::Step {
-            title: S("step 2"),
-            lines: vec![],
-            line_no: 1,
-          },
-          gherkin::Step {
-            title: S("step 3"),
-            lines: vec![],
-            line_no: 0,
-          },
-        ],
-      });
+      let give_block = gherkin::Block::Steps(vec![
+        gherkin::Step {
+          title: S("step 3"),
+          lines: vec![],
+          line_no: 0,
+          indent: 0,
+        },
+        gherkin::Step {
+          title: S("step 2"),
+          lines: vec![],
+          line_no: 1,
+          indent: 0,
+        },
+        gherkin::Step {
+          title: S("step 1"),
+          lines: vec![],
+          line_no: 2,
+          indent: 0,
+        },
+      ]);
+      let want_block = gherkin::Block::Steps(vec![
+        gherkin::Step {
+          title: S("step 1"),
+          lines: vec![],
+          line_no: 2,
+          indent: 0,
+        },
+        gherkin::Step {
+          title: S("step 2"),
+          lines: vec![],
+          line_no: 1,
+          indent: 0,
+        },
+        gherkin::Step {
+          title: S("step 3"),
+          lines: vec![],
+          line_no: 0,
+          indent: 0,
+        },
+      ]);
       let mut issues = vec![];
       let have_block = sort::block(give_block, &config, &mut issues);
       pretty::assert_eq!(have_block, want_block);
@@ -185,43 +179,40 @@ mod tests {
       let config = Config {
         steps: vec![S("step 1"), S("step 2")],
       };
-      let give_block = gherkin::Block::Executable(ExecutableBlock {
-        title: S("Scenario: test"),
-        line_no: 3,
-        steps: vec![
-          gherkin::Step {
-            title: S("step 2"),
-            lines: vec![],
-            line_no: 0,
-          },
-          gherkin::Step {
-            title: S("step 3"),
-            lines: vec![],
-            line_no: 1,
-          },
-          gherkin::Step {
-            title: S("step 1"),
-            lines: vec![],
-            line_no: 2,
-          },
-        ],
-      });
-      let want_block = gherkin::Block::Executable(ExecutableBlock {
-        title: S("Scenario: test"),
-        line_no: 3,
-        steps: vec![
-          gherkin::Step {
-            title: S("step 1"),
-            lines: vec![],
-            line_no: 2,
-          },
-          gherkin::Step {
-            title: S("step 2"),
-            lines: vec![],
-            line_no: 0,
-          },
-        ],
-      });
+      let give_block = gherkin::Block::Steps(vec![
+        gherkin::Step {
+          title: S("step 2"),
+          lines: vec![],
+          line_no: 0,
+          indent: 0,
+        },
+        gherkin::Step {
+          title: S("step 3"),
+          lines: vec![],
+          line_no: 1,
+          indent: 0,
+        },
+        gherkin::Step {
+          title: S("step 1"),
+          lines: vec![],
+          line_no: 2,
+          indent: 0,
+        },
+      ]);
+      let want_block = gherkin::Block::Steps(vec![
+        gherkin::Step {
+          title: S("step 1"),
+          lines: vec![],
+          line_no: 2,
+          indent: 0,
+        },
+        gherkin::Step {
+          title: S("step 2"),
+          lines: vec![],
+          line_no: 0,
+          indent: 0,
+        },
+      ]);
       let mut issues = vec![];
       let have_block = sort::block(give_block, &config, &mut issues);
       pretty::assert_eq!(have_block, want_block);
@@ -244,6 +235,7 @@ mod tests {
         title: S("title"),
         lines: vec![],
         line_no: 1,
+        indent: 0,
       };
       let give = Steps(vec![None, Some(step_1.clone())]);
       let have = give.elements();

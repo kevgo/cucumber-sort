@@ -11,8 +11,6 @@ pub enum UserError {
   CannotReadConfigFile { file: Utf8PathBuf, reason: String },
   CannotReadFile { file: Utf8PathBuf, reason: String },
   CannotWriteFile { file: Utf8PathBuf, reason: String },
-  GherkinBlockContainsNonExecutableLine { file: Utf8PathBuf, line: usize },
-  StepOutsideOfBlock { file: Utf8PathBuf, line: usize },
   UnknownCommand(String),
 }
 
@@ -30,15 +28,6 @@ impl Display for UserError {
       }
       UserError::CannotWriteFile { file, reason } => {
         write!(f, "cannot write file {file}: {reason}")
-      }
-      UserError::GherkinBlockContainsNonExecutableLine { file, line } => {
-        write!(
-          f,
-          "{file}:{line}  Gherkin block contains non-executable line",
-        )
-      }
-      UserError::StepOutsideOfBlock { file, line } => {
-        write!(f, "{file}:{line}  Gherkin step outside of a block")
       }
       UserError::UnknownCommand(cmd) => {
         write!(f, "unknown command: {cmd}\n\n{}", available_commands())

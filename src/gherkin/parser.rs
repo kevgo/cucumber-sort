@@ -19,6 +19,7 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Feature> {
           title: line.title().to_string(),
           lines: vec![line.text],
           indent: line.indent,
+          line_no: line.number,
         });
       }
       (LineType::StepStart, Some(Block::Steps(mut steps)), Some(step)) => {
@@ -28,6 +29,7 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Feature> {
           title: line.title().to_string(),
           lines: vec![line.text],
           indent: line.indent,
+          line_no: line.number,
         });
       }
       (LineType::CommentStartStop, Some(Block::Steps(steps)), Some(mut step)) => {
@@ -135,7 +137,7 @@ impl Lines {
 impl Display for Lines {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     for line in &self.0 {
-      f.write_str(line);
+      _ = f.write_str(line);
     }
     Ok(())
   }
@@ -165,4 +167,6 @@ pub struct Step {
 
   /// the indentation of this step
   pub indent: usize,
+
+  pub line_no: usize,
 }
