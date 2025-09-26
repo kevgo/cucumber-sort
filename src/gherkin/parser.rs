@@ -97,6 +97,19 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Feature> {
     open_block = new_open_block;
     open_step = new_open_step;
   }
+  if let Some(block) = open_block {
+    match block {
+      Block::Steps(mut steps) => {
+        if let Some(step) = open_step {
+          steps.push(step);
+        }
+        blocks.push(Block::Steps(steps));
+      }
+      Block::Text(lines) => {
+        blocks.push(Block::Text(lines));
+      }
+    }
+  }
   Ok(Feature { blocks })
 }
 

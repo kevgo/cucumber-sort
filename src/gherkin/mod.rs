@@ -164,6 +164,7 @@ Feature: test
             S(""),
             S("  An example feature file."),
             S(""),
+            S("  Background:"),
           ]),
           Block::Steps(vec![
             Step {
@@ -185,34 +186,34 @@ Feature: test
               line_no: 7,
             },
           ]),
-          Block::Text(vec![S("")]),
+          Block::Text(vec![S(""), S("  Scenario: result")]),
           Block::Steps(vec![
             Step {
               title: S("step 4"),
               lines: vec![S("    Then step 4")],
               indent: 4,
-              line_no: 5,
+              line_no: 10,
             },
             Step {
               title: S("step 5"),
               lines: vec![S("    And step 5")],
               indent: 4,
-              line_no: 5,
+              line_no: 11,
             },
           ]),
-          Block::Text(vec![S("")]),
+          Block::Text(vec![S(""), S("  Scenario: undo")]),
           Block::Steps(vec![
             Step {
               title: S("step 6"),
               lines: vec![S("    When step 6")],
               indent: 4,
-              line_no: 5,
+              line_no: 14,
             },
             Step {
               title: S("step 7"),
               lines: vec![S("    Then step 7")],
               indent: 4,
-              line_no: 5,
+              line_no: 15,
             },
           ]),
         ],
