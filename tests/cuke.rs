@@ -34,7 +34,7 @@ async fn file(world: &mut MyWorld, step: &Step, filename: String) {
 #[when("I run cucumber-sort")]
 async fn run_binary(world: &mut MyWorld) {
   let output = Command::new("cargo")
-    .args(&["run", "--bin", "cucumber-sort"])
+    .args(&["run", "--bin", "cucumber-sort", "check"])
     .output()
     .await
     .unwrap();

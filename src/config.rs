@@ -3,7 +3,7 @@ use camino::Utf8PathBuf;
 use std::fs;
 use std::io::{BufRead, BufReader};
 
-pub const FILE_NAME: &str = "cucumbersortrc";
+pub const FILE_NAME: &str = ".cucumbersortrc";
 
 pub struct Config {
   pub steps: Vec<String>,
