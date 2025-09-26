@@ -244,7 +244,7 @@ Feature: test
 
       // step 4: serialize back into the original string
       let have_text = have_lines.to_string();
-      pretty::assert_eq!(source, have_text);
+      pretty::assert_eq!(source[1..], have_text);
     }
 
     #[test]

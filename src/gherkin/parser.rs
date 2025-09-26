@@ -3,14 +3,13 @@ use crate::prelude::*;
 use crate::sort::Issue;
 use ansi_term::Color::{Cyan, Red};
 use camino::Utf8Path;
-use std::fmt::Display;
+use std::fmt::{Display, Write};
 
 pub fn file(lines: Vec<lexer::Line>) -> Result<Feature> {
   let mut blocks: Vec<Block> = vec![];
   let mut open_block: Option<Block> = None;
   let mut open_step: Option<Step> = None;
   for line in lines {
-    println!("LINE: {}", line.text);
     let new_open_block: Option<Block>;
     let new_open_step: Option<Step>;
     match (&line.line_type, open_block, open_step) {
@@ -162,6 +161,7 @@ impl Display for Lines {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     for line in &self.0 {
       _ = f.write_str(line);
+      _ = f.write_char('\n');
     }
     Ok(())
   }
