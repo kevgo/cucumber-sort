@@ -27,9 +27,9 @@ fn check_file(filepath: Utf8PathBuf, config: &config::Config) -> Result<ExitCode
       issues.push(Issue {
         line: original_line,
         problem: format!(
-          "{filepath}:{original_line}  expected \"{}\" but found \"{}\"",
-          Cyan.paint(sorted_text),
-          Red.paint(original_text)
+          "{filepath}:{original_line}  expected {} but found {}",
+          Cyan.paint(sorted_text.trim()),
+          Red.paint(original_text.trim())
         ),
       });
     }
@@ -37,7 +37,7 @@ fn check_file(filepath: Utf8PathBuf, config: &config::Config) -> Result<ExitCode
   sort::sort_issues(&mut issues);
   for issue in issues {
     exit_code = ExitCode::FAILURE;
-    println!("{filepath}:{}  {}", issue.line, issue.problem);
+    println!("{}", issue.problem);
   }
   Ok(exit_code)
 }
