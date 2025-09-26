@@ -24,3 +24,4 @@ Feature: ordered steps
       """
     When I run "cucumber-sort check"
     Then it prints nothing
+    And it succeeds

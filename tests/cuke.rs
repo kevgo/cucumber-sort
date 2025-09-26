@@ -30,7 +30,9 @@ impl Default for MyWorld {
 #[given(expr = "file {string}:")]
 async fn file(world: &mut MyWorld, step: &Step, filename: String) {
   let filepath = world.dir.path().join(filename);
-  if let Some(parent) = filepath.parent() {
+  if let Some(parent) = filepath.parent()
+    && parent != world.dir.path()
+  {
     fs::create_dir_all(parent).await.unwrap();
   }
   let content = step.docstring.as_ref().unwrap();
@@ -40,12 +42,20 @@ async fn file(world: &mut MyWorld, step: &Step, filename: String) {
 #[when(expr = "I run {string}")]
 async fn run_binary(world: &mut MyWorld, command: String) {
   let output = Command::new("cargo")
+    .current_dir(world.dir.path())
     .arg("run")
     .arg("--bin")
     .args(command.split(' '))
     .output()
     .await
     .unwrap();
+  if !output.stderr.is_empty() {
+    panic!(
+      "running \"{command}\" produced unexpected STDERR output: {}",
+      str::from_utf8(&output.stderr).unwrap()
+    );
+  }
+  println!("11111111111111111111111111111111111 {:?}", output);
   world.output = Some(String::from_utf8(output.stdout).unwrap());
   world.exit_status = Some(output.status);
 }
@@ -57,16 +67,27 @@ async fn it_prints(world: &mut MyWorld, step: &Step) {
     panic!("no output captured");
   };
   assert_eq!(have.trim(), want.trim());
-  assert!(world.exit_status.unwrap().success());
 }
 
 #[then("it prints nothing")]
 async fn prints_nothing(world: &mut MyWorld) {
-  let Some(have) = world.output.take() else {
-    panic!("no output captured");
+  let Some(have) = &world.output else {
+    panic!("no command run");
   };
   assert_eq!(have, "");
-  assert!(world.exit_status.unwrap().success());
+}
+
+#[then("it succeeds")]
+async fn succeeds(world: &mut MyWorld) {
+  let Some(have) = &world.exit_status else {
+    panic!("no command run");
+  };
+  if !have.success() {
+    panic!(
+      "expected success but received exit code {}",
+      have.code().unwrap()
+    );
+  }
 }
 
 #[tokio::main(flavor = "current_thread")]
