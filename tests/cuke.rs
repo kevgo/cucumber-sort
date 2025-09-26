@@ -1,3 +1,4 @@
+use std::env;
 use std::process::ExitStatus;
 
 use cucumber::gherkin::Step;
@@ -41,11 +42,20 @@ async fn file(world: &mut MyWorld, step: &Step, filename: String) {
 
 #[when(expr = "I run {string}")]
 async fn run_binary(world: &mut MyWorld, command: String) {
-  let output = Command::new("cargo")
+  let mut cmd_parts = command.split(' ');
+  let mut binary_name = cmd_parts.next().unwrap().to_string();
+  if binary_name == "cucumber-sort" {
+    let cwd = env::current_dir().unwrap();
+    binary_name = cwd
+      .join("target")
+      .join("release")
+      .join("cucumber-sort")
+      .to_string_lossy()
+      .to_string();
+  }
+  let output = Command::new(binary_name)
+    .args(cmd_parts)
     .current_dir(world.dir.path())
-    .arg("run")
-    .arg("--bin")
-    .args(command.split(' '))
     .output()
     .await
     .unwrap();
