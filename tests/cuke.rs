@@ -1,3 +1,5 @@
+use std::process::ExitStatus;
+
 use cucumber::gherkin::Step;
 use cucumber::{World, given, then, when};
 use tokio::fs;
@@ -10,6 +12,9 @@ pub struct MyWorld {
 
   /// what the binary printed when running
   output: Option<String>,
+
+  /// exit status of the binary
+  exit_status: Option<ExitStatus>,
 }
 
 impl Default for MyWorld {
@@ -17,6 +22,7 @@ impl Default for MyWorld {
     Self {
       dir: camino_tempfile::tempdir().unwrap(),
       output: None,
+      exit_status: None,
     }
   }
 }
@@ -39,15 +45,26 @@ async fn run_binary(world: &mut MyWorld) {
     .await
     .unwrap();
   world.output = Some(String::from_utf8(output.stdout).unwrap());
+  world.exit_status = Some(output.status);
 }
 
-#[then(expr = "it prints:")]
-async fn check_output(world: &mut MyWorld, step: &Step) {
+#[then("it prints:")]
+async fn it_prints(world: &mut MyWorld, step: &Step) {
   let want = step.docstring.as_ref().unwrap();
   let Some(have) = world.output.take() else {
     panic!("no output captured");
   };
   assert_eq!(have.trim(), want.trim());
+  assert!(world.exit_status.unwrap().success());
+}
+
+#[then("it prints nothing")]
+async fn prints_nothing(world: &mut MyWorld) {
+  let Some(have) = world.output.take() else {
+    panic!("no output captured");
+  };
+  assert_eq!(have, "");
+  assert!(world.exit_status.unwrap().success());
 }
 
 #[tokio::main(flavor = "current_thread")]

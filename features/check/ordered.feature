@@ -23,7 +23,4 @@ Feature: ordered steps
           And step 5
       """
     When I run cucumber-sort
-    Then it prints:
-      """
-      All steps are ordered.
-      """
+    Then it prints nothing

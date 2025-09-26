@@ -1,3 +1,4 @@
 file "
 I run cucumber-sort
 it prints:
+it prints nothing
