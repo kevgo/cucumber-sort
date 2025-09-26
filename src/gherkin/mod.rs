@@ -397,7 +397,26 @@ Feature: test
       // step 2: parse the Lines into blocks
       let have_feature = parser::file(have_lines).unwrap();
       let want_feature = parser::Feature {
-        blocks: vec![Block::Text(vec![S("Feature: test"), S("")])],
+        blocks: vec![
+          Block::Text(vec![S("Feature: test"), S(""), S("  Scenario: with table")]),
+          Block::Steps(vec![Step {
+            title: S("step 1:"),
+            lines: vec![S("    Given step 1:")],
+            indent: 4,
+            line_no: 3,
+          }]),
+          Block::Text(vec![
+            S("      | HEAD A | HEAD B |"),
+            S("      | row 1A | row 1B |"),
+            S("      | row 2A | row 2B |"),
+          ]),
+          Block::Steps(vec![Step {
+            title: S("step 2"),
+            lines: vec![S("    And step 2")],
+            indent: 4,
+            line_no: 7,
+          }]),
+        ],
       };
       pretty::assert_eq!(want_feature, have_feature);
     }
