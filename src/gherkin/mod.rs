@@ -448,8 +448,8 @@ Feature: test
       | one   | two  |
 "#;
       let bufread = BufReader::new(&give.as_bytes()[1..]);
-      let have = lexer::file(bufread);
-      let want = vec![
+      let have_lines = lexer::file(bufread);
+      let want_lines = vec![
         Line {
           number: 0,
           text: S("Feature: test"),
@@ -505,7 +505,41 @@ Feature: test
           line_type: LineType::Other,
         },
       ];
-      pretty::assert_eq!(want, have);
+      pretty::assert_eq!(want_lines, have_lines);
+
+      // step 2: parse the Lines into blocks
+      let have_feature = parser::file(have_lines, "file.feature".into()).unwrap();
+      let want_feature = parser::Feature {
+        blocks: vec![
+          Block::NonExecutable(NonExecutableBlock {
+            line_no: 0,
+            text: vec![S("Feature: test"), S("")],
+          }),
+          Block::Executable(ExecutableBlock {
+            title: S("  Scenario Outline:"),
+            line_no: 2,
+            steps: vec![
+              Step {
+                title: S("<ALPHA>"),
+                line_no: 3,
+                lines: vec![S("    Given <ALPHA>")],
+              },
+              Step {
+                title: S("<BETA>"),
+                line_no: 4,
+                lines: vec![
+                  S("    Then <BETA>"),
+                  S(""),
+                  S("    Examples:"),
+                  S("      | ALPHA | BETA |"),
+                  S("      | one   | two  |"),
+                ],
+              },
+            ],
+          }),
+        ],
+      };
+      pretty::assert_eq!(want_feature, have_feature);
     }
 
     #[test]
