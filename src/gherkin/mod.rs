@@ -556,8 +556,8 @@ Feature: test
     When step 2
 "#;
       let bufread = BufReader::new(&give.as_bytes()[1..]);
-      let have = lexer::file(bufread);
-      let want = vec![
+      let have_lines = lexer::file(bufread);
+      let want_lines = vec![
         Line {
           number: 0,
           text: S("Feature: test"),
@@ -613,7 +613,41 @@ Feature: test
           line_type: LineType::StepStart,
         },
       ];
-      pretty::assert_eq!(want, have);
+      pretty::assert_eq!(want_lines, have_lines);
+
+      // step 2: parse the Lines into blocks
+      let have_feature = parser::file(have_lines, "file.feature".into()).unwrap();
+      let want_feature = parser::Feature {
+        blocks: vec![
+          Block::NonExecutable(NonExecutableBlock {
+            line_no: 0,
+            text: vec![S("Feature: test"), S("")],
+          }),
+          Block::Executable(ExecutableBlock {
+            title: S("  Scenario: gherkin in docstring"),
+            line_no: 2,
+            steps: vec![
+              Step {
+                title: S("file \"foo\":"),
+                line_no: 3,
+                lines: vec![
+                  S("    Given file \"foo\":"),
+                  S("      \"\"\""),
+                  S("      Scenario: embedded"),
+                  S("        Given step 1"),
+                  S("      \"\"\""),
+                ],
+              },
+              Step {
+                title: S("step 2"),
+                line_no: 8,
+                lines: vec![S("    When step 2")],
+              },
+            ],
+          }),
+        ],
+      };
+      pretty::assert_eq!(want_feature, have_feature);
     }
   }
 }
