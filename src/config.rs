@@ -16,6 +16,10 @@ pub fn load() -> Result<Config> {
   })?;
   let reader = BufReader::new(file);
   Ok(Config {
-    steps: reader.lines().map(|e| e.unwrap()).collect(),
+    steps: reader
+      .lines()
+      .map(|e| e.unwrap())
+      .filter(|line| !line.is_empty())
+      .collect(),
   })
 }

@@ -71,7 +71,7 @@ async fn it_prints(world: &mut MyWorld, step: &Step) {
   let Some(have) = world.output.take() else {
     panic!("no output captured");
   };
-  assert_eq!(have.trim(), want.trim());
+  pretty::assert_eq!(have.trim(), want.trim());
 }
 
 #[then("it prints nothing")]
@@ -79,7 +79,7 @@ async fn prints_nothing(world: &mut MyWorld) {
   let Some(have) = &world.output else {
     panic!("no command run");
   };
-  assert_eq!(have, "");
+  pretty::assert_eq!(have, "");
 }
 
 #[then("it succeeds")]
