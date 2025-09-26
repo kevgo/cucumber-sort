@@ -55,7 +55,6 @@ async fn run_binary(world: &mut MyWorld, command: String) {
       str::from_utf8(&output.stderr).unwrap()
     );
   }
-  println!("11111111111111111111111111111111111 {:?}", output);
   world.output = Some(String::from_utf8(output.stdout).unwrap());
   world.exit_status = Some(output.status);
 }
