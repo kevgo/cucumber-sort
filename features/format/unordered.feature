@@ -31,10 +31,7 @@ Feature: format unordered steps
           Then step 5
       """
     When I run "cucumber-sort format"
-    Then it prints:
-      """
-
-      """
+    Then it prints nothing
     And the exit code is success
     And file "feature/one.feature" now has content:
       """
