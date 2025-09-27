@@ -40,6 +40,7 @@ setup: setup-ci  # install development dependencies on this computer
 	cargo install cargo-edit cargo-upgrades --locked
 
 setup-ci:  # prepares the CI server
+	rustup component add clippy
 	rustup toolchain add nightly
 	rustup component add rustfmt --toolchain nightly
 	cargo install cargo-machete --locked
