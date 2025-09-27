@@ -33,7 +33,7 @@ impl Default for MyWorld {
   }
 }
 
-#[then("all files haven't changed")]
+#[then("file contents haven't changed")]
 async fn files_not_changed(world: &mut MyWorld) {
   for (filepath, want_content) in &world.files {
     let have_content = fs::read_to_string(filepath).await.unwrap();
