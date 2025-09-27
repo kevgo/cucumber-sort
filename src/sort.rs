@@ -11,14 +11,14 @@ pub fn file(
 ) -> gherkin::Document {
   let mut new_blocks = Vec::<gherkin::Block>::new();
   for file_block in file.blocks {
-    let sorted_block = block(file_block, config, filename, issues);
+    let sorted_block = sort_block(file_block, config, filename, issues);
     new_blocks.push(sorted_block);
   }
   gherkin::Document { blocks: new_blocks }
 }
 
 /// provides the given block with all steps sorted according to the given configuration
-fn block(
+fn sort_block(
   block: gherkin::Block,
   config: &Config,
   filename: &Utf8Path,
@@ -26,14 +26,14 @@ fn block(
 ) -> gherkin::Block {
   match block {
     gherkin::Block::Sortable(block_steps) => {
-      gherkin::Block::Sortable(steps(block_steps, &config.steps, filename, issues))
+      gherkin::Block::Sortable(sort_steps(block_steps, &config.steps, filename, issues))
     }
     gherkin::Block::Static(lines) => gherkin::Block::Static(lines),
   }
 }
 
 /// orders the given have_steps to follow the same order as the given config_steps
-fn steps(
+fn sort_steps(
   have_steps: Vec<gherkin::Step>,
   config_steps: &[String],
   filename: &Utf8Path,
@@ -137,7 +137,7 @@ mod tests {
       ];
       let want_steps = give_steps.clone();
       let mut issues = vec![];
-      let have_steps = sort::steps(
+      let have_steps = sort::sort_steps(
         give_steps,
         &config_steps,
         "test.feature".into(),
@@ -192,7 +192,7 @@ mod tests {
         },
       ]);
       let mut issues = vec![];
-      let have_block = sort::block(give_block, &config, "test.feature".into(), &mut issues);
+      let have_block = sort::sort_block(give_block, &config, "test.feature".into(), &mut issues);
       pretty::assert_eq!(have_block, want_block);
     }
 
@@ -236,7 +236,7 @@ mod tests {
         },
       ]);
       let mut issues = vec![];
-      let have_block = sort::block(give_block, &config, "test.feature".into(), &mut issues);
+      let have_block = sort::sort_block(give_block, &config, "test.feature".into(), &mut issues);
       pretty::assert_eq!(have_block, want_block);
       let want_issues = vec![Issue {
         line: 1,
