@@ -68,8 +68,7 @@ fn trim_initial_whitespace<'a>(line: &'a str) -> (usize, TrimmedLine<'a>) {
     }
   }
   // here the line is all whitespace or nothing
-  let length = line.len();
-  (length, TrimmedLine::from(""))
+  (line.len(), TrimmedLine::from(""))
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
