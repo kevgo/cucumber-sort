@@ -4,10 +4,24 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+ansi_term = "0.12.1"
+camino = "1.1"
 
 [dev-dependencies]
+big_s = "1.0.2"
+camino-tempfile = "1.4.1"
 cucumber = "0.21"
-tokio = { version = "1.0", features = ["macros", "process", "rt"] }
+pretty = { package = "pretty_assertions", version = "1.4.1" }
+strip-ansi-escapes = "0.2.1"
+tokio = { version = "1.0", features = ["fs", "macros", "process", "rt"] }
+
+[profile.release]
+codegen-units = 1
+debug = 0
+lto = true
+opt-level = "z"
+panic = "abort"
+strip = "symbols"
 
 [[test]]
 name = "cuke" # this should be the same as the filename of your test target

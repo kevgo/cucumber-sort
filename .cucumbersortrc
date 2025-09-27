@@ -1,0 +1,6 @@
+file {string} with content:
+I run {string}
+it prints
+the exit code is
+file {string} now has content
+file contents haven't changed
