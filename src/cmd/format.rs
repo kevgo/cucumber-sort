@@ -10,14 +10,14 @@ pub fn format(filepath: Option<Utf8PathBuf>) -> Result<ExitCode> {
   let config = config::load()?;
   match filepath {
     Some(filepath) => file(filepath, &config),
-    None => all(config),
+    None => all(&config),
   }
 }
 
 /// updates all files in the current folder to contain sorted steps
-fn all(config: config::Config) -> Result<ExitCode> {
+fn all(config: &config::Config) -> Result<ExitCode> {
   for filepath in find::all()? {
-    let exit_code = file(filepath, &config)?;
+    let exit_code = file(filepath, config)?;
     if exit_code == ExitCode::FAILURE {
       return Ok(exit_code);
     }
