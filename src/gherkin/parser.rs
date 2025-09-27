@@ -7,12 +7,12 @@ use std::fmt::{Display, Write};
 
 pub fn file(lines: Vec<lexer::Line>) -> Result<Feature> {
   let mut blocks: Vec<Block> = vec![];
-  let mut open_block: Option<Block> = None;
-  let mut open_step: Option<Step> = None;
-  let mut inside_docstring = false;
+  let mut open_block: Option<Block> = None; // the block that is currently being populated
+  let mut open_step: Option<Step> = None; // the step that is currently being populated
+  let mut inside_docstring = false; // whether we are inside a docstring
   for line in lines {
-    let new_open_block: Option<Block>;
-    let new_open_step: Option<Step>;
+    let new_open_block: Option<Block>; // the new value of open_block at the end of this loop
+    let new_open_step: Option<Step>; // the new value of open_step at the end of this loop
     match (&line.line_type, open_block, open_step) {
       (LineType::StepStart, None, None) => {
         new_open_block = Some(Block::Sortable(vec![]));
