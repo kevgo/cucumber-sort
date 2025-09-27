@@ -5,15 +5,28 @@ use camino::Utf8PathBuf;
 use std::fs;
 use std::process::ExitCode;
 
-pub fn format(file: Option<Utf8PathBuf>) -> Result<ExitCode> {
+/// updates the given or all files to contain sorted steps
+pub fn format(filepath: Option<Utf8PathBuf>) -> Result<ExitCode> {
   let config = config::load()?;
-  match file {
-    Some(filepath) => format_file(filepath, &config),
-    None => format_all(config),
+  match filepath {
+    Some(filepath) => file(filepath, &config),
+    None => all(config),
   }
 }
 
-fn format_file(filepath: Utf8PathBuf, config: &config::Config) -> Result<ExitCode> {
+/// updates all files in the current folder to contain sorted steps
+fn all(config: config::Config) -> Result<ExitCode> {
+  for filepath in find::all()? {
+    let exit_code = file(filepath, &config)?;
+    if exit_code == ExitCode::FAILURE {
+      return Ok(exit_code);
+    }
+  }
+  Ok(ExitCode::SUCCESS)
+}
+
+/// updates the given file to contain sorted steps
+fn file(filepath: Utf8PathBuf, config: &config::Config) -> Result<ExitCode> {
   let mut issues = Vec::<Issue>::new();
   let gherkin = gherkin::load(&filepath)?;
   let sorted_file = sort::file(gherkin.clone(), config, &filepath, &mut issues);
@@ -29,15 +42,5 @@ fn format_file(filepath: Utf8PathBuf, config: &config::Config) -> Result<ExitCod
     file: filepath,
     reason: err.to_string(),
   })?;
-  Ok(ExitCode::SUCCESS)
-}
-
-fn format_all(config: config::Config) -> Result<ExitCode> {
-  for filepath in find::all()? {
-    let exit_code = format_file(filepath, &config)?;
-    if exit_code == ExitCode::FAILURE {
-      return Ok(exit_code);
-    }
-  }
   Ok(ExitCode::SUCCESS)
 }
