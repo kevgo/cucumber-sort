@@ -34,13 +34,13 @@ fn sort_block(
 
 /// orders the given have_steps to follow the same order as the given config_steps
 fn sort_steps(
-  have_steps: Vec<gherkin::Step>,
+  unordered_steps: Vec<gherkin::Step>,
   config_steps: &[String],
   filename: &Utf8Path,
   issues: &mut Vec<Issue>,
 ) -> Vec<gherkin::Step> {
-  let mut ordered = Vec::<gherkin::Step>::with_capacity(have_steps.len());
-  let mut steps = Steps::from(have_steps);
+  let mut ordered = Vec::<gherkin::Step>::with_capacity(unordered_steps.len());
+  let mut steps = Steps::from(unordered_steps);
   for config_step in config_steps {
     let mut extracted = steps.extract(config_step);
     ordered.append(&mut extracted);
