@@ -4,14 +4,15 @@ use crate::{config, find, gherkin};
 use camino::Utf8PathBuf;
 use std::process::ExitCode;
 
-pub fn check(filename: Option<Utf8PathBuf>) -> Result<ExitCode> {
+pub fn check(filepath: Option<Utf8PathBuf>) -> Result<ExitCode> {
   let config = config::load()?;
-  match filename {
+  match filepath {
     Some(filepath) => file(filepath, &config),
     None => all(config),
   }
 }
 
+/// checks all files in the current folder
 fn all(config: config::Config) -> Result<ExitCode> {
   for filepath in find::all()? {
     let exit_code = file(filepath, &config)?;
@@ -21,6 +22,8 @@ fn all(config: config::Config) -> Result<ExitCode> {
   }
   Ok(ExitCode::SUCCESS)
 }
+
+/// checks the file with the given path
 fn file(filepath: Utf8PathBuf, config: &config::Config) -> Result<ExitCode> {
   let mut issues = Vec::<Issue>::new();
   let gherkin = gherkin::load(&filepath)?;
