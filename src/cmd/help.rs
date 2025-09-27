@@ -2,8 +2,8 @@ use crate::prelude::*;
 use std::process::ExitCode;
 
 pub fn help() -> Result<ExitCode> {
-  println!("Sorts steps in Gherkin files to match the order in cucumbersortrc.\n");
-  println!("{}", available_commands());
+  println!("Sorts steps in Gherkin files to match the order in cucumbersortrc.");
+  println!("\n{}", available_commands());
   Ok(ExitCode::SUCCESS)
 }
 
