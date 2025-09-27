@@ -184,6 +184,7 @@ impl From<Vec<String>> for Lines {
   }
 }
 
+/// a section of a Gherkin document
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Block {
   /// this block type contains sortable elements, i.e. steps to be sorted
@@ -192,6 +193,7 @@ pub enum Block {
   Static(Vec<String>),
 }
 
+/// a Gherkin step, to be sorted by this app
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Step {
   /// the relevant title of the step (without Given/When/Then)
