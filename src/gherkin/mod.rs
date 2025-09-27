@@ -39,8 +39,6 @@ mod tests {
       let source = r#"
 Feature: test
 
-  An example feature file.
-
   Background:
     Given step 1
     And step 2
@@ -70,84 +68,72 @@ Feature: test
         },
         Line {
           number: 2,
-          text: S("  An example feature file."),
-          indent: 2,
-          line_type: LineType::Other,
-        },
-        Line {
-          number: 3,
-          text: S(""),
-          indent: 0,
-          line_type: LineType::Other,
-        },
-        Line {
-          number: 4,
           text: S("  Background:"),
           indent: 2,
           line_type: LineType::Other,
         },
         Line {
-          number: 5,
+          number: 3,
           text: S("    Given step 1"),
           indent: 4,
           line_type: LineType::StepStart,
         },
         Line {
-          number: 6,
+          number: 4,
           text: S("    And step 2"),
           indent: 4,
           line_type: LineType::StepStart,
         },
         Line {
-          number: 7,
+          number: 5,
           text: S("    When step 3"),
           indent: 4,
           line_type: LineType::StepStart,
         },
         Line {
-          number: 8,
+          number: 6,
           text: S(""),
           indent: 0,
           line_type: LineType::Other,
         },
         Line {
-          number: 9,
+          number: 7,
           text: S("  Scenario: result"),
           indent: 2,
           line_type: LineType::Other,
         },
         Line {
-          number: 10,
+          number: 8,
           text: S("    Then step 4"),
           indent: 4,
           line_type: LineType::StepStart,
         },
         Line {
-          number: 11,
+          number: 9,
           text: S("    And step 5"),
           indent: 4,
           line_type: LineType::StepStart,
         },
         Line {
-          number: 12,
+          number: 10,
           text: S(""),
           indent: 0,
           line_type: LineType::Other,
         },
         Line {
-          number: 13,
+          number: 11,
           text: S("  Scenario: undo"),
           indent: 2,
           line_type: LineType::Other,
         },
         Line {
-          number: 14,
+          number: 12,
           text: S("    When step 6"),
           indent: 4,
           line_type: LineType::StepStart,
         },
         Line {
-          number: 15,
+          number: 13,
           text: S("    Then step 7"),
           indent: 4,
           line_type: LineType::StepStart,
@@ -159,31 +145,25 @@ Feature: test
       let have_feature = parser::file(have_lines).unwrap();
       let want_feature = parser::Feature {
         blocks: vec![
-          Block::Text(vec![
-            S("Feature: test"),
-            S(""),
-            S("  An example feature file."),
-            S(""),
-            S("  Background:"),
-          ]),
+          Block::Text(vec![S("Feature: test"), S(""), S("  Background:")]),
           Block::Steps(vec![
             Step {
               title: S("step 1"),
               lines: vec![S("    Given step 1")],
               indent: 4,
-              line_no: 5,
+              line_no: 3,
             },
             Step {
               title: S("step 2"),
               lines: vec![S("    And step 2")],
               indent: 4,
-              line_no: 6,
+              line_no: 4,
             },
             Step {
               title: S("step 3"),
               lines: vec![S("    When step 3")],
               indent: 4,
-              line_no: 7,
+              line_no: 5,
             },
           ]),
           Block::Text(vec![S(""), S("  Scenario: result")]),
@@ -192,13 +172,13 @@ Feature: test
               title: S("step 4"),
               lines: vec![S("    Then step 4")],
               indent: 4,
-              line_no: 10,
+              line_no: 8,
             },
             Step {
               title: S("step 5"),
               lines: vec![S("    And step 5")],
               indent: 4,
-              line_no: 11,
+              line_no: 9,
             },
           ]),
           Block::Text(vec![S(""), S("  Scenario: undo")]),
@@ -207,13 +187,13 @@ Feature: test
               title: S("step 6"),
               lines: vec![S("    When step 6")],
               indent: 4,
-              line_no: 14,
+              line_no: 12,
             },
             Step {
               title: S("step 7"),
               lines: vec![S("    Then step 7")],
               indent: 4,
-              line_no: 15,
+              line_no: 13,
             },
           ]),
         ],
@@ -224,8 +204,6 @@ Feature: test
       let have_lines = have_feature.lines();
       let want_lines = Lines::from(vec![
         S("Feature: test"),
-        S(""),
-        S("  An example feature file."),
         S(""),
         S("  Background:"),
         S("    Given step 1"),
