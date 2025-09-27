@@ -1,6 +1,5 @@
 use crate::prelude::*;
 use camino::{Utf8Path, Utf8PathBuf};
-use std::fs;
 
 pub fn all() -> Result<Vec<Utf8PathBuf>> {
   let mut result = Vec::<Utf8PathBuf>::new();
@@ -9,14 +8,13 @@ pub fn all() -> Result<Vec<Utf8PathBuf>> {
 }
 
 fn search_folder(dir: impl AsRef<Utf8Path>, files: &mut Vec<Utf8PathBuf>) -> Result<()> {
-  for entry in fs::read_dir(dir.as_ref()).unwrap() {
+  for entry in dir.as_ref().read_dir_utf8().unwrap() {
     let entry = entry.unwrap();
     let entry_path = entry.path();
-    let path = Utf8Path::from_path(&entry_path).unwrap();
-    if path.is_dir() {
-      search_folder(path, files)?;
-    } else if path.extension() == Some("feature") {
-      files.push(path.strip_prefix(".").unwrap().to_path_buf());
+    if entry_path.is_dir() {
+      search_folder(entry_path, files)?;
+    } else if entry_path.extension() == Some("feature") {
+      files.push(entry_path.strip_prefix(".").unwrap().to_path_buf());
     }
   }
   Ok(())
