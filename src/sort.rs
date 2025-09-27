@@ -68,8 +68,8 @@ fn matches_config_step(gherkin_step: &gherkin::Step, config_step: &str) -> bool 
 struct DeletableSteps(Vec<Option<gherkin::Step>>);
 
 impl DeletableSteps {
-  /// provides all steps from self that match the given config_step
-  /// in the given result Vec and removes those steps from self
+  /// moves all steps from self that match the given config_step
+  /// into the given result Vec
   fn extract(&mut self, config_step: &str, result: &mut Vec<gherkin::Step>) {
     for entry_opt in self.0.iter_mut() {
       if let Some(entry) = entry_opt.take() {
