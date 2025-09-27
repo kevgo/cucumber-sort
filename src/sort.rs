@@ -40,7 +40,7 @@ fn sort_steps(
   issues: &mut Vec<Issue>,
 ) -> Vec<gherkin::Step> {
   let mut ordered = Vec::<gherkin::Step>::with_capacity(unordered_steps.len());
-  let mut steps = Steps::from(unordered_steps);
+  let mut steps = DeletableSteps::from(unordered_steps);
   for config_step in config_steps {
     let mut extracted = steps.extract(config_step);
     ordered.append(&mut extracted);
@@ -63,9 +63,10 @@ fn matches_config_step(gherkin_step: &gherkin::Step, config_step: &str) -> bool 
   gherkin_step.title.starts_with(config_step)
 }
 
-struct Steps(Vec<Option<gherkin::Step>>);
+/// a Vec that makes it efficient to delete elements from it
+struct DeletableSteps(Vec<Option<gherkin::Step>>);
 
-impl Steps {
+impl DeletableSteps {
   /// provides all steps from self that match the given config_step
   /// and removes those steps from self
   fn extract(&mut self, config_step: &str) -> Vec<gherkin::Step> {
@@ -87,9 +88,9 @@ impl Steps {
   }
 }
 
-impl From<Vec<gherkin::Step>> for Steps {
+impl From<Vec<gherkin::Step>> for DeletableSteps {
   fn from(value: Vec<gherkin::Step>) -> Self {
-    Steps(value.into_iter().map(Some).collect())
+    DeletableSteps(value.into_iter().map(Some).collect())
   }
 }
 
@@ -248,7 +249,7 @@ mod tests {
 
   mod steps_collect {
     use crate::gherkin::Step;
-    use crate::sort::Steps;
+    use crate::sort::DeletableSteps;
     use big_s::S;
 
     #[test]
@@ -259,7 +260,7 @@ mod tests {
         line_no: 1,
         indent: 0,
       };
-      let give = Steps(vec![None, Some(step_1.clone())]);
+      let give = DeletableSteps(vec![None, Some(step_1.clone())]);
       let have = give.elements();
       let want = vec![step_1];
       assert_eq!(want, have);
@@ -267,7 +268,7 @@ mod tests {
 
     #[test]
     fn all_none() {
-      let give = Steps(vec![None, None]);
+      let give = DeletableSteps(vec![None, None]);
       let have = give.elements();
       let want = Vec::<Step>::new();
       assert_eq!(want, have);
