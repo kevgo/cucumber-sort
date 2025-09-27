@@ -486,7 +486,7 @@ Feature: test
 
     #[test]
     fn scenario_outline() {
-      let give = r#"
+      let source = r#"
 Feature: test
 
   Scenario Outline:
@@ -497,7 +497,7 @@ Feature: test
       | ALPHA | BETA |
       | one   | two  |
 "#;
-      let bufread = BufReader::new(&give.as_bytes()[1..]);
+      let bufread = BufReader::new(&source.as_bytes()[1..]);
       let have_lines = lexer::file(bufread);
       let want_lines = vec![
         Line {
@@ -585,6 +585,25 @@ Feature: test
         ],
       };
       pretty::assert_eq!(want_feature, have_feature);
+
+      // step 3: serialize the block back into lines
+      let have_lines = have_feature.lines();
+      let want_lines = Lines::from(vec![
+        S("Feature: test"),
+        S(""),
+        S("  Scenario Outline:"),
+        S("    Given <ALPHA>"),
+        S("    Then <BETA>"),
+        S(""),
+        S("    Examples:"),
+        S("      | ALPHA | BETA |"),
+        S("      | one   | two  |"),
+      ]);
+      pretty::assert_eq!(want_lines, have_lines);
+
+      // step 4: serialize back into the original string
+      let have_text = have_lines.to_string();
+      pretty::assert_eq!(source[1..], have_text);
     }
 
     #[test]

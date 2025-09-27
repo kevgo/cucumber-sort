@@ -13,7 +13,6 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Feature> {
   for line in lines {
     let new_open_block: Option<Block>;
     let new_open_step: Option<Step>;
-    println!("\nLINE: \"{:?}\" {}", line.line_type, line.text);
     match (&line.line_type, open_block, open_step) {
       (LineType::StepStart, None, None) => {
         new_open_block = Some(Block::Steps(vec![]));
@@ -104,8 +103,6 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Feature> {
     }
     open_block = new_open_block;
     open_step = new_open_step;
-    println!("OPEN BLOCK: {:?}", open_block);
-    println!("OPEN STEP: {:?}", open_step);
   }
   if let Some(block) = open_block {
     match block {
