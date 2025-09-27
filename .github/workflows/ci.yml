@@ -20,5 +20,6 @@ jobs:
       - uses: Swatinem/rust-cache@v2.8.0
       - run: make setup-ci
       - run: make test
+      - run: make fix
       - name: Indicate uncommitted formatting
         run: git diff HEAD --exit-code --color
