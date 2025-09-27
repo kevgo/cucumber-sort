@@ -34,7 +34,7 @@ setup-ci:  # prepares the CI server
 	rustup component add rustfmt --toolchain nightly
 	cargo install cargo-machete --locked
 
-test: unit cuke  # runs all tests
+test: unit lint cuke  # runs all tests
 
 unit:  # runs the unit tests
 	cargo test --locked

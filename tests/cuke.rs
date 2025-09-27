@@ -1,9 +1,8 @@
+use cucumber::gherkin::Step;
+use cucumber::{World, given, then, when};
 use std::env;
 use std::path::PathBuf;
 use std::process::ExitStatus;
-
-use cucumber::gherkin::Step;
-use cucumber::{World, given, then, when};
 use tokio::fs;
 use tokio::process::Command;
 
