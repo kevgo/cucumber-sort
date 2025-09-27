@@ -608,7 +608,7 @@ Feature: test
 
     #[test]
     fn cucumber_in_docstring() {
-      let give = r#"
+      let source = r#"
 Feature: test
 
   Scenario: gherkin in docstring
@@ -619,7 +619,7 @@ Feature: test
       """
     When step 2
 "#;
-      let bufread = BufReader::new(&give.as_bytes()[1..]);
+      let bufread = BufReader::new(&source.as_bytes()[1..]);
       let have_lines = lexer::file(bufread);
       let want_lines = vec![
         Line {
@@ -711,6 +711,25 @@ Feature: test
         ],
       };
       pretty::assert_eq!(want_feature, have_feature);
+
+      // step 3: serialize the block back into lines
+      let have_lines = have_feature.lines();
+      let want_lines = Lines::from(vec![
+        S("Feature: test"),
+        S(""),
+        S("  Scenario: gherkin in docstring"),
+        S("    Given file \"foo\":"),
+        S("      \"\"\""),
+        S("      Scenario: embedded"),
+        S("        Given step 1"),
+        S("      \"\"\""),
+        S("    When step 2"),
+      ]);
+      pretty::assert_eq!(want_lines, have_lines);
+
+      // step 4: serialize back into the original string
+      let have_text = have_lines.to_string();
+      pretty::assert_eq!(source[1..], have_text);
     }
   }
 }
