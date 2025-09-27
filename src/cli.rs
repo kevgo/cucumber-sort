@@ -12,6 +12,7 @@ pub fn load(mut args: env::Args) -> Result<Command> {
       "format" => Ok(Command::Format {
         file: args.next().map(Utf8PathBuf::from),
       }),
+      "help" => Ok(Command::Help),
       _ => Err(UserError::UnknownCommand(arg)),
     },
     None => Ok(Command::Help),
