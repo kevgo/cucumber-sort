@@ -33,7 +33,7 @@ fn check_file(filepath: Utf8PathBuf, config: &config::Config) -> Result<ExitCode
 fn check_all(config: config::Config) -> Result<ExitCode> {
   for filepath in find::all()? {
     let exit_code = check_file(filepath, &config)?;
-    if exit_code == ExitCode::FAILURE {
+    if exit_code != ExitCode::SUCCESS {
       return Ok(exit_code);
     }
   }
