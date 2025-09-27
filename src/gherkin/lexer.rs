@@ -174,6 +174,10 @@ mod tests {
         TrimmedLine::from("Feature: test").line_type(),
         LineType::Other
       );
+      assert_eq!(
+        TrimmedLine::from("\"\"\"").line_type(),
+        LineType::DocStringStartStop
+      );
     }
   }
 
