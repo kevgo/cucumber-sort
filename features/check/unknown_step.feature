@@ -1,6 +1,5 @@
 Feature: ordered steps
 
-  @this
   Scenario:
     Given file ".cucumbersortrc":
       """
