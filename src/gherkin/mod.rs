@@ -226,6 +226,119 @@ Feature: test
     }
 
     #[test]
+    fn comments() {
+      // step 1: lex Gherkin source into Lines
+      let source = r#"
+Feature: test
+
+  An example feature file
+
+  Scenario:
+    Given step 1:
+    # And step 2
+    And step 3
+"#;
+      let have_lines = lexer::file(BufReader::new(&source.as_bytes()[1..]));
+      let want_lines = vec![
+        Line {
+          number: 0,
+          text: S("Feature: test"),
+          indent: 0,
+          line_type: LineType::Other,
+        },
+        Line {
+          number: 1,
+          text: S(""),
+          indent: 0,
+          line_type: LineType::Other,
+        },
+        Line {
+          number: 2,
+          text: S("  An example feature file"),
+          indent: 2,
+          line_type: LineType::Other,
+        },
+        Line {
+          number: 3,
+          text: S(""),
+          indent: 0,
+          line_type: LineType::Other,
+        },
+        Line {
+          number: 4,
+          text: S("  Scenario:"),
+          indent: 2,
+          line_type: LineType::Other,
+        },
+        Line {
+          number: 5,
+          text: S("    Given step 1:"),
+          indent: 4,
+          line_type: LineType::StepStart,
+        },
+        Line {
+          number: 6,
+          text: S("    # And step 2"),
+          indent: 4,
+          line_type: LineType::Other,
+        },
+        Line {
+          number: 7,
+          text: S("    And step 3"),
+          indent: 4,
+          line_type: LineType::StepStart,
+        },
+      ];
+      pretty::assert_eq!(have_lines, want_lines);
+
+      // step 2: parse the Lines into blocks
+      let have_feature = parser::file(have_lines).unwrap();
+      let want_feature = parser::Feature {
+        blocks: vec![
+          Block::Text(vec![
+            S("Feature: test"),
+            S(""),
+            S("  An example feature file"),
+            S(""),
+            S("  Scenario:"),
+          ]),
+          Block::Steps(vec![Step {
+            title: S("step 1:"),
+            lines: vec![S("    Given step 1:")],
+            indent: 4,
+            line_no: 5,
+          }]),
+          Block::Text(vec![S("    # And step 2")]),
+          Block::Steps(vec![Step {
+            title: S("step 3"),
+            lines: vec![S("    And step 3")],
+            indent: 4,
+            line_no: 7,
+          }]),
+        ],
+      };
+      pretty::assert_eq!(want_feature, have_feature);
+
+      // step 3: serialize the block back into lines
+      let have_lines = have_feature.lines();
+      let want_lines = Lines::from(vec![
+        S("Feature: test"),
+        S(""),
+        S("  An example feature file"),
+        S(""),
+        S("  Scenario:"),
+        S("    Given step 1:"),
+        S("    # And step 2"),
+        S("    And step 3"),
+      ]);
+      pretty::assert_eq!(want_lines, have_lines);
+
+      // step 4: serialize back into the original string
+      let have_text = have_lines.to_string();
+      pretty::assert_eq!(source[1..], have_text);
+    }
+
+    #[test]
     fn docstrings() {
       // step 1: lex Gherkin source into Lines
       let source = r#"
