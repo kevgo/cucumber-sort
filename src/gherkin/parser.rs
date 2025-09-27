@@ -1,7 +1,7 @@
 use crate::gherkin::lexer::{self, LineType};
 use crate::prelude::*;
 use crate::sort::Issue;
-use ansi_term::Color::{Cyan, Red};
+use ansi_term::Color::{Green, Red};
 use camino::Utf8Path;
 use std::fmt::{Display, Write};
 
@@ -157,7 +157,7 @@ impl Lines {
           problem: format!(
             "{filepath}:{}  expected {} but found {}",
             line_no + 1,
-            Cyan.paint(other_text.trim()),
+            Green.paint(other_text.trim()),
             Red.paint(self_text.trim())
           ),
         });

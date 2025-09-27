@@ -7,6 +7,7 @@ mod gherkin;
 mod prelude;
 mod sort;
 
+use ansi_term::Color::Red;
 use cli::Command::{Check, Format, Help};
 use prelude::*;
 use std::env;
@@ -16,7 +17,11 @@ fn main() -> ExitCode {
   match inner() {
     Ok(exit_code) => exit_code,
     Err(err) => {
-      println!("{}", err);
+      let messages = err.messages();
+      println!("{}", Red.paint(messages.0));
+      if let Some(details) = messages.1 {
+        println!("\n{}", details);
+      }
       ExitCode::FAILURE
     }
   }

@@ -1,37 +1,39 @@
 //! stuff that is used in pretty much every file of this crate
 
 use crate::cmd::available_commands;
+use crate::config;
 use camino::Utf8PathBuf;
-use core::fmt::Display;
 
 /// UserError are errors that the user makes around using this linter the wrong way.
 /// They do not include problems that the linter finds in Gherkin files.
 #[derive(Eq, Debug, PartialEq)]
 pub enum UserError {
-  CannotReadConfigFile { file: Utf8PathBuf, reason: String },
+  CannotReadConfigFile { reason: String },
   CannotReadFile { file: Utf8PathBuf, reason: String },
   CannotWriteFile { file: Utf8PathBuf, reason: String },
   UnknownCommand(String),
 }
 
-impl Display for UserError {
-  fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+impl UserError {
+  pub fn messages(&self) -> (String, Option<String>) {
     match self {
-      UserError::CannotReadConfigFile {
-        file: filename,
-        reason,
-      } => {
-        write!(f, "cannot read configuration file ({filename}): {reason}")
-      }
+      UserError::CannotReadConfigFile { reason } => (
+        format!("cannot read configuration file: {reason}"),
+        Some(format!(
+          "The configuration file has name {}.",
+          config::FILE_NAME
+        )),
+      ),
       UserError::CannotReadFile { file, reason } => {
-        write!(f, "cannot read file {file}: {reason}")
+        (format!("cannot read file {file}: {reason}"), None)
       }
       UserError::CannotWriteFile { file, reason } => {
-        write!(f, "cannot write file {file}: {reason}")
+        (format!("cannot write file {file}: {reason}"), None)
       }
-      UserError::UnknownCommand(cmd) => {
-        write!(f, "unknown command: {cmd}\n\n{}", available_commands())
-      }
+      UserError::UnknownCommand(cmd) => (
+        format!("unknown command: {cmd}"),
+        Some(available_commands().to_string()),
+      ),
     }
   }
 }
