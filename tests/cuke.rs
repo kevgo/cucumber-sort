@@ -29,15 +29,23 @@ impl Default for MyWorld {
 }
 
 #[given(expr = "file {string}:")]
-async fn file(world: &mut MyWorld, step: &Step, filename: String) {
+async fn create_file(world: &mut MyWorld, step: &Step, filename: String) {
   let filepath = world.dir.path().join(filename);
+  let content = step.docstring.as_ref().unwrap();
   if let Some(parent) = filepath.parent()
     && parent != world.dir.path()
   {
     fs::create_dir_all(parent).await.unwrap();
   }
-  let content = step.docstring.as_ref().unwrap();
   fs::write(filepath, content).await.unwrap();
+}
+
+#[then(expr = "file {string} now has content:")]
+async fn verify_file(world: &mut MyWorld, step: &Step, filename: String) {
+  let filepath = world.dir.path().join(filename);
+  let want = step.docstring.as_ref().unwrap();
+  let have = fs::read_to_string(filepath).await.unwrap();
+  pretty::assert_eq!(have, *want);
 }
 
 #[when(expr = "I run {string}")]
