@@ -10,7 +10,7 @@ Feature: format unordered steps
       step 5
       step 6
       """
-    And file "feature/one.feature":
+    And file "feature/one.feature" with content:
       """
       Feature: example
         Comment text

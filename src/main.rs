@@ -1,7 +1,6 @@
 mod cli;
 mod cmd;
 mod config;
-mod domain;
 mod find;
 mod gherkin;
 mod prelude;
