@@ -35,7 +35,7 @@ mod tests {
 
     #[test]
     fn multiple_scenarios() {
-      // step 1: lex Gherkin source into tokens (in our case Lines)
+      // step 1: lex Gherkin source into Lines
       let source = r#"
 Feature: test
 
@@ -249,7 +249,7 @@ Feature: test
 
     #[test]
     fn docstrings() {
-      // step 1: lex Gherkin source into tokens (in our case Lines)
+      // step 1: lex Gherkin source into Lines
       let source = r#"
 Feature: test
 
@@ -291,7 +291,7 @@ Feature: test
           number: 4,
           text: S(r#"      """"#),
           indent: 6,
-          line_type: LineType::CommentStartStop,
+          line_type: LineType::DocStringStartStop,
         },
         Line {
           number: 5,
@@ -309,7 +309,7 @@ Feature: test
           number: 7,
           text: S(r#"      """"#),
           indent: 6,
-          line_type: LineType::CommentStartStop,
+          line_type: LineType::DocStringStartStop,
         },
         Line {
           number: 8,
@@ -323,9 +323,54 @@ Feature: test
       // step 2: parse the Lines into blocks
       let have_feature = parser::file(have_lines).unwrap();
       let want_feature = parser::Feature {
-        blocks: vec![Block::Text(vec![S("Feature: test"), S("")])],
+        blocks: vec![
+          Block::Text(vec![
+            S("Feature: test"),
+            S(""),
+            S("  Scenario: with docstring"),
+          ]),
+          Block::Steps(vec![
+            Step {
+              title: S("step 1:"),
+              lines: vec![
+                S("    Given step 1:"),
+                S("      \"\"\""),
+                S("      docstring line 1"),
+                S("      docstring line 2"),
+                S("      \"\"\""),
+              ],
+              indent: 4,
+              line_no: 3,
+            },
+            Step {
+              title: S("step 2"),
+              lines: vec![S("    And step 2")],
+              indent: 4,
+              line_no: 8,
+            },
+          ]),
+        ],
       };
       pretty::assert_eq!(want_feature, have_feature);
+
+      // step 3: serialize the block back into lines
+      let have_lines = have_feature.lines();
+      let want_lines = Lines::from(vec![
+        S("Feature: test"),
+        S(""),
+        S("  Scenario: with docstring"),
+        S("    Given step 1:"),
+        S("      \"\"\""),
+        S("      docstring line 1"),
+        S("      docstring line 2"),
+        S("      \"\"\""),
+        S("    And step 2"),
+      ]);
+      pretty::assert_eq!(want_lines, have_lines);
+
+      // step 4: serialize back into the original string
+      let have_text = have_lines.to_string();
+      pretty::assert_eq!(source[1..], have_text);
     }
 
     #[test]
@@ -546,7 +591,7 @@ Feature: test
           number: 4,
           text: S(r#"      """"#),
           indent: 6,
-          line_type: LineType::CommentStartStop,
+          line_type: LineType::DocStringStartStop,
         },
         Line {
           number: 5,
@@ -564,7 +609,7 @@ Feature: test
           number: 7,
           text: S("      \"\"\""),
           indent: 6,
-          line_type: LineType::CommentStartStop,
+          line_type: LineType::DocStringStartStop,
         },
         Line {
           number: 8,

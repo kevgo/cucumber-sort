@@ -9,10 +9,10 @@ pub fn file(text: impl BufRead) -> Vec<Line> {
   let mut docstring_indentation = None;
   for (i, text_line) in text.lines().enumerate() {
     let mut line = Line::new(text_line.unwrap(), i);
-    if docstring_indentation.is_none() && line.line_type == LineType::CommentStartStop {
+    if docstring_indentation.is_none() && line.line_type == LineType::DocStringStartStop {
       docstring_indentation = Some(line.indent);
     } else if let Some(indentation) = &docstring_indentation
-      && line.line_type == LineType::CommentStartStop
+      && line.line_type == LineType::DocStringStartStop
       && line.indent == *indentation
     {
       docstring_indentation = None
@@ -76,7 +76,7 @@ fn trim_initial_whitespace<'a>(line: &'a str) -> (usize, TrimmedLine<'a>) {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum LineType {
   /// this line starts or stops a comment
-  CommentStartStop,
+  DocStringStartStop,
   /// this line starts a step, i.e. "Given", "When", "Then", etc
   StepStart,
   /// this line is neither a block or step start
@@ -90,7 +90,7 @@ pub struct TrimmedLine<'a>(&'a str);
 impl<'a> TrimmedLine<'a> {
   fn line_type(&self) -> LineType {
     if self.is_docstring_start() {
-      LineType::CommentStartStop
+      LineType::DocStringStartStop
     } else if self.is_step_start() {
       LineType::StepStart
     } else {
