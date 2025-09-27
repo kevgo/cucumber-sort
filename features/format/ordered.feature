@@ -12,6 +12,8 @@ Feature: ordered steps
     And file "feature/one.feature":
       """
       Feature: example
+        Comment text
+        describing the feature.
       
         Background:
           Given step 1

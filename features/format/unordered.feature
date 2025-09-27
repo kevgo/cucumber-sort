@@ -14,6 +14,8 @@ Feature: unordered steps
     And file "feature/one.feature":
       """
       Feature: example
+        Comment text
+        describing the feature.
       
         Background:
           Given step 2
@@ -36,6 +38,8 @@ Feature: unordered steps
     And file "feature/one.feature" now has content:
       """
       Feature: example
+        Comment text
+        describing the feature.
       
         Background:
           And step 1
