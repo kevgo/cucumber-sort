@@ -199,7 +199,7 @@ mod tests {
     }
 
     #[test]
-    fn cut_first_word_after_trim() {
+    fn title() {
       let line = Line::new(S("    Given a cucumber"), 4);
       assert_eq!("a cucumber", line.title());
     }
