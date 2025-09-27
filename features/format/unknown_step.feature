@@ -9,7 +9,7 @@ Feature: format unknown steps
     And file "feature/one.feature":
       """
       Feature: example
-
+      
         Background:
           Given step 1
           And step 3
@@ -20,3 +20,4 @@ Feature: format unknown steps
       feature/one.feature:5  unknown step: step 3
       """
     And the exit code is failure
+    And all files haven't changed
