@@ -1,9 +1,6 @@
 # dev tooling and versions
 RUN_THAT_APP_VERSION = 0.18.0
 
-build:
-	@cargo build --quiet
-
 clear:  # removes all temporary artifacts
 	@rm -f tools/rta*
 	@rm -rf tools/node_modules
@@ -23,9 +20,6 @@ fix: tools/rta@${RUN_THAT_APP_VERSION}  # auto-corrects issues
 	tools/rta ghokin fmt replace features/
 
 
-help:  # prints all available targets
-	@grep -h -E '^[a-zA-Z_-]+:.*?# .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?# "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
-
 lint: tools/node_modules tools/rta@${RUN_THAT_APP_VERSION}  # checks formatting
 	tools/rta dprint check
 	cargo clippy --all-targets --all-features -- --deny=warnings
@@ -39,18 +33,24 @@ lint: tools/node_modules tools/rta@${RUN_THAT_APP_VERSION}  # checks formatting
 setup: setup-ci  # install development dependencies on this computer
 	cargo install cargo-edit cargo-upgrades --locked
 
-setup-ci:  # prepares the CI server
-	rustup component add clippy
-	rustup toolchain add nightly
-	rustup component add rustfmt --toolchain nightly
-	cargo install cargo-machete --locked
-
 test: build unit lint cuke  # runs all tests
 
 unit:  # runs the unit tests
 	cargo test --locked
 
 # --- HELPER TARGETS --------------------------------------------------------------------------------------------------------------------------------
+
+build:
+	@cargo build --quiet
+
+help:  # prints all available targets
+	@grep -h -E '^[a-zA-Z_-]+:.*?# .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?# "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+
+setup-ci:
+	rustup component add clippy
+	rustup toolchain add nightly
+	rustup component add rustfmt --toolchain nightly
+	cargo install cargo-machete --locked
 
 tools/rta@${RUN_THAT_APP_VERSION}:
 	@rm -f tools/rta* tools/rta
