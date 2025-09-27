@@ -33,6 +33,8 @@ impl Default for MyWorld {
   }
 }
 
+const NO_COMMAND_RUN: &str = "no command run";
+
 #[then("file contents haven't changed")]
 async fn files_not_changed(world: &mut MyWorld) {
   for (filepath, want_content) in &world.files {
@@ -93,22 +95,20 @@ async fn run_binary(world: &mut MyWorld, command: String) {
 #[then("it prints:")]
 async fn it_prints(world: &mut MyWorld, step: &Step) {
   let want = step.docstring.as_ref().unwrap();
-  let have = world.output.as_ref().expect("no command run");
+  let have = world.output.as_ref().expect(NO_COMMAND_RUN);
   let stripped = strip_ansi_escapes::strip_str(have);
   pretty::assert_eq!(want.trim(), stripped.trim());
 }
 
 #[then("it prints nothing")]
 async fn prints_nothing(world: &mut MyWorld) {
-  let have = &world.output.as_ref().expect("no command run");
+  let have = &world.output.as_ref().expect(NO_COMMAND_RUN);
   pretty::assert_eq!(*have, "");
 }
 
 #[then("the exit code is success")]
 async fn succeeds(world: &mut MyWorld) {
-  let Some(have) = &world.exit_status else {
-    panic!("no command run");
-  };
+  let have = &world.exit_status.as_ref().expect(NO_COMMAND_RUN);
   if !have.success() {
     panic!(
       "expected success but received exit code {}",
@@ -119,9 +119,7 @@ async fn succeeds(world: &mut MyWorld) {
 
 #[then("the exit code is failure")]
 async fn fails(world: &mut MyWorld) {
-  let Some(have) = &world.exit_status else {
-    panic!("no command run");
-  };
+  let have = &world.exit_status.as_ref().expect(NO_COMMAND_RUN);
   if have.success() {
     panic!("expected failure but the app succeeded");
   }
