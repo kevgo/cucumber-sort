@@ -1,20 +1,32 @@
+use camino::Utf8Path;
+
 use crate::config::Config;
 use crate::gherkin;
 
 /// provides a copy of the given File with all Gherkin steps sorted the same way as the given configuration
-pub fn file(file: gherkin::Feature, config: &Config, issues: &mut Vec<Issue>) -> gherkin::Feature {
+pub fn file(
+  file: gherkin::Feature,
+  config: &Config,
+  filename: &Utf8Path,
+  issues: &mut Vec<Issue>,
+) -> gherkin::Feature {
   let mut new_blocks = Vec::<gherkin::Block>::new();
   for file_block in file.blocks {
-    new_blocks.push(block(file_block, config, issues));
+    new_blocks.push(block(file_block, config, filename, issues));
   }
   gherkin::Feature { blocks: new_blocks }
 }
 
 /// provides the given block with all steps sorted according to the given configuration
-fn block(block: gherkin::Block, config: &Config, issues: &mut Vec<Issue>) -> gherkin::Block {
+fn block(
+  block: gherkin::Block,
+  config: &Config,
+  filename: &Utf8Path,
+  issues: &mut Vec<Issue>,
+) -> gherkin::Block {
   match block {
     gherkin::Block::Steps(block_steps) => {
-      gherkin::Block::Steps(steps(block_steps, &config.steps, issues))
+      gherkin::Block::Steps(steps(block_steps, &config.steps, filename, issues))
     }
     gherkin::Block::Text(lines) => gherkin::Block::Text(lines),
   }
@@ -24,6 +36,7 @@ fn block(block: gherkin::Block, config: &Config, issues: &mut Vec<Issue>) -> ghe
 fn steps(
   have_steps: Vec<gherkin::Step>,
   config_steps: &[String],
+  filename: &Utf8Path,
   issues: &mut Vec<Issue>,
 ) -> Vec<gherkin::Step> {
   let mut ordered = Vec::<gherkin::Step>::with_capacity(have_steps.len());
@@ -36,7 +49,7 @@ fn steps(
   for step in steps.elements() {
     issues.push(Issue {
       line: step.line_no,
-      problem: format!("unknown step: {}", step.title),
+      problem: format!("{filename}:{}  unknown step: {}", step.line_no, step.title),
     });
   }
   ordered
@@ -120,7 +133,12 @@ mod tests {
       ];
       let want_steps = give_steps.clone();
       let mut issues = vec![];
-      let have_steps = sort::steps(give_steps, &config_steps, &mut issues);
+      let have_steps = sort::steps(
+        give_steps,
+        &config_steps,
+        "test.feature".into(),
+        &mut issues,
+      );
       assert_eq!(want_steps, have_steps);
     }
 
@@ -170,7 +188,7 @@ mod tests {
         },
       ]);
       let mut issues = vec![];
-      let have_block = sort::block(give_block, &config, &mut issues);
+      let have_block = sort::block(give_block, &config, "test.feature".into(), &mut issues);
       pretty::assert_eq!(have_block, want_block);
     }
 
@@ -214,7 +232,7 @@ mod tests {
         },
       ]);
       let mut issues = vec![];
-      let have_block = sort::block(give_block, &config, &mut issues);
+      let have_block = sort::block(give_block, &config, "test.feature".into(), &mut issues);
       pretty::assert_eq!(have_block, want_block);
       let want_issues = vec![Issue {
         line: 1,

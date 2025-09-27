@@ -15,7 +15,7 @@ pub fn check(file: Option<Utf8PathBuf>) -> Result<ExitCode> {
 fn check_file(filepath: Utf8PathBuf, config: &config::Config) -> Result<ExitCode> {
   let mut issues = Vec::<Issue>::new();
   let gherkin = gherkin::load(&filepath)?;
-  let sorted_file = sort::file(gherkin.clone(), config, &mut issues);
+  let sorted_file = sort::file(gherkin.clone(), config, &filepath, &mut issues);
   let sorted_lines = sorted_file.lines();
   let original_lines = gherkin.lines();
   let mut exit_code = ExitCode::SUCCESS;
