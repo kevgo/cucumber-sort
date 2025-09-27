@@ -95,6 +95,16 @@ async fn succeeds(world: &mut MyWorld) {
   }
 }
 
+#[then("it fails")]
+async fn fails(world: &mut MyWorld) {
+  let Some(have) = &world.exit_status else {
+    panic!("no command run");
+  };
+  if have.success() {
+    panic!("expected failure but the app succeeded");
+  }
+}
+
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
   MyWorld::run("features").await;

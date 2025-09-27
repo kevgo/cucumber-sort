@@ -13,8 +13,8 @@ pub fn file(file: gherkin::Feature, config: &Config, issues: &mut Vec<Issue>) ->
 /// provides the given block with all steps sorted according to the given configuration
 fn block(block: gherkin::Block, config: &Config, issues: &mut Vec<Issue>) -> gherkin::Block {
   match block {
-    gherkin::Block::Steps(steps) => {
-      gherkin::Block::Steps(crate::sort::steps(steps, &config.steps, issues))
+    gherkin::Block::Steps(block_steps) => {
+      gherkin::Block::Steps(steps(block_steps, &config.steps, issues))
     }
     gherkin::Block::Text(lines) => gherkin::Block::Text(lines),
   }

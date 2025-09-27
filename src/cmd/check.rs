@@ -21,8 +21,10 @@ fn check_file(filepath: Utf8PathBuf, config: &config::Config) -> Result<ExitCode
   let mut exit_code = ExitCode::SUCCESS;
   original_lines.find_mismatching(&sorted_lines, &filepath, &mut issues);
   sort::sort_issues(&mut issues);
-  for issue in issues {
+  if !issues.is_empty() {
     exit_code = ExitCode::FAILURE;
+  }
+  for issue in issues {
     println!("{}", issue.problem);
   }
   Ok(exit_code)
@@ -30,7 +32,10 @@ fn check_file(filepath: Utf8PathBuf, config: &config::Config) -> Result<ExitCode
 
 fn check_all(config: config::Config) -> Result<ExitCode> {
   for filepath in find::all()? {
-    check_file(filepath, &config)?;
+    let exit_code = check_file(filepath, &config)?;
+    if exit_code == ExitCode::FAILURE {
+      return Ok(exit_code);
+    }
   }
   Ok(ExitCode::SUCCESS)
 }
