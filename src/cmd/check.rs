@@ -4,15 +4,24 @@ use crate::{config, find, gherkin};
 use camino::Utf8PathBuf;
 use std::process::ExitCode;
 
-pub fn check(file: Option<Utf8PathBuf>) -> Result<ExitCode> {
+pub fn check(filename: Option<Utf8PathBuf>) -> Result<ExitCode> {
   let config = config::load()?;
-  match file {
-    Some(filepath) => check_file(filepath, &config),
-    None => check_all(config),
+  match filename {
+    Some(filepath) => file(filepath, &config),
+    None => all(config),
   }
 }
 
-fn check_file(filepath: Utf8PathBuf, config: &config::Config) -> Result<ExitCode> {
+fn all(config: config::Config) -> Result<ExitCode> {
+  for filepath in find::all()? {
+    let exit_code = file(filepath, &config)?;
+    if exit_code != ExitCode::SUCCESS {
+      return Ok(exit_code);
+    }
+  }
+  Ok(ExitCode::SUCCESS)
+}
+fn file(filepath: Utf8PathBuf, config: &config::Config) -> Result<ExitCode> {
   let mut issues = Vec::<Issue>::new();
   let gherkin = gherkin::load(&filepath)?;
   let sorted_file = sort::file(gherkin.clone(), config, &filepath, &mut issues);
@@ -28,14 +37,4 @@ fn check_file(filepath: Utf8PathBuf, config: &config::Config) -> Result<ExitCode
   } else {
     Ok(ExitCode::FAILURE)
   }
-}
-
-fn check_all(config: config::Config) -> Result<ExitCode> {
-  for filepath in find::all()? {
-    let exit_code = check_file(filepath, &config)?;
-    if exit_code != ExitCode::SUCCESS {
-      return Ok(exit_code);
-    }
-  }
-  Ok(ExitCode::SUCCESS)
 }
