@@ -93,11 +93,9 @@ async fn run_binary(world: &mut MyWorld, command: String) {
 #[then("it prints:")]
 async fn it_prints(world: &mut MyWorld, step: &Step) {
   let want = step.docstring.as_ref().unwrap();
-  let Some(mut have) = world.output.take() else {
-    panic!("no output captured");
-  };
-  have = strip_ansi_escapes::strip_str(have);
-  pretty::assert_eq!(want.trim(), have.trim());
+  let have = world.output.as_ref().expect("no output captured");
+  let stripped = strip_ansi_escapes::strip_str(have);
+  pretty::assert_eq!(want.trim(), stripped.trim());
 }
 
 #[then("it prints nothing")]
