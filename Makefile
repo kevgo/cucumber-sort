@@ -31,7 +31,7 @@ lint: tools/node_modules tools/rta@${RUN_THAT_APP_VERSION}  # checks formatting
 setup: setup-ci  # install development dependencies on this computer
 	cargo install cargo-edit cargo-upgrades --locked
 
-test: build unit lint cuke  # runs all tests
+test: build unit fix lint cuke   # runs all tests
 
 unit:  # runs the unit tests
 	cargo test --locked

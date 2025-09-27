@@ -8,7 +8,8 @@ Feature: requesting help
 
       Available commands:
 
-      check: verifies ordering of the Cucumber files
-      format: fixes the order of Cucumber files
+      check   verifies ordering of the Cucumber files
+      format  fixes the order of Cucumber files
+      help    displays this help screen
       """
     And the exit code is success

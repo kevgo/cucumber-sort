@@ -10,6 +10,8 @@ pub fn help() -> Result<ExitCode> {
 pub fn available_commands() -> &'static str {
   r#"Available commands:
 
-check: verifies ordering of the Cucumber files
-format: fixes the order of Cucumber files"#
+check   verifies ordering of the Cucumber files
+format  fixes the order of Cucumber files
+help    displays this help screen
+"#
 }
