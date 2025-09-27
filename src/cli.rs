@@ -3,7 +3,7 @@ use camino::Utf8PathBuf;
 use std::env;
 
 pub fn load(mut args: env::Args) -> Result<Command> {
-  let _ = args.next(); // skip the command path
+  let _ = args.next(); // skip the executable name
   match args.next() {
     Some(arg) => match arg.as_str() {
       "check" => Ok(Command::Check {
