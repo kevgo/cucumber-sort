@@ -17,7 +17,7 @@ pub fn file(text: impl BufRead) -> Vec<Line> {
     {
       docstring_indentation = None
     } else if docstring_indentation.is_some() {
-      line.line_type = LineType::Other;
+      line.line_type = LineType::Text;
     }
     result.push(line);
   }
@@ -73,12 +73,12 @@ fn trim_initial_whitespace<'a>(line: &'a str) -> (usize, TrimmedLine<'a>) {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum LineType {
-  /// this line starts or stops a comment
+  /// the start or stop of a Gherkin docstring
   DocStringStartStop,
-  /// this line starts a step, i.e. "Given", "When", "Then", etc
+  /// the start of a Gherkin step, i.e. "Given", "When", "Then", etc
   StepStart,
-  /// this line is neither a block or step start
-  Other,
+  /// static text that shouldn't be sorted
+  Text,
 }
 
 /// a line without the initial whitespace
@@ -92,7 +92,7 @@ impl<'a> TrimmedLine<'a> {
     } else if self.is_step_start() {
       LineType::StepStart
     } else {
-      LineType::Other
+      LineType::Text
     }
   }
 
@@ -172,7 +172,7 @@ mod tests {
       );
       assert_eq!(
         TrimmedLine::from("Feature: test").line_type(),
-        LineType::Other
+        LineType::Text
       );
       assert_eq!(
         TrimmedLine::from("\"\"\"").line_type(),
@@ -193,7 +193,7 @@ mod tests {
         number: 12,
         text: S("  Some documentation"),
         indent: 2,
-        line_type: LineType::Other,
+        line_type: LineType::Text,
       };
       pretty::assert_eq!(have, want);
     }

@@ -49,11 +49,11 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Feature> {
         new_open_step = Some(step);
         inside_docstring = !inside_docstring
       }
-      (LineType::Other, None, None) => {
+      (LineType::Text, None, None) => {
         new_open_block = Some(Block::Text(vec![line.text]));
         new_open_step = None;
       }
-      (LineType::Other, Some(Block::Steps(mut steps)), Some(mut step)) => {
+      (LineType::Text, Some(Block::Steps(mut steps)), Some(mut step)) => {
         if inside_docstring {
           step.lines.push(line.text);
           new_open_block = Some(Block::Steps(steps));
@@ -65,7 +65,7 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Feature> {
           new_open_step = None;
         }
       }
-      (LineType::Other, Some(Block::Text(mut lines)), None) => {
+      (LineType::Text, Some(Block::Text(mut lines)), None) => {
         lines.push(line.text);
         new_open_block = Some(Block::Text(lines));
         new_open_step = None;
@@ -91,13 +91,13 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Feature> {
       (LineType::DocStringStartStop, Some(Block::Text(_lines)), Some(_step)) => {
         panic!("should not have an opening comment and open step in the middle of a text block")
       }
-      (LineType::Other, None, Some(_step)) => {
+      (LineType::Text, None, Some(_step)) => {
         panic!("should not have an open step without an open block")
       }
-      (LineType::Other, Some(_block), None) => {
+      (LineType::Text, Some(_block), None) => {
         panic!("should not have an open block without an open step")
       }
-      (LineType::Other, Some(Block::Text(_lines)), Some(_step)) => {
+      (LineType::Text, Some(Block::Text(_lines)), Some(_step)) => {
         panic!("should not have an open step in the middle of populating a text block")
       }
     }
