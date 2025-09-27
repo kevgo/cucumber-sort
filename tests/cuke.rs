@@ -9,7 +9,7 @@ use tokio::process::Command;
 #[derive(Debug, World)]
 pub struct MyWorld {
   /// the directory in which the test executes
-  pub dir: camino_tempfile::Utf8TempDir,
+  dir: camino_tempfile::Utf8TempDir,
 
   /// what the binary printed when running
   output: Option<String>,

@@ -26,4 +26,5 @@ Feature: format already ordered steps
       """
     When I run "cucumber-sort format"
     Then it prints nothing
+    And all files haven't changed
     And the exit code is success
