@@ -4,8 +4,8 @@ use crate::cmd::available_commands;
 use camino::Utf8PathBuf;
 use core::fmt::Display;
 
-/// errors that the user can do something about,
-/// and which the app should therefore display to them
+/// UserError are errors that the user makes around using this linter the wrong way.
+/// They do not include problems that the linter finds in Gherkin files.
 #[derive(Eq, Debug, PartialEq)]
 pub enum UserError {
   CannotReadConfigFile { file: Utf8PathBuf, reason: String },
