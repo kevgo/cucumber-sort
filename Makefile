@@ -13,8 +13,8 @@ cukethis: build  # runs only end-to-end tests with a @this tag
 fix: tools/rta@${RUN_THAT_APP_VERSION}  # auto-corrects issues
 	tools/rta dprint fmt
 	cargo +nightly fmt
-	cargo clippy --all-targets --all-features -- --deny=warnings
-	cargo +nightly fix --allow-dirty
+	cargo clippy --all-targets --all-features --quiet -- --deny=warnings
+	cargo +nightly fix --allow-dirty --quiet
 	tools/rta ghokin fmt replace features/
 
 
