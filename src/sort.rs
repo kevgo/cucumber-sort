@@ -80,8 +80,8 @@ impl DeletableSteps {
     }
   }
 
-  fn elements(self) -> Vec<gherkin::Step> {
-    self.0.into_iter().flatten().collect()
+  fn elements(self) -> impl Iterator<Item = gherkin::Step> {
+    self.0.into_iter().flatten()
   }
 }
 
@@ -258,7 +258,7 @@ mod tests {
         indent: 0,
       };
       let give = DeletableSteps(vec![None, Some(step_1.clone())]);
-      let have = give.elements();
+      let have: Vec<_> = give.elements().collect();
       let want = vec![step_1];
       assert_eq!(want, have);
     }
@@ -266,7 +266,7 @@ mod tests {
     #[test]
     fn all_none() {
       let give = DeletableSteps(vec![None, None]);
-      let have = give.elements();
+      let have: Vec<_> = give.elements().collect();
       let want = Vec::<Step>::new();
       assert_eq!(want, have);
     }
