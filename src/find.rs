@@ -16,7 +16,7 @@ fn search_folder(dir: impl AsRef<Utf8Path>, files: &mut Vec<Utf8PathBuf>) -> Res
     if path.is_dir() {
       search_folder(path, files)?;
     } else if path.extension() == Some("feature") {
-      files.push(path.to_path_buf());
+      files.push(path.strip_prefix(".").unwrap().to_path_buf());
     }
   }
   Ok(())

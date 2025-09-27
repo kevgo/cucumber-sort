@@ -19,6 +19,6 @@ Feature: ordered steps
     When I run "cucumber-sort check"
     Then it prints:
       """
-      ./feature/one.feature:6  unknown step: step 3
+      feature/one.feature:6  unknown step: step 3
       """
     And it fails
