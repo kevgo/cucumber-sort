@@ -542,7 +542,29 @@ Feature: test
       // step 2: parse the Lines into blocks
       let have_feature = parser::file(have_lines).unwrap();
       let want_feature = parser::Feature {
-        blocks: vec![Block::Text(vec![S("Feature: test"), S("")])],
+        blocks: vec![
+          Block::Text(vec![S("Feature: test"), S(""), S("  Scenario Outline:")]),
+          Block::Steps(vec![
+            Step {
+              title: S("<ALPHA>"),
+              lines: vec![S("    Given <ALPHA>")],
+              indent: 4,
+              line_no: 3,
+            },
+            Step {
+              title: S("<BETA>"),
+              lines: vec![S("    Then <BETA>")],
+              indent: 4,
+              line_no: 4,
+            },
+          ]),
+          Block::Text(vec![
+            S(""),
+            S("    Examples:"),
+            S("      | ALPHA | BETA |"),
+            S("      | one   | two  |"),
+          ]),
+        ],
       };
       pretty::assert_eq!(want_feature, have_feature);
     }
@@ -623,7 +645,33 @@ Feature: test
       // step 2: parse the Lines into blocks
       let have_feature = parser::file(have_lines).unwrap();
       let want_feature = parser::Feature {
-        blocks: vec![Block::Text(vec![S("Feature: test"), S("")])],
+        blocks: vec![
+          Block::Text(vec![
+            S("Feature: test"),
+            S(""),
+            S("  Scenario: gherkin in docstring"),
+          ]),
+          Block::Steps(vec![
+            Step {
+              title: S("file \"foo\":"),
+              lines: vec![
+                S("    Given file \"foo\":"),
+                S("      \"\"\""),
+                S("      Scenario: embedded"),
+                S("        Given step 1"),
+                S("      \"\"\""),
+              ],
+              indent: 4,
+              line_no: 3,
+            },
+            Step {
+              title: S("step 2"),
+              lines: vec![S("    When step 2")],
+              indent: 4,
+              line_no: 8,
+            },
+          ]),
+        ],
       };
       pretty::assert_eq!(want_feature, have_feature);
     }
