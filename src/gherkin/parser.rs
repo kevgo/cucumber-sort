@@ -14,16 +14,8 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Feature> {
     let new_open_block: Option<Block>; // the new value of open_block at the end of this loop
     let new_open_step: Option<Step>; // the new value of open_step at the end of this loop
     match (&line.line_type, open_block, open_step) {
-      (LineType::StepStart, None, None) => {
-        new_open_block = Some(Block::Sortable(vec![]));
-        new_open_step = Some(Step {
-          title: line.title().to_string(),
-          lines: vec![line.text],
-          indent: line.indent,
-          line_no: line.number,
-        });
-      }
       (LineType::StepStart, Some(Block::Static(lines)), None) => {
+        // the first step after some static text
         blocks.push(Block::Static(lines));
         new_open_block = Some(Block::Sortable(vec![]));
         new_open_step = Some(Step {
@@ -34,6 +26,7 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Feature> {
         });
       }
       (LineType::StepStart, Some(Block::Sortable(mut steps)), Some(step)) => {
+        // a step in the middle of populating a sortable block
         steps.push(step);
         new_open_block = Some(Block::Sortable(steps));
         new_open_step = Some(Step {
@@ -44,21 +37,25 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Feature> {
         });
       }
       (LineType::DocStringStartStop, Some(Block::Sortable(steps)), Some(mut step)) => {
+        // a docstring start/stop while populating a step
         step.lines.push(line.text);
         new_open_block = Some(Block::Sortable(steps));
         new_open_step = Some(step);
         inside_docstring = !inside_docstring
       }
       (LineType::Text, None, None) => {
+        // the first line of the document
         new_open_block = Some(Block::Static(vec![line.text]));
         new_open_step = None;
       }
       (LineType::Text, Some(Block::Sortable(mut steps)), Some(mut step)) => {
         if inside_docstring {
+          // we are inside a docstring, this line is part of the docstring content
           step.lines.push(line.text);
           new_open_block = Some(Block::Sortable(steps));
           new_open_step = Some(step);
         } else {
+          // the first static line after a sortable block
           steps.push(step);
           blocks.push(Block::Sortable(steps));
           new_open_block = Some(Block::Static(vec![line.text]));
@@ -66,9 +63,13 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Feature> {
         }
       }
       (LineType::Text, Some(Block::Static(mut lines)), None) => {
+        // a line of unsortable text while populating a static block
         lines.push(line.text);
         new_open_block = Some(Block::Static(lines));
         new_open_step = None;
+      }
+      (LineType::StepStart, None, None) => {
+        panic!("a Gherkin document cannot start with a step");
       }
       (LineType::StepStart, None, Some(_step)) => {
         panic!("shouldn't have a current_step without a current_block")
