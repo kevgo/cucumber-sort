@@ -24,10 +24,10 @@ fn block(
   issues: &mut Vec<Issue>,
 ) -> gherkin::Block {
   match block {
-    gherkin::Block::Steps(block_steps) => {
-      gherkin::Block::Steps(steps(block_steps, &config.steps, filename, issues))
+    gherkin::Block::Sortable(block_steps) => {
+      gherkin::Block::Sortable(steps(block_steps, &config.steps, filename, issues))
     }
-    gherkin::Block::Text(lines) => gherkin::Block::Text(lines),
+    gherkin::Block::Static(lines) => gherkin::Block::Static(lines),
   }
 }
 
@@ -150,7 +150,7 @@ mod tests {
       let config = Config {
         steps: vec![S("step 1"), S("step 2"), S("step 3")],
       };
-      let give_block = gherkin::Block::Steps(vec![
+      let give_block = gherkin::Block::Sortable(vec![
         gherkin::Step {
           title: S("step 3"),
           lines: vec![],
@@ -170,7 +170,7 @@ mod tests {
           indent: 0,
         },
       ]);
-      let want_block = gherkin::Block::Steps(vec![
+      let want_block = gherkin::Block::Sortable(vec![
         gherkin::Step {
           title: S("step 1"),
           lines: vec![],
@@ -200,7 +200,7 @@ mod tests {
       let config = Config {
         steps: vec![S("step 1"), S("step 2")],
       };
-      let give_block = gherkin::Block::Steps(vec![
+      let give_block = gherkin::Block::Sortable(vec![
         gherkin::Step {
           title: S("step 2"),
           lines: vec![],
@@ -220,7 +220,7 @@ mod tests {
           indent: 0,
         },
       ]);
-      let want_block = gherkin::Block::Steps(vec![
+      let want_block = gherkin::Block::Sortable(vec![
         gherkin::Step {
           title: S("step 1"),
           lines: vec![],

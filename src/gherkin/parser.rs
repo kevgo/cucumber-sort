@@ -15,7 +15,7 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Feature> {
     let new_open_step: Option<Step>;
     match (&line.line_type, open_block, open_step) {
       (LineType::StepStart, None, None) => {
-        new_open_block = Some(Block::Steps(vec![]));
+        new_open_block = Some(Block::Sortable(vec![]));
         new_open_step = Some(Step {
           title: line.title().to_string(),
           lines: vec![line.text],
@@ -23,9 +23,9 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Feature> {
           line_no: line.number,
         });
       }
-      (LineType::StepStart, Some(Block::Text(lines)), None) => {
-        blocks.push(Block::Text(lines));
-        new_open_block = Some(Block::Steps(vec![]));
+      (LineType::StepStart, Some(Block::Static(lines)), None) => {
+        blocks.push(Block::Static(lines));
+        new_open_block = Some(Block::Sortable(vec![]));
         new_open_step = Some(Step {
           title: line.title().to_string(),
           lines: vec![line.text],
@@ -33,9 +33,9 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Feature> {
           line_no: line.number,
         });
       }
-      (LineType::StepStart, Some(Block::Steps(mut steps)), Some(step)) => {
+      (LineType::StepStart, Some(Block::Sortable(mut steps)), Some(step)) => {
         steps.push(step);
-        new_open_block = Some(Block::Steps(steps));
+        new_open_block = Some(Block::Sortable(steps));
         new_open_step = Some(Step {
           title: line.title().to_string(),
           lines: vec![line.text],
@@ -43,40 +43,40 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Feature> {
           line_no: line.number,
         });
       }
-      (LineType::DocStringStartStop, Some(Block::Steps(steps)), Some(mut step)) => {
+      (LineType::DocStringStartStop, Some(Block::Sortable(steps)), Some(mut step)) => {
         step.lines.push(line.text);
-        new_open_block = Some(Block::Steps(steps));
+        new_open_block = Some(Block::Sortable(steps));
         new_open_step = Some(step);
         inside_docstring = !inside_docstring
       }
       (LineType::Text, None, None) => {
-        new_open_block = Some(Block::Text(vec![line.text]));
+        new_open_block = Some(Block::Static(vec![line.text]));
         new_open_step = None;
       }
-      (LineType::Text, Some(Block::Steps(mut steps)), Some(mut step)) => {
+      (LineType::Text, Some(Block::Sortable(mut steps)), Some(mut step)) => {
         if inside_docstring {
           step.lines.push(line.text);
-          new_open_block = Some(Block::Steps(steps));
+          new_open_block = Some(Block::Sortable(steps));
           new_open_step = Some(step);
         } else {
           steps.push(step);
-          blocks.push(Block::Steps(steps));
-          new_open_block = Some(Block::Text(vec![line.text]));
+          blocks.push(Block::Sortable(steps));
+          new_open_block = Some(Block::Static(vec![line.text]));
           new_open_step = None;
         }
       }
-      (LineType::Text, Some(Block::Text(mut lines)), None) => {
+      (LineType::Text, Some(Block::Static(mut lines)), None) => {
         lines.push(line.text);
-        new_open_block = Some(Block::Text(lines));
+        new_open_block = Some(Block::Static(lines));
         new_open_step = None;
       }
       (LineType::StepStart, None, Some(_step)) => {
         panic!("shouldn't have a current_step without a current_block")
       }
-      (LineType::StepStart, Some(Block::Steps(_steps)), None) => {
+      (LineType::StepStart, Some(Block::Sortable(_steps)), None) => {
         panic!("shouldn't have an open steps block without a current step")
       }
-      (LineType::StepStart, Some(Block::Text(_lines)), Some(_step)) => {
+      (LineType::StepStart, Some(Block::Static(_lines)), Some(_step)) => {
         panic!("should not have an open step while there is an open text block");
       }
       (LineType::DocStringStartStop, None, None) => {
@@ -88,7 +88,7 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Feature> {
       (LineType::DocStringStartStop, Some(_block), None) => {
         panic!("should not have a docstring start without an open step")
       }
-      (LineType::DocStringStartStop, Some(Block::Text(_lines)), Some(_step)) => {
+      (LineType::DocStringStartStop, Some(Block::Static(_lines)), Some(_step)) => {
         panic!("should not have an opening comment and open step in the middle of a text block")
       }
       (LineType::Text, None, Some(_step)) => {
@@ -97,7 +97,7 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Feature> {
       (LineType::Text, Some(_block), None) => {
         panic!("should not have an open block without an open step")
       }
-      (LineType::Text, Some(Block::Text(_lines)), Some(_step)) => {
+      (LineType::Text, Some(Block::Static(_lines)), Some(_step)) => {
         panic!("should not have an open step in the middle of populating a text block")
       }
     }
@@ -106,14 +106,14 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Feature> {
   }
   if let Some(block) = open_block {
     match block {
-      Block::Steps(mut steps) => {
+      Block::Sortable(mut steps) => {
         if let Some(step) = open_step {
           steps.push(step);
         }
-        blocks.push(Block::Steps(steps));
+        blocks.push(Block::Sortable(steps));
       }
-      Block::Text(lines) => {
-        blocks.push(Block::Text(lines));
+      Block::Static(lines) => {
+        blocks.push(Block::Static(lines));
       }
     }
   }
@@ -130,12 +130,12 @@ impl Feature {
     let mut result = vec![];
     for block in self.blocks {
       match block {
-        Block::Steps(steps) => {
+        Block::Sortable(steps) => {
           for mut step in steps {
             result.append(&mut step.lines);
           }
         }
-        Block::Text(mut lines) => {
+        Block::Static(mut lines) => {
           result.append(&mut lines);
         }
       }
@@ -184,10 +184,10 @@ impl From<Vec<String>> for Lines {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Block {
-  /// steps that need to be sorted
-  Steps(Vec<Step>),
-  /// non-executable text
-  Text(Vec<String>),
+  /// this block type contains sortable elements, i.e. steps to be sorted
+  Sortable(Vec<Step>),
+  /// this block type contains non-sortable text
+  Static(Vec<String>),
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]

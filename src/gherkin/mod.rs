@@ -145,8 +145,8 @@ Feature: test
       let have_feature = parser::file(have_lines).unwrap();
       let want_feature = parser::Feature {
         blocks: vec![
-          Block::Text(vec![S("Feature: test"), S(""), S("  Background:")]),
-          Block::Steps(vec![
+          Block::Static(vec![S("Feature: test"), S(""), S("  Background:")]),
+          Block::Sortable(vec![
             Step {
               title: S("step 1"),
               lines: vec![S("    Given step 1")],
@@ -166,8 +166,8 @@ Feature: test
               line_no: 5,
             },
           ]),
-          Block::Text(vec![S(""), S("  Scenario: result")]),
-          Block::Steps(vec![
+          Block::Static(vec![S(""), S("  Scenario: result")]),
+          Block::Sortable(vec![
             Step {
               title: S("step 4"),
               lines: vec![S("    Then step 4")],
@@ -181,8 +181,8 @@ Feature: test
               line_no: 9,
             },
           ]),
-          Block::Text(vec![S(""), S("  Scenario: undo")]),
-          Block::Steps(vec![
+          Block::Static(vec![S(""), S("  Scenario: undo")]),
+          Block::Sortable(vec![
             Step {
               title: S("step 6"),
               lines: vec![S("    When step 6")],
@@ -295,21 +295,21 @@ Feature: test
       let have_feature = parser::file(have_lines).unwrap();
       let want_feature = parser::Feature {
         blocks: vec![
-          Block::Text(vec![
+          Block::Static(vec![
             S("Feature: test"),
             S(""),
             S("  An example feature file"),
             S(""),
             S("  Scenario:"),
           ]),
-          Block::Steps(vec![Step {
+          Block::Sortable(vec![Step {
             title: S("step 1:"),
             lines: vec![S("    Given step 1:")],
             indent: 4,
             line_no: 5,
           }]),
-          Block::Text(vec![S("    # And step 2")]),
-          Block::Steps(vec![Step {
+          Block::Static(vec![S("    # And step 2")]),
+          Block::Sortable(vec![Step {
             title: S("step 3"),
             lines: vec![S("    And step 3")],
             indent: 4,
@@ -415,12 +415,12 @@ Feature: test
       let have_feature = parser::file(have_lines).unwrap();
       let want_feature = parser::Feature {
         blocks: vec![
-          Block::Text(vec![
+          Block::Static(vec![
             S("Feature: test"),
             S(""),
             S("  Scenario: with docstring"),
           ]),
-          Block::Steps(vec![
+          Block::Sortable(vec![
             Step {
               title: S("step 1:"),
               lines: vec![
@@ -534,19 +534,19 @@ Feature: test
       let have_feature = parser::file(have_lines).unwrap();
       let want_feature = parser::Feature {
         blocks: vec![
-          Block::Text(vec![S("Feature: test"), S(""), S("  Scenario: with table")]),
-          Block::Steps(vec![Step {
+          Block::Static(vec![S("Feature: test"), S(""), S("  Scenario: with table")]),
+          Block::Sortable(vec![Step {
             title: S("step 1:"),
             lines: vec![S("    Given step 1:")],
             indent: 4,
             line_no: 3,
           }]),
-          Block::Text(vec![
+          Block::Static(vec![
             S("      | HEAD A | HEAD B |"),
             S("      | row 1A | row 1B |"),
             S("      | row 2A | row 2B |"),
           ]),
-          Block::Steps(vec![Step {
+          Block::Sortable(vec![Step {
             title: S("step 2"),
             lines: vec![S("    And step 2")],
             indent: 4,
@@ -652,8 +652,8 @@ Feature: test
       let have_feature = parser::file(have_lines).unwrap();
       let want_feature = parser::Feature {
         blocks: vec![
-          Block::Text(vec![S("Feature: test"), S(""), S("  Scenario Outline:")]),
-          Block::Steps(vec![
+          Block::Static(vec![S("Feature: test"), S(""), S("  Scenario Outline:")]),
+          Block::Sortable(vec![
             Step {
               title: S("<ALPHA>"),
               lines: vec![S("    Given <ALPHA>")],
@@ -667,7 +667,7 @@ Feature: test
               line_no: 4,
             },
           ]),
-          Block::Text(vec![
+          Block::Static(vec![
             S(""),
             S("    Examples:"),
             S("      | ALPHA | BETA |"),
@@ -774,12 +774,12 @@ Feature: test
       let have_feature = parser::file(have_lines).unwrap();
       let want_feature = parser::Feature {
         blocks: vec![
-          Block::Text(vec![
+          Block::Static(vec![
             S("Feature: test"),
             S(""),
             S("  Scenario: gherkin in docstring"),
           ]),
-          Block::Steps(vec![
+          Block::Sortable(vec![
             Step {
               title: S("file \"foo\":"),
               lines: vec![
