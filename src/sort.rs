@@ -72,12 +72,10 @@ impl DeletableSteps {
   /// into the given result Vec
   fn extract(&mut self, config_step: &str, result: &mut Vec<gherkin::Step>) {
     for entry_opt in self.0.iter_mut() {
-      if let Some(entry) = entry_opt.take() {
-        if matches_config_step(&entry, config_step) {
-          result.push(entry);
-        } else {
-          let _ = entry_opt.insert(entry);
-        }
+      if let Some(entry) = &entry_opt
+        && matches_config_step(entry, config_step)
+      {
+        result.push(entry_opt.take().unwrap());
       }
     }
   }
