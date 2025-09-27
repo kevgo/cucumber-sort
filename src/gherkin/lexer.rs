@@ -62,15 +62,14 @@ impl Line {
 
 /// provides the number of leading whitespace characters and the text without that leading whitespace
 fn trim_initial_whitespace<'a>(line: &'a str) -> (usize, TrimmedLine<'a>) {
-  let mut counter = 0;
-  for c in line.chars() {
-    if c == ' ' || c == '\t' {
-      counter += 1;
-      continue;
+  for (i, c) in line.char_indices() {
+    if c != ' ' && c != '\t' {
+      return (i, TrimmedLine::from(&line[i..]));
     }
-    return (counter, TrimmedLine::from(&line[counter..]));
   }
-  (counter, TrimmedLine::from(&line[counter..]))
+  // here the line is all whitespace or nothing
+  let length = line.len();
+  (length, TrimmedLine::from(""))
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
