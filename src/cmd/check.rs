@@ -29,8 +29,7 @@ fn file(filepath: Utf8PathBuf, config: &config::Config) -> Result<ExitCode> {
   let (sorted_file, mut issues) = sort::file(gherkin.clone(), config, &filepath);
   let sorted_lines = sorted_file.lines();
   let original_lines = gherkin.lines();
-  let issues2 = original_lines.find_mismatching(&sorted_lines, &filepath);
-  issues.extend(issues2);
+  issues.extend(original_lines.find_mismatching(&sorted_lines, &filepath));
   sort::sort_issues(&mut issues);
   for issue in &issues {
     println!("{}", issue.problem);
