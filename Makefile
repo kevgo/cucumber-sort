@@ -6,6 +6,8 @@ build:
 
 clear:  # removes all temporary artifacts
 	@rm tools/rta*
+	@rm -rf tools/node_modules
+	@rm -rf target
 
 cuke: build  # runs the end-to-end tests
 	@cargo test --quiet --locked --test cuke
