@@ -50,7 +50,7 @@ tools/rta@${RUN_THAT_APP_VERSION}:
 	@rm -f tools/rta* tools/rta
 	@(cd tools && curl https://raw.githubusercontent.com/kevgo/run-that-app/main/download.sh | sh)
 	@mv tools/rta tools/rta@${RUN_THAT_APP_VERSION}
-	@ln -s rta@${RUN_THAT_APP_VERSION} tools/rta
+	@ln -s tools/rta@${RUN_THAT_APP_VERSION} tools/rta
 
 tools/node_modules: tools/package-lock.json tools/rta@${RUN_THAT_APP_VERSION}
 	@echo "Installing Node based tools"
