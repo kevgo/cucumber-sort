@@ -1,7 +1,7 @@
 Feature: format unordered steps
 
   Scenario: unordered step in a scenario
-    Given file ".cucumbersortrc":
+    Given file ".cucumbersortrc" with content:
       """
       step 1
       step 2

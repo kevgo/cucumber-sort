@@ -45,7 +45,7 @@ async fn files_not_changed(world: &mut MyWorld) {
   }
 }
 
-#[given(expr = "file {string}:")]
+#[given(expr = "file {string} with content:")]
 async fn create_file(world: &mut MyWorld, step: &Step, filename: String) {
   let filepath = world.dir.path().join(filename);
   let content = step.docstring.as_ref().unwrap().trim();
