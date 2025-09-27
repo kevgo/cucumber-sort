@@ -464,6 +464,24 @@ Feature: test
         ],
       };
       pretty::assert_eq!(want_feature, have_feature);
+
+      // step 3: serialize the block back into lines
+      let have_lines = have_feature.lines();
+      let want_lines = Lines::from(vec![
+        S("Feature: test"),
+        S(""),
+        S("  Scenario: with table"),
+        S("    Given step 1:"),
+        S("      | HEAD A | HEAD B |"),
+        S("      | row 1A | row 1B |"),
+        S("      | row 2A | row 2B |"),
+        S("    And step 2"),
+      ]);
+      pretty::assert_eq!(want_lines, have_lines);
+
+      // step 4: serialize back into the original string
+      let have_text = have_lines.to_string();
+      pretty::assert_eq!(source[1..], have_text);
     }
 
     #[test]
