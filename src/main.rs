@@ -16,9 +16,9 @@ fn main() -> ExitCode {
   match inner() {
     Ok(exit_code) => exit_code,
     Err(err) => {
-      let messages = err.messages();
-      println!("{}", Red.paint(messages.0));
-      if let Some(details) = messages.1 {
+      let (message, details) = err.messages();
+      println!("{}", Red.paint(message));
+      if let Some(details) = details {
         println!("\n{}", details);
       }
       ExitCode::FAILURE
