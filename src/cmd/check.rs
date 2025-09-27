@@ -4,18 +4,19 @@ use crate::{config, find, gherkin};
 use camino::Utf8PathBuf;
 use std::process::ExitCode;
 
+/// verifies whether the given or all files contain sorted steps
 pub fn check(filepath: Option<Utf8PathBuf>) -> Result<ExitCode> {
   let config = config::load()?;
   match filepath {
     Some(filepath) => file(filepath, &config),
-    None => all(config),
+    None => all(&config),
   }
 }
 
 /// checks all files in the current folder
-fn all(config: config::Config) -> Result<ExitCode> {
+fn all(config: &config::Config) -> Result<ExitCode> {
   for filepath in find::all()? {
-    let exit_code = file(filepath, &config)?;
+    let exit_code = file(filepath, config)?;
     if exit_code != ExitCode::SUCCESS {
       return Ok(exit_code);
     }
