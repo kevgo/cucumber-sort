@@ -39,11 +39,11 @@ fn sort_steps(
   filename: &Utf8Path,
   issues: &mut Vec<Issue>,
 ) -> Vec<gherkin::Step> {
-  let mut ordered = Vec::<gherkin::Step>::with_capacity(unordered_steps.len());
+  let mut result = Vec::<gherkin::Step>::with_capacity(unordered_steps.len());
   let mut steps = DeletableSteps::from(unordered_steps);
   for config_step in config_steps {
     let mut extracted = steps.extract(config_step);
-    ordered.append(&mut extracted);
+    result.append(&mut extracted);
   }
   // report the remaining unextracted steps as unknown steps
   for step in steps.elements() {
@@ -56,7 +56,7 @@ fn sort_steps(
       ),
     });
   }
-  ordered
+  result
 }
 
 fn matches_config_step(gherkin_step: &gherkin::Step, config_step: &str) -> bool {
