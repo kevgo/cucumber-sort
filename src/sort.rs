@@ -11,9 +11,9 @@ pub fn file(
   let mut doc_issues = vec![];
   let mut new_blocks = Vec::<gherkin::Block>::new();
   for file_block in file.blocks {
-    let (sorted_block, mut block_issues) = sort_block(file_block, config, filename);
+    let (sorted_block, block_issues) = sort_block(file_block, config, filename);
     new_blocks.push(sorted_block);
-    doc_issues.append(&mut block_issues);
+    doc_issues.extend(block_issues);
   }
   (gherkin::Document { blocks: new_blocks }, doc_issues)
 }
@@ -42,8 +42,8 @@ fn sort_steps(
   let mut result = Vec::<gherkin::Step>::with_capacity(unordered_steps.len());
   let mut steps = DeletableSteps::from(unordered_steps);
   for config_step in config_steps {
-    let mut extracted = steps.extract(config_step);
-    result.append(&mut extracted);
+    let extracted = steps.extract(config_step);
+    result.extend(extracted);
   }
   // report the remaining unextracted steps as unknown steps
   let mut issues = vec![];

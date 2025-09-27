@@ -133,12 +133,12 @@ impl Document {
     for block in self.blocks {
       match block {
         Block::Sortable(steps) => {
-          for mut step in steps {
-            result.append(&mut step.lines);
+          for step in steps {
+            result.extend(step.lines);
           }
         }
-        Block::Static(mut lines) => {
-          result.append(&mut lines);
+        Block::Static(lines) => {
+          result.extend(lines);
         }
       }
     }
