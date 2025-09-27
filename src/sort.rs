@@ -45,7 +45,7 @@ fn sort_steps(
     let mut extracted = steps.extract(config_step);
     ordered.append(&mut extracted);
   }
-  // report unknown steps
+  // report the remaining unextracted steps as unknown steps
   for step in steps.elements() {
     issues.push(Issue {
       line: step.line_no,
