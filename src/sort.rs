@@ -187,7 +187,7 @@ mod tests {
         },
       ]);
       let (have_block, issues) = sort::sort_block(give_block, &config, "test.feature".into());
-      pretty::assert_eq!(have_block, want_block);
+      pretty::assert_eq!(want_block, have_block);
       assert!(issues.is_empty());
     }
 
@@ -231,7 +231,7 @@ mod tests {
         },
       ]);
       let (have_block, issues) = sort::sort_block(give_block, &config, "test.feature".into());
-      pretty::assert_eq!(have_block, want_block);
+      pretty::assert_eq!(want_block, have_block);
       let want_issues = vec![Issue {
         line: 1,
         problem: S("test.feature:2  unknown step: step 3"),

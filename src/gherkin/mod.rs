@@ -139,7 +139,7 @@ Feature: test
           line_type: LineType::StepStart,
         },
       ];
-      pretty::assert_eq!(have_lines, want_lines);
+      pretty::assert_eq!(want_lines, have_lines);
 
       // step 2: parse the Lines into blocks
       let have_feature = parser::file(have_lines).unwrap();
@@ -289,7 +289,7 @@ Feature: test
           line_type: LineType::StepStart,
         },
       ];
-      pretty::assert_eq!(have_lines, want_lines);
+      pretty::assert_eq!(want_lines, have_lines);
 
       // step 2: parse the Lines into blocks
       let have_feature = parser::file(have_lines).unwrap();
@@ -409,7 +409,7 @@ Feature: test
           line_type: LineType::StepStart,
         },
       ];
-      pretty::assert_eq!(have_lines, want_lines);
+      pretty::assert_eq!(want_lines, have_lines);
 
       // step 2: parse the Lines into blocks
       let have_feature = parser::file(have_lines).unwrap();
@@ -528,7 +528,7 @@ Feature: test
           line_type: LineType::StepStart,
         },
       ];
-      pretty::assert_eq!(have_lines, want_lines);
+      pretty::assert_eq!(want_lines, have_lines);
 
       // step 2: parse the Lines into blocks
       let have_feature = parser::file(have_lines).unwrap();

@@ -63,7 +63,7 @@ async fn verify_file(world: &mut MyWorld, step: &Step, filename: String) {
   let filepath = world.dir.path().join(filename);
   let want = step.docstring.as_ref().unwrap().trim();
   let have = fs::read_to_string(filepath).await.unwrap();
-  pretty::assert_eq!(have.trim(), want);
+  pretty::assert_eq!(want, have.trim());
 }
 
 #[when(expr = "I run {string}")]
@@ -97,7 +97,7 @@ async fn it_prints(world: &mut MyWorld, step: &Step) {
     panic!("no output captured");
   };
   have = strip_ansi_escapes::strip_str(have);
-  pretty::assert_eq!(have.trim(), want.trim());
+  pretty::assert_eq!(want.trim(), have.trim());
 }
 
 #[then("it prints nothing")]

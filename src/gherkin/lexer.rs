@@ -195,7 +195,7 @@ mod tests {
         indent: 2,
         line_type: LineType::Text,
       };
-      pretty::assert_eq!(have, want);
+      pretty::assert_eq!(want, have);
     }
 
     #[test]
