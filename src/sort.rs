@@ -41,9 +41,8 @@ fn sort_steps(
 ) -> Vec<gherkin::Step> {
   let mut result = Vec::<gherkin::Step>::with_capacity(unordered_steps.len());
   let mut steps = DeletableSteps::from(unordered_steps);
-  let mut extracted = Vec::<gherkin::Step>::new();
   for config_step in config_steps {
-    steps.extract(config_step, &mut extracted);
+    let mut extracted = steps.extract(config_step);
     result.append(&mut extracted);
   }
   // report the remaining unextracted steps as unknown steps
@@ -70,7 +69,8 @@ struct DeletableSteps(Vec<Option<gherkin::Step>>);
 impl DeletableSteps {
   /// moves all steps from self that match the given config_step
   /// into the given result Vec
-  fn extract(&mut self, config_step: &str, result: &mut Vec<gherkin::Step>) {
+  fn extract(&mut self, config_step: &str) -> Vec<gherkin::Step> {
+    let mut result = vec![];
     for entry_opt in self.0.iter_mut() {
       if let Some(entry) = &entry_opt
         && matches_config_step(entry, config_step)
@@ -78,6 +78,7 @@ impl DeletableSteps {
         result.push(entry_opt.take().unwrap());
       }
     }
+    result
   }
 
   fn elements(self) -> impl Iterator<Item = gherkin::Step> {
