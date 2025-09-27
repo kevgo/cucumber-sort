@@ -13,9 +13,8 @@ pub fn load() -> Result<Config> {
   let file = fs::File::open(FILE_NAME).map_err(|e| UserError::CannotReadConfigFile {
     reason: e.to_string(),
   })?;
-  let reader = BufReader::new(file);
   Ok(Config {
-    steps: reader
+    steps: BufReader::new(file)
       .lines()
       .map(|e| e.unwrap())
       .filter(|line| !line.is_empty())
