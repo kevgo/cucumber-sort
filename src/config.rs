@@ -2,6 +2,7 @@ use crate::prelude::*;
 use std::fs;
 use std::io::{BufRead, BufReader};
 
+/// the filename of the configuration file
 pub const FILE_NAME: &str = ".cucumbersortrc";
 
 pub struct Config {
