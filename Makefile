@@ -7,7 +7,7 @@ cuke:  # runs the end-to-end tests
 
 cukethis:  # runs only end-to-end tests with a @this tag
 	@cargo build --quiet
-	@cargo test --test cuke --quiet -- -t @this
+	@cargo test --test cuke --quiet --locked -- -t @this
 
 fix: tools/rta@${RUN_THAT_APP_VERSION}  # auto-corrects issues
 	tools/rta dprint fmt
