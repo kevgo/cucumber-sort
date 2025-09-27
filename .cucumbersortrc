@@ -1,5 +1,5 @@
 file "
 I run "
-it prints:
-it prints nothing
-it succeeds
+it prints
+the exit code is
+file contents haven't changed

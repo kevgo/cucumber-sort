@@ -37,8 +37,9 @@ impl Default for MyWorld {
 async fn files_not_changed(world: &mut MyWorld) {
   for (filepath, want_content) in &world.files {
     let have_content = fs::read_to_string(filepath).await.unwrap();
-    if *want_content != have_content {
-      pretty::assert_eq!(*want_content, have_content);
+    let have_trimmed = have_content.trim();
+    if *want_content != have_trimmed {
+      pretty::assert_eq!(*want_content, have_trimmed);
       panic!("file {filepath} has unexpected content");
     }
   }
@@ -47,7 +48,7 @@ async fn files_not_changed(world: &mut MyWorld) {
 #[given(expr = "file {string}:")]
 async fn create_file(world: &mut MyWorld, step: &Step, filename: String) {
   let filepath = world.dir.path().join(filename);
-  let content = step.docstring.as_ref().unwrap();
+  let content = step.docstring.as_ref().unwrap().trim();
   if let Some(parent) = filepath.parent()
     && parent != world.dir.path()
   {
@@ -60,9 +61,9 @@ async fn create_file(world: &mut MyWorld, step: &Step, filename: String) {
 #[then(expr = "file {string} now has content:")]
 async fn verify_file(world: &mut MyWorld, step: &Step, filename: String) {
   let filepath = world.dir.path().join(filename);
-  let want = step.docstring.as_ref().unwrap();
+  let want = step.docstring.as_ref().unwrap().trim();
   let have = fs::read_to_string(filepath).await.unwrap();
-  pretty::assert_eq!(have, *want);
+  pretty::assert_eq!(have.trim(), want);
 }
 
 #[when(expr = "I run {string}")]

@@ -48,7 +48,11 @@ fn steps(
   for step in steps.elements() {
     issues.push(Issue {
       line: step.line_no,
-      problem: format!("{filename}:{}  unknown step: {}", step.line_no, step.title),
+      problem: format!(
+        "{filename}:{}  unknown step: {}",
+        step.line_no + 1,
+        step.title
+      ),
     });
   }
   ordered
@@ -235,7 +239,7 @@ mod tests {
       pretty::assert_eq!(have_block, want_block);
       let want_issues = vec![Issue {
         line: 1,
-        problem: S("test.feature:1  unknown step: step 3"),
+        problem: S("test.feature:2  unknown step: step 3"),
       }];
       pretty::assert_eq!(want_issues, issues);
     }

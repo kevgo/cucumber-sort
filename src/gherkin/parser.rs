@@ -155,7 +155,8 @@ impl Lines {
         issues.push(Issue {
           line: line_no,
           problem: format!(
-            "{filepath}:{line_no}  expected {} but found {}",
+            "{filepath}:{}  expected {} but found {}",
+            line_no + 1,
             Cyan.paint(other_text.trim()),
             Red.paint(self_text.trim())
           ),
