@@ -20,4 +20,4 @@ Feature: check unordered steps
       feature/one.feature:4  expected And step 1 but found Then step 2
       feature/one.feature:5  expected Then step 2 but found And step 1
       """
-    And the app terminates with a non-zero exit code
+    And the exit code is failure

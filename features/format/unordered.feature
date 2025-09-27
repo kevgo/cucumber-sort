@@ -35,7 +35,7 @@ Feature: format unordered steps
       """
 
       """
-    And the app terminates with a success code
+    And the exit code is success
     And file "feature/one.feature" now has content:
       """
       Feature: example

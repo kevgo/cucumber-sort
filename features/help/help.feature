@@ -11,4 +11,4 @@ Feature: requesting help
       check: verifies ordering of the Cucumber files
       format: fixes the order of Cucumber files
       """
-    And the app terminates with a success code
+    And the exit code is success

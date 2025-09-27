@@ -24,4 +24,4 @@ Feature: check ordered steps
       """
     When I run "cucumber-sort check"
     Then it prints nothing
-    And the app terminates with a success code
+    And the exit code is success

@@ -90,7 +90,7 @@ async fn prints_nothing(world: &mut MyWorld) {
   pretty::assert_eq!(have, "");
 }
 
-#[then("the app terminates with a success code")]
+#[then("the exit code is success")]
 async fn succeeds(world: &mut MyWorld) {
   let Some(have) = &world.exit_status else {
     panic!("no command run");
@@ -103,7 +103,7 @@ async fn succeeds(world: &mut MyWorld) {
   }
 }
 
-#[then("the app terminates with a non-zero exit code")]
+#[then("the exit code is failure")]
 async fn fails(world: &mut MyWorld) {
   let Some(have) = &world.exit_status else {
     panic!("no command run");

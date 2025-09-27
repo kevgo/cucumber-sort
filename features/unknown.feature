@@ -11,4 +11,4 @@ Feature: unknown command
       check: verifies ordering of the Cucumber files
       format: fixes the order of Cucumber files
       """
-    And the app terminates with a non-zero exit code
+    And the exit code is failure

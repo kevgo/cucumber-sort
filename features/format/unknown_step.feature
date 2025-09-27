@@ -19,4 +19,4 @@ Feature: format unknown steps
       """
       feature/one.feature:5  unknown step: step 3
       """
-    And the app terminates with a non-zero exit code
+    And the exit code is failure

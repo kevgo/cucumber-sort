@@ -26,4 +26,4 @@ Feature: format already ordered steps
       """
     When I run "cucumber-sort format"
     Then it prints nothing
-    And the app terminates with a success code
+    And the exit code is success
