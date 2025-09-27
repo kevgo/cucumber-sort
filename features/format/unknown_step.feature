@@ -1,15 +1,15 @@
 Feature: format unknown steps
 
   Scenario:
-    Given file ".cucumbersortrc":
+    Given file ".cucumbersortrc" with content:
       """
       step 1
       step 2
       """
-    And file "feature/one.feature":
+    And file "feature/one.feature" with content:
       """
       Feature: example
-
+      
         Background:
           Given step 1
           And step 3

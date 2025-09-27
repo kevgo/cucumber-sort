@@ -1,7 +1,7 @@
 Feature: check ordered steps
 
   Scenario:
-    Given file ".cucumbersortrc":
+    Given file ".cucumbersortrc" with content:
       """
       step 1
       step 2
@@ -9,15 +9,15 @@ Feature: check ordered steps
       step 4
       step 5
       """
-    And file "feature/one.feature":
+    And file "feature/one.feature" with content:
       """
       Feature: example
-
+      
         Background:
           Given step 1
           And step 2
           When step 3
-
+      
         Scenario: result
           Then step 4
           And step 5

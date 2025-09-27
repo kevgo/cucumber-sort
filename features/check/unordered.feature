@@ -1,15 +1,15 @@
 Feature: check unordered steps
 
   Scenario: unordered step in a scenario
-    Given file ".cucumbersortrc":
+    Given file ".cucumbersortrc" with content:
       """
       step 1
       step 2
       """
-    And file "feature/one.feature":
+    And file "feature/one.feature" with content:
       """
       Feature: example
-
+      
         Scenario: steps out of order
           Then step 2
           And step 1
