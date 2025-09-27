@@ -1,4 +1,4 @@
-Feature: check unknown steps
+Feature: format unknown steps
 
   Scenario:
     Given file ".cucumbersortrc":
@@ -14,7 +14,7 @@ Feature: check unknown steps
           Given step 1
           And step 3
       """
-    When I run "cucumber-sort check"
+    When I run "cucumber-sort format"
     Then it prints:
       """
       feature/one.feature:5  unknown step: step 3

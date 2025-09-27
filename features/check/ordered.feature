@@ -1,4 +1,4 @@
-Feature: ordered steps
+Feature: check ordered steps
 
   Scenario:
     Given file ".cucumbersortrc":

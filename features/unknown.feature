@@ -1,4 +1,4 @@
-Feature: requesting help
+Feature: unknown command
 
   Scenario:
     When I run "cucumber-sort zonk"

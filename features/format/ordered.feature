@@ -1,4 +1,4 @@
-Feature: ordered steps
+Feature: format already ordered steps
 
   Scenario:
     Given file ".cucumbersortrc":

@@ -1,12 +1,13 @@
 # dev tooling and versions
 RUN_THAT_APP_VERSION = 0.18.0
 
-cuke:  # runs the end-to-end tests
+build:
 	@cargo build --quiet
+
+cuke: build  # runs the end-to-end tests
 	@cargo test --quiet --locked --test cuke
 
-cukethis:  # runs only end-to-end tests with a @this tag
-	@cargo build --quiet
+cukethis: build  # runs only end-to-end tests with a @this tag
 	@cargo test --test cuke --quiet --locked -- -t @this
 
 fix: tools/rta@${RUN_THAT_APP_VERSION}  # auto-corrects issues
@@ -34,7 +35,7 @@ setup-ci:  # prepares the CI server
 	rustup component add rustfmt --toolchain nightly
 	cargo install cargo-machete --locked
 
-test: unit lint cuke  # runs all tests
+test: build unit lint cuke  # runs all tests
 
 unit:  # runs the unit tests
 	cargo test --locked

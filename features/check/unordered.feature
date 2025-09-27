@@ -1,4 +1,4 @@
-Feature: unordered steps
+Feature: check unordered steps
 
   Scenario: unordered step in a scenario
     Given file ".cucumbersortrc":

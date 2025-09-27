@@ -19,6 +19,12 @@ fn format_file(filepath: Utf8PathBuf, config: &config::Config) -> Result<ExitCod
   let sorted_file = sort::file(gherkin.clone(), config, &filepath, &mut issues);
   let sorted_lines = sorted_file.lines();
   let sorted_text = sorted_lines.to_string();
+  for issue in &issues {
+    println!("{}", issue.problem);
+  }
+  if !issues.is_empty() {
+    return Ok(ExitCode::FAILURE);
+  }
   fs::write(&filepath, sorted_text).map_err(|err| UserError::CannotWriteFile {
     file: filepath,
     reason: err.to_string(),
@@ -28,7 +34,10 @@ fn format_file(filepath: Utf8PathBuf, config: &config::Config) -> Result<ExitCod
 
 fn format_all(config: config::Config) -> Result<ExitCode> {
   for filepath in find::all()? {
-    format_file(filepath, &config)?;
+    let exit_code = format_file(filepath, &config)?;
+    if exit_code == ExitCode::FAILURE {
+      return Ok(exit_code);
+    }
   }
   Ok(ExitCode::SUCCESS)
 }
