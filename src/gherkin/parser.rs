@@ -5,7 +5,7 @@ use ansi_term::Color::{Green, Red};
 use camino::Utf8Path;
 use std::fmt::{Display, Write};
 
-pub fn file(lines: Vec<lexer::Line>) -> Result<Feature> {
+pub fn file(lines: Vec<lexer::Line>) -> Result<Document> {
   let mut blocks: Vec<Block> = vec![];
   let mut open_block: Option<Block> = None; // the block that is currently being populated
   let mut open_step: Option<Step> = None; // the step that is currently being populated
@@ -118,15 +118,16 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Feature> {
       }
     }
   }
-  Ok(Feature { blocks })
+  Ok(Document { blocks })
 }
 
+/// a high-level parsed Gherkin document
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct Feature {
+pub struct Document {
   pub blocks: Vec<Block>,
 }
 
-impl Feature {
+impl Document {
   pub fn lines(self) -> Lines {
     let mut result = vec![];
     for block in self.blocks {

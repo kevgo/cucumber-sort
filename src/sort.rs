@@ -4,16 +4,16 @@ use camino::Utf8Path;
 
 /// provides a copy of the given File with all Gherkin steps sorted the same way as the given configuration
 pub fn file(
-  file: gherkin::Feature,
+  file: gherkin::Document,
   config: &Config,
   filename: &Utf8Path,
   issues: &mut Vec<Issue>,
-) -> gherkin::Feature {
+) -> gherkin::Document {
   let mut new_blocks = Vec::<gherkin::Block>::new();
   for file_block in file.blocks {
     new_blocks.push(block(file_block, config, filename, issues));
   }
-  gherkin::Feature { blocks: new_blocks }
+  gherkin::Document { blocks: new_blocks }
 }
 
 /// provides the given block with all steps sorted according to the given configuration

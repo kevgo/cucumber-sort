@@ -3,11 +3,11 @@ mod parser;
 
 use crate::prelude::*;
 use camino::Utf8Path;
-pub use parser::{Block, Feature, Step};
+pub use parser::{Block, Document, Step};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
-pub fn load(filepath: &Utf8Path) -> Result<parser::Feature> {
+pub fn load(filepath: &Utf8Path) -> Result<parser::Document> {
   let file_content = File::open(filepath).map_err(|e| UserError::CannotReadFile {
     file: filepath.to_path_buf(),
     reason: e.to_string(),
@@ -16,7 +16,7 @@ pub fn load(filepath: &Utf8Path) -> Result<parser::Feature> {
 }
 
 /// parses the given file content into Gherkin
-pub fn file(text: impl BufRead) -> Result<parser::Feature> {
+pub fn file(text: impl BufRead) -> Result<parser::Document> {
   // step 1: lex the file content into token (lines)
   let lines = lexer::file(text);
   // step 2: parse the tokens (lines) into Gherkin data structures
@@ -143,7 +143,7 @@ Feature: test
 
       // step 2: parse the Lines into blocks
       let have_feature = parser::file(have_lines).unwrap();
-      let want_feature = parser::Feature {
+      let want_feature = parser::Document {
         blocks: vec![
           Block::Static(vec![S("Feature: test"), S(""), S("  Background:")]),
           Block::Sortable(vec![
@@ -293,7 +293,7 @@ Feature: test
 
       // step 2: parse the Lines into blocks
       let have_feature = parser::file(have_lines).unwrap();
-      let want_feature = parser::Feature {
+      let want_feature = parser::Document {
         blocks: vec![
           Block::Static(vec![
             S("Feature: test"),
@@ -413,7 +413,7 @@ Feature: test
 
       // step 2: parse the Lines into blocks
       let have_feature = parser::file(have_lines).unwrap();
-      let want_feature = parser::Feature {
+      let want_feature = parser::Document {
         blocks: vec![
           Block::Static(vec![
             S("Feature: test"),
@@ -532,7 +532,7 @@ Feature: test
 
       // step 2: parse the Lines into blocks
       let have_feature = parser::file(have_lines).unwrap();
-      let want_feature = parser::Feature {
+      let want_feature = parser::Document {
         blocks: vec![
           Block::Static(vec![S("Feature: test"), S(""), S("  Scenario: with table")]),
           Block::Sortable(vec![Step {
@@ -650,7 +650,7 @@ Feature: test
 
       // step 2: parse the Lines into blocks
       let have_feature = parser::file(have_lines).unwrap();
-      let want_feature = parser::Feature {
+      let want_feature = parser::Document {
         blocks: vec![
           Block::Static(vec![S("Feature: test"), S(""), S("  Scenario Outline:")]),
           Block::Sortable(vec![
@@ -772,7 +772,7 @@ Feature: test
 
       // step 2: parse the Lines into blocks
       let have_feature = parser::file(have_lines).unwrap();
-      let want_feature = parser::Feature {
+      let want_feature = parser::Document {
         blocks: vec![
           Block::Static(vec![
             S("Feature: test"),
