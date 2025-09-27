@@ -205,5 +205,6 @@ pub struct Step {
   /// the indentation of this step
   pub indent: usize,
 
+  /// the absolute line number inside the document at which this step start
   pub line_no: usize,
 }
