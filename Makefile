@@ -19,7 +19,6 @@ fix: tools/rta@${RUN_THAT_APP_VERSION}  # auto-corrects issues
 	cargo +nightly fix --allow-dirty --quiet
 	tools/rta ghokin fmt replace features/
 
-
 lint: tools/node_modules tools/rta@${RUN_THAT_APP_VERSION}  # checks formatting
 	tools/rta dprint check
 	cargo clippy --all-targets --all-features -- --deny=warnings
@@ -28,7 +27,6 @@ lint: tools/node_modules tools/rta@${RUN_THAT_APP_VERSION}  # checks formatting
 	tools/rta actionlint
 	cargo machete
 	tools/rta node tools/node_modules/.bin/gherkin-lint
-
 
 setup: setup-ci  # install development dependencies on this computer
 	cargo install cargo-edit cargo-upgrades --locked
