@@ -4,6 +4,9 @@ RUN_THAT_APP_VERSION = 0.18.0
 build:
 	@cargo build --quiet
 
+clear:  # removes all temporary artifacts
+	@rm tools/rta*
+
 cuke: build  # runs the end-to-end tests
 	@cargo test --quiet --locked --test cuke
 
