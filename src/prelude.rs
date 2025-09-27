@@ -4,7 +4,7 @@ use crate::cmd::available_commands;
 use crate::config;
 use camino::Utf8PathBuf;
 
-/// UserError are errors that the user makes around using this linter the wrong way.
+/// UserError happen when the user uses this linter the wrong way.
 /// They do not include problems that the linter finds in Gherkin files.
 #[derive(Eq, Debug, PartialEq)]
 pub enum UserError {
@@ -15,6 +15,9 @@ pub enum UserError {
 }
 
 impl UserError {
+  /// Provides human-readable descriptions for the various errors variants.
+  /// The first result is the actual error message,
+  /// the second result is an optional description providing additional details.
   pub fn messages(&self) -> (String, Option<String>) {
     match self {
       UserError::CannotReadConfigFile { reason } => (
