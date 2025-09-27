@@ -150,11 +150,12 @@ impl Document {
 pub struct Lines(Vec<String>);
 
 impl Lines {
-  pub fn find_mismatching(&self, other: &Lines, filepath: &Utf8Path, issues: &mut Vec<Issue>) {
+  pub fn find_mismatching(&self, other: &Lines, filepath: &Utf8Path) -> Vec<Issue> {
+    let mut result = vec![];
     for (line_no, (self_text, other_text)) in self.0.iter().zip(other.0.iter()).enumerate() {
       //   println!("line: {} {}", self_text, other_text);
       if self_text != other_text {
-        issues.push(Issue {
+        result.push(Issue {
           line: line_no,
           problem: format!(
             "{filepath}:{}  expected {} but found {}",
@@ -165,6 +166,7 @@ impl Lines {
         });
       }
     }
+    result
   }
 }
 

@@ -1,6 +1,5 @@
 use crate::prelude::*;
-use crate::sort::{self, Issue};
-use crate::{config, find, gherkin};
+use crate::{config, find, gherkin, sort};
 use camino::Utf8PathBuf;
 use std::fs;
 use std::process::ExitCode;
@@ -27,9 +26,8 @@ fn all(config: &config::Config) -> Result<ExitCode> {
 
 /// updates the given file to contain sorted steps
 fn file(filepath: Utf8PathBuf, config: &config::Config) -> Result<ExitCode> {
-  let mut issues = Vec::<Issue>::new();
   let gherkin = gherkin::load(&filepath)?;
-  let sorted_file = sort::file(gherkin.clone(), config, &filepath, &mut issues);
+  let (sorted_file, issues) = sort::file(gherkin.clone(), config, &filepath);
   let sorted_lines = sorted_file.lines();
   let sorted_text = sorted_lines.to_string();
   for issue in &issues {

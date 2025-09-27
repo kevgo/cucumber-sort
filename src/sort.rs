@@ -7,14 +7,15 @@ pub fn file(
   file: gherkin::Document,
   config: &Config,
   filename: &Utf8Path,
-  issues: &mut Vec<Issue>,
-) -> gherkin::Document {
+) -> (gherkin::Document, Vec<Issue>) {
+  let mut doc_issues = vec![];
   let mut new_blocks = Vec::<gherkin::Block>::new();
   for file_block in file.blocks {
-    let sorted_block = sort_block(file_block, config, filename, issues);
+    let (sorted_block, mut block_issues) = sort_block(file_block, config, filename);
     new_blocks.push(sorted_block);
+    doc_issues.append(&mut block_issues);
   }
-  gherkin::Document { blocks: new_blocks }
+  (gherkin::Document { blocks: new_blocks }, doc_issues)
 }
 
 /// provides the given block with all steps sorted according to the given configuration
@@ -22,13 +23,13 @@ fn sort_block(
   block: gherkin::Block,
   config: &Config,
   filename: &Utf8Path,
-  issues: &mut Vec<Issue>,
-) -> gherkin::Block {
+) -> (gherkin::Block, Vec<Issue>) {
   match block {
     gherkin::Block::Sortable(block_steps) => {
-      gherkin::Block::Sortable(sort_steps(block_steps, &config.steps, filename, issues))
+      let (sorted_steps, issues) = sort_steps(block_steps, &config.steps, filename);
+      (gherkin::Block::Sortable(sorted_steps), issues)
     }
-    gherkin::Block::Static(lines) => gherkin::Block::Static(lines),
+    gherkin::Block::Static(lines) => (gherkin::Block::Static(lines), vec![]),
   }
 }
 
@@ -37,8 +38,7 @@ fn sort_steps(
   unordered_steps: Vec<gherkin::Step>,
   config_steps: &[String],
   filename: &Utf8Path,
-  issues: &mut Vec<Issue>,
-) -> Vec<gherkin::Step> {
+) -> (Vec<gherkin::Step>, Vec<Issue>) {
   let mut result = Vec::<gherkin::Step>::with_capacity(unordered_steps.len());
   let mut steps = DeletableSteps::from(unordered_steps);
   for config_step in config_steps {
@@ -46,6 +46,7 @@ fn sort_steps(
     result.append(&mut extracted);
   }
   // report the remaining unextracted steps as unknown steps
+  let mut issues = vec![];
   for step in steps.elements() {
     issues.push(Issue {
       line: step.line_no,
@@ -56,7 +57,7 @@ fn sort_steps(
       ),
     });
   }
-  result
+  (result, issues)
 }
 
 fn matches_config_step(gherkin_step: &gherkin::Step, config_step: &str) -> bool {
@@ -135,14 +136,9 @@ mod tests {
         },
       ];
       let want_steps = give_steps.clone();
-      let mut issues = vec![];
-      let have_steps = sort::sort_steps(
-        give_steps,
-        &config_steps,
-        "test.feature".into(),
-        &mut issues,
-      );
+      let (have_steps, issues) = sort::sort_steps(give_steps, &config_steps, "test.feature".into());
       assert_eq!(want_steps, have_steps);
+      assert!(issues.is_empty());
     }
 
     #[test]
@@ -190,9 +186,9 @@ mod tests {
           indent: 0,
         },
       ]);
-      let mut issues = vec![];
-      let have_block = sort::sort_block(give_block, &config, "test.feature".into(), &mut issues);
+      let (have_block, issues) = sort::sort_block(give_block, &config, "test.feature".into());
       pretty::assert_eq!(have_block, want_block);
+      assert!(issues.is_empty());
     }
 
     #[test]
@@ -234,8 +230,7 @@ mod tests {
           indent: 0,
         },
       ]);
-      let mut issues = vec![];
-      let have_block = sort::sort_block(give_block, &config, "test.feature".into(), &mut issues);
+      let (have_block, issues) = sort::sort_block(give_block, &config, "test.feature".into());
       pretty::assert_eq!(have_block, want_block);
       let want_issues = vec![Issue {
         line: 1,
