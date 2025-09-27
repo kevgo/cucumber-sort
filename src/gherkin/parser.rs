@@ -37,7 +37,7 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Feature> {
         });
       }
       (LineType::DocStringStartStop, Some(Block::Sortable(steps)), Some(mut step)) => {
-        // a docstring start/stop while populating a step
+        // a docstring start/end while populating a step
         step.lines.push(line.text);
         new_open_block = Some(Block::Sortable(steps));
         new_open_step = Some(step);
