@@ -18,16 +18,16 @@ fn check_file(filepath: Utf8PathBuf, config: &config::Config) -> Result<ExitCode
   let sorted_file = sort::file(gherkin.clone(), config, &filepath, &mut issues);
   let sorted_lines = sorted_file.lines();
   let original_lines = gherkin.lines();
-  let mut exit_code = ExitCode::SUCCESS;
   original_lines.find_mismatching(&sorted_lines, &filepath, &mut issues);
   sort::sort_issues(&mut issues);
-  if !issues.is_empty() {
-    exit_code = ExitCode::FAILURE;
-  }
-  for issue in issues {
+  for issue in &issues {
     println!("{}", issue.problem);
   }
-  Ok(exit_code)
+  if issues.is_empty() {
+    Ok(ExitCode::SUCCESS)
+  } else {
+    Ok(ExitCode::FAILURE)
+  }
 }
 
 fn check_all(config: config::Config) -> Result<ExitCode> {
