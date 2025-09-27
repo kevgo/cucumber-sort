@@ -11,7 +11,8 @@ pub fn file(
 ) -> gherkin::Document {
   let mut new_blocks = Vec::<gherkin::Block>::new();
   for file_block in file.blocks {
-    new_blocks.push(block(file_block, config, filename, issues));
+    let sorted_block = block(file_block, config, filename, issues);
+    new_blocks.push(sorted_block);
   }
   gherkin::Document { blocks: new_blocks }
 }
