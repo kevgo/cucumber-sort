@@ -1,3 +1,4 @@
+use camino::Utf8PathBuf;
 use cucumber::gherkin::Step;
 use cucumber::{World, given, then, when};
 use std::env;
@@ -11,6 +12,9 @@ pub struct MyWorld {
   /// the directory in which the test executes
   dir: camino_tempfile::Utf8TempDir,
 
+  /// all created files and their content
+  files: Vec<(Utf8PathBuf, String)>,
+
   /// what the binary printed when running
   output: Option<String>,
 
@@ -22,8 +26,20 @@ impl Default for MyWorld {
   fn default() -> Self {
     Self {
       dir: camino_tempfile::tempdir().unwrap(),
+      files: vec![],
       output: None,
       exit_status: None,
+    }
+  }
+}
+
+#[then("all files haven't changed")]
+async fn files_not_changed(world: &mut MyWorld) {
+  for (filepath, want_content) in &world.files {
+    let have_content = fs::read_to_string(filepath).await.unwrap();
+    if *want_content != have_content {
+      pretty::assert_eq!(*want_content, have_content);
+      panic!("file {filepath} has unexpected content");
     }
   }
 }
@@ -37,7 +53,8 @@ async fn create_file(world: &mut MyWorld, step: &Step, filename: String) {
   {
     fs::create_dir_all(parent).await.unwrap();
   }
-  fs::write(filepath, content).await.unwrap();
+  fs::write(&filepath, content).await.unwrap();
+  world.files.push((filepath, content.to_string()));
 }
 
 #[then(expr = "file {string} now has content:")]
