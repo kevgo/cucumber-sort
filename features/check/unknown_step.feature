@@ -21,4 +21,4 @@ Feature: ordered steps
       """
       feature/one.feature:6  unknown step: step 3
       """
-    And it fails
+    And the app terminates with a non-zero exit code
