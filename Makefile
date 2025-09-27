@@ -15,17 +15,21 @@ fix: tools/rta@${RUN_THAT_APP_VERSION}  # auto-corrects issues
 	cargo +nightly fmt
 	cargo clippy --all-targets --all-features -- --deny=warnings
 	cargo +nightly fix --allow-dirty
+	tools/rta ghokin fmt replace features/
+
 
 help:  # prints all available targets
 	@grep -h -E '^[a-zA-Z_-]+:.*?# .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?# "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
-lint: tools/rta@${RUN_THAT_APP_VERSION}  # checks formatting
+lint: tools/node_modules tools/rta@${RUN_THAT_APP_VERSION}  # checks formatting
 	tools/rta dprint check
 	cargo clippy --all-targets --all-features -- --deny=warnings
 	cargo +nightly fmt -- --check
 	git diff --check
 	tools/rta actionlint
 	cargo machete
+	tools/rta node tools/node_modules/.bin/gherkin-lint
+
 
 setup: setup-ci  # install development dependencies on this computer
 	cargo install cargo-edit cargo-upgrades --locked
@@ -47,6 +51,11 @@ tools/rta@${RUN_THAT_APP_VERSION}:
 	@(cd tools && curl https://raw.githubusercontent.com/kevgo/run-that-app/main/download.sh | sh)
 	@mv tools/rta tools/rta@${RUN_THAT_APP_VERSION}
 	@ln -s rta@${RUN_THAT_APP_VERSION} tools/rta
+
+tools/node_modules: tools/package-lock.json tools/rta@${RUN_THAT_APP_VERSION}
+	@echo "Installing Node based tools"
+	cd tools && ./rta npm ci
+	@touch tools/node_modules  # update timestamp of the node_modules folder so that Make doesn't re-install it on every command
 
 .SILENT:
 .DEFAULT_GOAL := help

@@ -5,9 +5,9 @@ Feature: unknown command
     Then it prints:
       """
       unknown command: zonk
-      
+
       Available commands:
-      
+
       check: verifies ordering of the Cucumber files
       format: fixes the order of Cucumber files
       """

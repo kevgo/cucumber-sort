@@ -9,7 +9,7 @@ Feature: check unknown steps
     And file "feature/one.feature":
       """
       Feature: example
-      
+
         Background:
           Given step 1
           And step 3
