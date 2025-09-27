@@ -63,7 +63,7 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Feature> {
         }
       }
       (LineType::Text, Some(Block::Static(mut lines)), None) => {
-        // a line of unsortable text while populating a static block
+        // another line of text while populating an unsortable block
         lines.push(line.text);
         new_open_block = Some(Block::Static(lines));
         new_open_step = None;
