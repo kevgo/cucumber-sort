@@ -120,7 +120,7 @@ impl<'a> PartialEq<&str> for TrimmedLine<'a> {
 #[cfg(test)]
 mod tests {
 
-  mod trim_whitespace_start {
+  mod trim_initial_whitespace {
     use crate::gherkin::lexer::trim_initial_whitespace;
 
     #[test]
