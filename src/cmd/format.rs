@@ -18,7 +18,7 @@ pub fn format(filepath: Option<Utf8PathBuf>) -> Result<ExitCode> {
 fn all(config: &config::Config) -> Result<ExitCode> {
   for filepath in find::all()? {
     let exit_code = file(filepath, config)?;
-    if exit_code == ExitCode::FAILURE {
+    if exit_code != ExitCode::SUCCESS {
       return Ok(exit_code);
     }
   }
