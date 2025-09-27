@@ -17,9 +17,7 @@ fn check_file(filepath: Utf8PathBuf, config: &config::Config) -> Result<ExitCode
   let gherkin = gherkin::load(&filepath)?;
   let sorted_file = sort::file(gherkin.clone(), config, &mut issues);
   let sorted_lines = sorted_file.lines();
-  println!("SORTED LINES: {:?}", sorted_lines);
   let original_lines = gherkin.lines();
-  println!("ORIGINAL LINES: {:?}", sorted_lines);
   let mut exit_code = ExitCode::SUCCESS;
   original_lines.find_mismatching(&sorted_lines, &filepath, &mut issues);
   sort::sort_issues(&mut issues);
