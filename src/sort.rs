@@ -2,7 +2,7 @@ use crate::config::Config;
 use crate::gherkin;
 use camino::Utf8Path;
 
-/// provides a copy of the given File with all Gherkin steps sorted the same way as the given configuration
+/// provides a copy of the given File with all Gherkin steps sorted the same way as in the given configuration
 pub fn file(
   file: gherkin::Document,
   config: &Config,
