@@ -12,12 +12,11 @@ Feature: ordered steps
       
         Background:
           Given step 1
-          And step 2
-          When step 3
+          And step 3
       """
     When I run "cucumber-sort check"
     Then it prints:
       """
-      feature/one.feature:6  unknown step: step 3
+      feature/one.feature:5  unknown step: step 3
       """
     And the app terminates with a non-zero exit code
