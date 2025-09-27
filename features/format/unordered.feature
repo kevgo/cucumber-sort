@@ -1,6 +1,5 @@
 Feature: unordered steps
 
-  @this
   Scenario: unordered step in a scenario
     Given file ".cucumbersortrc":
       """
@@ -25,6 +24,8 @@ Feature: unordered steps
           Then step 4
           And step 3
       
+        # another comment
+      
         Scenario: undo
           When step 6
           Then step 5
@@ -48,6 +49,8 @@ Feature: unordered steps
         Scenario: result
           And step 3
           Then step 4
+      
+        # another comment
       
         Scenario: undo
           Then step 5
