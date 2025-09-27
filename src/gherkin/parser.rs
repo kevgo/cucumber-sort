@@ -15,7 +15,7 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Feature> {
     let new_open_step: Option<Step>; // the new value of open_step at the end of this loop
     match (&line.line_type, open_block, open_step) {
       (LineType::StepStart, Some(Block::Static(lines)), None) => {
-        // the first step after some static text
+        // the first step after a static text block
         blocks.push(Block::Static(lines));
         new_open_block = Some(Block::Sortable(vec![]));
         new_open_step = Some(Step {
