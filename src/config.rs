@@ -10,7 +10,7 @@ pub struct Config {
 }
 
 pub fn load() -> Result<Config> {
-  let file = fs::File::open(FILE_NAME).map_err(|e| UserError::CannotReadConfigFile {
+  let file = fs::File::open(FILE_NAME).map_err(|e| UserError::ConfigFileRead {
     reason: e.to_string(),
   })?;
   Ok(Config {

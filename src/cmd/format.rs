@@ -36,7 +36,7 @@ fn file(filepath: Utf8PathBuf, config: &config::Config) -> Result<ExitCode> {
   if !issues.is_empty() {
     return Ok(ExitCode::FAILURE);
   }
-  fs::write(&filepath, sorted_text).map_err(|err| UserError::CannotWriteFile {
+  fs::write(&filepath, sorted_text).map_err(|err| UserError::FileWrite {
     file: filepath,
     reason: err.to_string(),
   })?;

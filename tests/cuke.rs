@@ -15,8 +15,11 @@ pub struct MyWorld {
   /// all created files and their content
   files: Vec<(Utf8PathBuf, String)>,
 
-  /// what the binary printed when running
-  output: Option<String>,
+  /// what the binary printed to STDOUT when running
+  stdout: Option<String>,
+
+  /// what the binary printed to STDERR when running
+  stderr: Option<String>,
 
   /// exit status of the binary
   exit_status: Option<ExitStatus>,
@@ -27,7 +30,8 @@ impl Default for MyWorld {
     Self {
       dir: camino_tempfile::tempdir().unwrap(),
       files: vec![],
-      output: None,
+      stdout: None,
+      stderr: None,
       exit_status: None,
     }
   }
@@ -82,27 +86,30 @@ async fn run_binary(world: &mut MyWorld, command: String) {
     .output()
     .await
     .unwrap();
-  if !output.stderr.is_empty() {
-    panic!(
-      "running \"{command}\" produced unexpected STDERR output: {}",
-      str::from_utf8(&output.stderr).unwrap()
-    );
-  }
-  world.output = Some(String::from_utf8(output.stdout).unwrap());
+  world.stdout = Some(String::from_utf8(output.stdout).unwrap());
+  world.stderr = Some(String::from_utf8(output.stderr).unwrap());
   world.exit_status = Some(output.status);
 }
 
 #[then("it prints:")]
 async fn it_prints(world: &mut MyWorld, step: &Step) {
   let want = step.docstring.as_ref().unwrap();
-  let have = world.output.as_ref().expect(NO_COMMAND_RUN);
+  let have = world.stdout.as_ref().expect(NO_COMMAND_RUN);
+  let stripped = strip_ansi_escapes::strip_str(have);
+  pretty::assert_eq!(want.trim(), stripped.trim());
+}
+
+#[then("it prints the error:")]
+async fn it_prints_error(world: &mut MyWorld, step: &Step) {
+  let want = step.docstring.as_ref().unwrap();
+  let have = world.stderr.as_ref().expect(NO_COMMAND_RUN);
   let stripped = strip_ansi_escapes::strip_str(have);
   pretty::assert_eq!(want.trim(), stripped.trim());
 }
 
 #[then("it prints nothing")]
 async fn prints_nothing(world: &mut MyWorld) {
-  let have = &world.output.as_ref().expect(NO_COMMAND_RUN);
+  let have = &world.stdout.as_ref().expect(NO_COMMAND_RUN);
   pretty::assert_eq!(*have, "");
 }
 
