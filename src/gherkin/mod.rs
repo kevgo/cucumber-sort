@@ -8,7 +8,7 @@ use std::fs::File;
 use std::io::{BufRead, BufReader};
 
 pub fn load(filepath: &Utf8Path) -> Result<parser::Document> {
-  let file_content = File::open(filepath).map_err(|e| UserError::CannotReadFile {
+  let file_content = File::open(filepath).map_err(|e| UserError::FileRead {
     file: filepath.to_path_buf(),
     reason: e.to_string(),
   })?;
