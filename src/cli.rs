@@ -6,8 +6,6 @@ pub fn parse() -> Command {
 }
 
 #[derive(Parser)]
-#[command(name = "cucumber-sort")]
-#[command(about = "Sorts steps in Cucumber files")]
 pub enum Command {
   /// Check if Cucumber files are properly sorted
   Check {

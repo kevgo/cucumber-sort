@@ -2,6 +2,7 @@
 name = "cucumber-sort"
 version = "0.1.0"
 edition = "2024"
+description = "Sorts steps in Cucumber files"
 
 [dependencies]
 ansi_term = "0.12.1"
