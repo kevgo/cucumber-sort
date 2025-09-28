@@ -6,6 +6,8 @@ pub fn parse() -> Command {
 }
 
 #[derive(Parser)]
+#[command(name = env!("CARGO_PKG_NAME"))]
+#[command(about = env!("CARGO_PKG_DESCRIPTION"))]
 pub enum Command {
   /// Check if Cucumber files are properly sorted
   Check {
