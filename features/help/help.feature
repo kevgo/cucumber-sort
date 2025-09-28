@@ -4,12 +4,16 @@ Feature: requesting help
     When I run "cucumber-sort help"
     Then it prints:
       """
-      Sorts steps in Gherkin files to match the order in cucumbersortrc.
-
-      Available commands:
-
-      check   verifies ordering of the Cucumber files
-      format  fixes the order of Cucumber files
-      help    displays this help screen
+      Sorts steps in Cucumber files
+      
+      Usage: cucumber-sort <COMMAND>
+      
+      Commands:
+        check   Check if Cucumber files are properly sorted
+        format  Format Cucumber files by sorting them
+        help    Print this message or the help of the given subcommand(s)
+      
+      Options:
+        -h, --help  Print help
       """
     And the exit code is success

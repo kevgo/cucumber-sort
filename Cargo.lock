@@ -314,6 +314,7 @@ dependencies = [
  "big_s",
  "camino",
  "camino-tempfile",
+ "clap",
  "cucumber",
  "pretty_assertions",
  "strip-ansi-escapes",

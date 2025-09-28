@@ -7,9 +7,8 @@ mod prelude;
 mod sort;
 
 use ansi_term::Color::Red;
-use cli::Command::{Check, Format, Help};
+use cli::Command::{Check, Format};
 use prelude::*;
-use std::env;
 use std::process::ExitCode;
 
 fn main() -> ExitCode {
@@ -27,9 +26,8 @@ fn main() -> ExitCode {
 }
 
 fn inner() -> Result<ExitCode> {
-  match cli::parse(env::args())? {
+  match cli::parse() {
     Check { file } => cmd::check(file),
     Format { file } => cmd::format(file),
-    Help => cmd::help(),
   }
 }
