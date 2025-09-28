@@ -1,5 +1,5 @@
 use crate::prelude::*;
-use crate::{config, find, gherkin, sort};
+use crate::{config, find_files, gherkin, sort};
 use camino::Utf8PathBuf;
 use std::fs;
 use std::process::ExitCode;
@@ -15,7 +15,7 @@ pub fn format(filepath: Option<Utf8PathBuf>) -> Result<ExitCode> {
 
 /// updates all files in the current folder to contain sorted steps
 fn all(config: &config::Config) -> Result<ExitCode> {
-  for filepath in find::all()? {
+  for filepath in find_files::all()? {
     let exit_code = file(filepath, config)?;
     if exit_code != ExitCode::SUCCESS {
       return Ok(exit_code);
