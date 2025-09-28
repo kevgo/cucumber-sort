@@ -1,5 +1,6 @@
 use crate::config::Config;
 use crate::gherkin;
+use ansi_term::Color::Cyan;
 use camino::Utf8Path;
 
 /// provides a copy of the given document with all Gherkin steps sorted the same way as in the given configuration
@@ -53,7 +54,7 @@ fn sort_steps(
       problem: format!(
         "{filename}:{}  unknown step: {}",
         step.line_no + 1,
-        step.title
+        Cyan.paint(step.title)
       ),
     });
   }
