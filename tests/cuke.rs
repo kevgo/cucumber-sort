@@ -15,10 +15,10 @@ pub struct MyWorld {
   /// all created files and their content
   files: Vec<(Utf8PathBuf, String)>,
 
-  /// what the binary printed when running
+  /// what the binary printed to STDOUT when running
   stdout: Option<String>,
 
-  /// what the binary printed when running
+  /// what the binary printed to STDERR when running
   stderr: Option<String>,
 
   /// exit status of the binary
