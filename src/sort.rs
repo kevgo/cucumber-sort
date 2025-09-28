@@ -1,5 +1,6 @@
 use crate::config::Config;
 use crate::gherkin;
+use ansi_term::Color::Cyan;
 use camino::Utf8Path;
 
 /// provides a copy of the given document with all Gherkin steps sorted the same way as in the given configuration
@@ -53,7 +54,7 @@ fn sort_steps(
       problem: format!(
         "{filename}:{}  unknown step: {}",
         step.line_no + 1,
-        step.title
+        Cyan.paint(step.title)
       ),
     });
   }
@@ -110,6 +111,7 @@ mod tests {
     use crate::config::Config;
     use crate::sort::Issue;
     use crate::{gherkin, sort};
+    use ansi_term::Color::Cyan;
     use big_s::S;
 
     #[test]
@@ -234,7 +236,7 @@ mod tests {
       pretty::assert_eq!(want_block, have_block);
       let want_issues = vec![Issue {
         line: 1,
-        problem: S("test.feature:2  unknown step: step 3"),
+        problem: format!("test.feature:2  unknown step: {}", Cyan.paint("step 3")),
       }];
       pretty::assert_eq!(want_issues, issues);
     }
