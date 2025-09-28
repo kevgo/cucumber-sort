@@ -38,6 +38,12 @@ test: build unit lint cuke   # runs all tests
 unit:  # runs the unit tests
 	cargo test --locked
 
+update: tools/rta@${RUN_THAT_APP_VERSION}  # updates the dependencies
+	cargo install cargo-edit
+	cargo upgrade
+	tools/rta --update
+	(cd tools && npm update)
+
 # --- HELPER TARGETS --------------------------------------------------------------------------------------------------------------------------------
 
 build:
