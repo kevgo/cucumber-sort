@@ -1,7 +1,7 @@
 mod cli;
 mod cmd;
 mod config;
-mod find;
+mod find_files;
 mod gherkin;
 mod prelude;
 mod sort;
