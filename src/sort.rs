@@ -1,5 +1,5 @@
 use crate::config::Config;
-use crate::gherkin::{self, Keyword, Step};
+use crate::gherkin::{self, Keyword};
 use ansi_term::Color::Cyan;
 use camino::Utf8Path;
 use regex::Regex;
@@ -59,25 +59,36 @@ fn sort_steps(
       ),
     });
   }
-  (result, issues)
+  (format_step_keywords(result), issues)
 }
 
 fn make_steps_sortable(steps: Vec<gherkin::Step>) -> Vec<gherkin::Step> {
   let mut result = Vec::with_capacity(steps.len());
   let mut previous_keyword: Option<Keyword> = None;
-  for step in steps {
+  for mut step in steps {
     let new_keyword = match step.keyword {
       Keyword::And => previous_keyword.unwrap_or(Keyword::And),
       _ => step.keyword,
     };
     previous_keyword = Some(new_keyword);
-    result.push(Step {
-      title: step.title,
-      keyword: new_keyword,
-      lines: step.lines,
-      indent: step.indent,
-      line_no: step.line_no,
-    });
+    step.keyword = new_keyword;
+    result.push(step);
+  }
+  result
+}
+
+fn format_step_keywords(steps: Vec<gherkin::Step>) -> Vec<gherkin::Step> {
+  let mut result = Vec::with_capacity(steps.len());
+  let mut previous_keyword: Option<Keyword> = None;
+  for mut step in steps {
+    if let Some(prev) = previous_keyword
+      && step.keyword == prev
+    {
+      step.keyword = prev;
+    } else {
+      previous_keyword = Some(step.keyword);
+    };
+    result.push(step);
   }
   result
 }
