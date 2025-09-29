@@ -55,7 +55,7 @@ async fn files_not_changed(world: &mut MyWorld) {
 async fn create_file(world: &mut MyWorld, step: &Step, filename: String) {
   let filepath = world.dir.path().join(filename);
   let content = step.docstring.as_ref().unwrap().trim();
-  let fixed_content = content.replace("'''", "\"\"\"");
+  let fixed_content = unescape_docstrings(content);
   if let Some(parent) = filepath.parent()
     && parent != world.dir.path()
   {
@@ -69,7 +69,7 @@ async fn create_file(world: &mut MyWorld, step: &Step, filename: String) {
 async fn verify_file(world: &mut MyWorld, step: &Step, filename: String) {
   let filepath = world.dir.path().join(filename);
   let raw_want = step.docstring.as_ref().unwrap().trim();
-  let want = raw_want.replace("'''", "\"\"\"");
+  let want = unescape_docstrings(raw_want);
   let have = fs::read_to_string(filepath).await.unwrap();
   pretty::assert_eq!(want, have.trim());
 }
@@ -137,4 +137,8 @@ async fn fails(world: &mut MyWorld) {
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
   MyWorld::run("features").await;
+}
+
+fn unescape_docstrings(text: &str) -> String {
+  text.replace("'''", "\"\"\"")
 }
