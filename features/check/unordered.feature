@@ -17,7 +17,7 @@ Feature: check unordered steps
     When I run "cucumber-sort check"
     Then it prints:
       """
-      feature/one.feature:4  expected And step 1 but found Then step 2
-      feature/one.feature:5  expected Then step 2 but found And step 1
+      feature/one.feature:4  expected Then step 1 but found Then step 2
+      feature/one.feature:5  expected And step 2 but found And step 1
       """
     And the exit code is failure
