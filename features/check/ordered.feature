@@ -13,20 +13,20 @@ Feature: check ordered steps
     And file "feature/one.feature" with content:
       """
       Feature: example
-
+      
         Background:
           Given file "foo" with content:
-            """
+            _"_"_"
             bar
-            """
+            _"_"_"
           And step 2
           When step 3
-
+      
         Scenario: result
           Then file "foo" now has content:
-            """
+            _"_"_"
             bar
-            """
+            _"_"_"
           And step 5
       """
     When I run "cucumber-sort check"
