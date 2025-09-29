@@ -1,7 +1,6 @@
 use crate::prelude::*;
 use std::fmt::Display;
 use std::io::BufRead;
-use std::usize;
 
 /// lexes the given file content
 pub fn file(text: impl BufRead) -> Result<Vec<Line>> {
