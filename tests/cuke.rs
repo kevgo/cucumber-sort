@@ -55,7 +55,7 @@ async fn files_not_changed(world: &mut MyWorld) {
 async fn create_file(world: &mut MyWorld, step: &Step, filename: String) {
   let filepath = world.dir.path().join(filename);
   let content = step.docstring.as_ref().unwrap().trim();
-  let fixed_content = content.replace("\\\"", "\"");
+  let fixed_content = content.replace("'''", "\"\"\"");
   if let Some(parent) = filepath.parent()
     && parent != world.dir.path()
   {

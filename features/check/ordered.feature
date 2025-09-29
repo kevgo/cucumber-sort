@@ -1,6 +1,5 @@
 Feature: check ordered steps
 
-  @this
   Scenario:
     Given file ".cucumbersortrc" with content:
       """
@@ -16,17 +15,17 @@ Feature: check ordered steps
 
         Background:
           Given file "foo" with content:
-            _"_"_"
+            '''
             bar
-            _"_"_"
+            '''
           And step 2
           When step 3
 
         Scenario: result
           Then file "foo" now has content:
-            _"_"_"
+            '''
             bar
-            _"_"_"
+            '''
           And step 5
       """
     When I run "cucumber-sort check"
