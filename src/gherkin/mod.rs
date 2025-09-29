@@ -92,7 +92,7 @@ Feature: test
           line_type: LineType::StepStart {
             keyword: Keyword::And,
           },
-          title_start: 10,
+          title_start: 8,
         },
         Line {
           number: 5,
@@ -101,7 +101,7 @@ Feature: test
           line_type: LineType::StepStart {
             keyword: Keyword::When,
           },
-          title_start: 10,
+          title_start: 9,
         },
         Line {
           number: 6,
@@ -124,7 +124,7 @@ Feature: test
           line_type: LineType::StepStart {
             keyword: Keyword::Then,
           },
-          title_start: 10,
+          title_start: 9,
         },
         Line {
           number: 9,
@@ -133,7 +133,7 @@ Feature: test
           line_type: LineType::StepStart {
             keyword: Keyword::And,
           },
-          title_start: 10,
+          title_start: 8,
         },
         Line {
           number: 10,
@@ -156,7 +156,7 @@ Feature: test
           line_type: LineType::StepStart {
             keyword: Keyword::When,
           },
-          title_start: 10,
+          title_start: 9,
         },
         Line {
           number: 13,
@@ -165,7 +165,7 @@ Feature: test
           line_type: LineType::StepStart {
             keyword: Keyword::Then,
           },
-          title_start: 10,
+          title_start: 9,
         },
       ];
       pretty::assert_eq!(want_lines, have_lines);
@@ -334,7 +334,7 @@ Feature: test
           line_type: LineType::StepStart {
             keyword: Keyword::And,
           },
-          title_start: 9,
+          title_start: 8,
         },
       ];
       pretty::assert_eq!(want_lines, have_lines);
@@ -469,7 +469,7 @@ Feature: test
           line_type: LineType::StepStart {
             keyword: Keyword::And,
           },
-          title_start: 9,
+          title_start: 8,
         },
       ];
       pretty::assert_eq!(want_lines, have_lines);
@@ -571,7 +571,7 @@ Feature: test
           line_type: LineType::StepStart {
             keyword: Keyword::Given,
           },
-          title_start: 9,
+          title_start: 10,
         },
         Line {
           number: 4,
@@ -601,7 +601,7 @@ Feature: test
           line_type: LineType::StepStart {
             keyword: Keyword::And,
           },
-          title_start: 4,
+          title_start: 8,
         },
       ];
       pretty::assert_eq!(want_lines, have_lines);
