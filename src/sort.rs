@@ -112,15 +112,15 @@ mod tests {
     use big_s::S;
     use regex::Regex;
 
-    // TODO: create a macro that creates a Regex instance for the given argument and unwraps it.
+    macro_rules! regex {
+      ($pattern:expr) => {
+        Regex::new($pattern).unwrap()
+      };
+    }
 
     #[test]
     fn already_ordered() {
-      let config_steps = vec![
-        Regex::new("step 1").unwrap(),
-        Regex::new("step 2").unwrap(),
-        Regex::new("step 3").unwrap(),
-      ];
+      let config_steps = vec![regex!("step 1"), regex!("step 2"), regex!("step 3")];
       let give_steps = vec![
         gherkin::Step {
           title: S("step 1"),
@@ -150,11 +150,7 @@ mod tests {
     #[test]
     fn unordered() {
       let config = Config {
-        steps: vec![
-          Regex::new("step 1").unwrap(),
-          Regex::new("step 2").unwrap(),
-          Regex::new("step 3").unwrap(),
-        ],
+        steps: vec![regex!("step 1"), regex!("step 2"), regex!("step 3")],
       };
       let give_block = gherkin::Block::Sortable(vec![
         gherkin::Step {
@@ -204,7 +200,7 @@ mod tests {
     #[test]
     fn unknown_step() {
       let config = Config {
-        steps: vec![S("step 1"), S("step 2")],
+        steps: vec![regex!("step 1"), regex!("step 2")],
       };
       let give_block = gherkin::Block::Sortable(vec![
         gherkin::Step {

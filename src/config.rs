@@ -1,6 +1,5 @@
-use regex::Regex;
-
 use crate::prelude::*;
+use regex::Regex;
 use std::fs;
 use std::io::{BufRead, BufReader};
 
