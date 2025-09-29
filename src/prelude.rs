@@ -11,7 +11,6 @@ pub enum UserError {
   ConfigFileRead { reason: String },
   FileRead { file: Utf8PathBuf, reason: String },
   FileWrite { file: Utf8PathBuf, reason: String },
-  BlockStartsWithAnd { file: Utf8PathBuf, line: usize },
   UnknownGherkinKeyword(String),
 }
 

@@ -3,7 +3,6 @@ mod parser;
 
 use crate::prelude::*;
 use camino::Utf8Path;
-#[cfg(test)]
 pub use lexer::Keyword;
 pub use parser::{Block, Document, Step};
 use std::fs::File;

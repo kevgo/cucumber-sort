@@ -1,6 +1,5 @@
 use crate::config::Config;
 use crate::gherkin::{self, Keyword, Step};
-use crate::prelude::*;
 use ansi_term::Color::Cyan;
 use camino::Utf8Path;
 use regex::Regex;
@@ -43,7 +42,7 @@ fn sort_steps(
   filename: &Utf8Path,
 ) -> (Vec<gherkin::Step>, Vec<Issue>) {
   let mut result = Vec::<gherkin::Step>::with_capacity(unordered_steps.len());
-  let mut steps = DeletableSteps::from(unordered_steps);
+  let mut steps = DeletableSteps::from(make_steps_sortable(unordered_steps));
   for config_step in config_steps {
     let extracted = steps.extract(config_step);
     result.extend(extracted);
@@ -63,20 +62,13 @@ fn sort_steps(
   (result, issues)
 }
 
-fn make_steps_sortable(steps: Vec<gherkin::Step>, file: &Utf8Path) -> Result<Vec<gherkin::Step>> {
+fn make_steps_sortable(steps: Vec<gherkin::Step>) -> Vec<gherkin::Step> {
   let mut result = Vec::with_capacity(steps.len());
   let mut previous_keyword: Option<Keyword> = None;
   for step in steps {
-    let new_keyword = if step.keyword == Keyword::And {
-      let Some(prev) = previous_keyword else {
-        return Err(UserError::BlockStartsWithAnd {
-          file: file.to_path_buf(),
-          line: step.line_no,
-        });
-      };
-      prev
-    } else {
-      step.keyword
+    let new_keyword = match step.keyword {
+      Keyword::And => previous_keyword.unwrap_or(Keyword::And),
+      _ => step.keyword,
     };
     previous_keyword = Some(new_keyword);
     result.push(Step {
@@ -87,7 +79,7 @@ fn make_steps_sortable(steps: Vec<gherkin::Step>, file: &Utf8Path) -> Result<Vec
       line_no: step.line_no,
     });
   }
-  Ok(result)
+  result
 }
 
 /// a Vec that makes it efficient to delete elements from it
