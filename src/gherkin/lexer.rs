@@ -1,14 +1,16 @@
+use crate::prelude::UserError;
+use crate::prelude::*;
 use std::io::BufRead;
 
 /// the words that lines which start a step can start with
 pub const STEP_STARTERS: &[&str] = &["Given ", "When ", "Then ", "And "];
 
 /// lexes the given file content
-pub fn file(text: impl BufRead) -> Vec<Line> {
+pub fn file(text: impl BufRead) -> Result<Vec<Line>> {
   let mut result = vec![];
   let mut docstring_indentation = None;
   for (i, text_line) in text.lines().enumerate() {
-    let mut line = Line::new(text_line.unwrap(), i);
+    let mut line = Line::new(text_line.unwrap(), i)?;
     if docstring_indentation.is_none() && line.line_type == LineType::DocStringStartStop {
       docstring_indentation = Some(line.indent);
     } else if let Some(indentation) = &docstring_indentation
@@ -21,7 +23,7 @@ pub fn file(text: impl BufRead) -> Vec<Line> {
     }
     result.push(line);
   }
-  result
+  Ok(result)
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -40,15 +42,15 @@ pub struct Line {
 }
 
 impl Line {
-  fn new(text: String, number: usize) -> Line {
+  fn new(text: String, number: usize) -> Result<Line> {
     let (indent, trimmed) = trim_initial_whitespace(&text);
-    let line_type = trimmed.line_type();
-    Line {
+    let line_type = trimmed.line_type()?;
+    Ok(Line {
       number,
       text,
       indent,
       line_type,
-    }
+    })
   }
 
   pub fn title(&self) -> &str {
@@ -76,9 +78,31 @@ pub enum LineType {
   /// the start or stop of a Gherkin docstring
   DocStringStartStop,
   /// the start of a Gherkin step, i.e. "Given", "When", "Then", etc
-  StepStart,
+  StepStart { keyword: Keyword },
   /// static text that shouldn't be sorted
   Text,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum Keyword {
+  Given,
+  When,
+  Then,
+  And,
+}
+
+impl TryFrom<&str> for Keyword {
+  type Error = UserError;
+
+  fn try_from(value: &str) -> std::result::Result<Self, Self::Error> {
+    match value.to_ascii_lowercase().as_str() {
+      "given" => Ok(Keyword::Given),
+      "when" => Ok(Keyword::When),
+      "then" => Ok(Keyword::Then),
+      "and" => Ok(Keyword::And),
+      other => Err(UserError::UnknownGherkinKeyword(other.to_string())),
+    }
+  }
 }
 
 /// a line without the initial whitespace
@@ -86,13 +110,13 @@ pub enum LineType {
 pub struct TrimmedLine<'a>(&'a str);
 
 impl<'a> TrimmedLine<'a> {
-  fn line_type(&self) -> LineType {
+  fn line_type(&self) -> Result<LineType> {
     if self.is_docstring_start() {
-      LineType::DocStringStartStop
-    } else if self.is_step_start() {
-      LineType::StepStart
+      return Ok(LineType::DocStringStartStop);
+    } else if let Some(keyword) = self.is_step_start()? {
+      Ok(LineType::StepStart { keyword })
     } else {
-      LineType::Text
+      Ok(LineType::Text)
     }
   }
 
@@ -100,8 +124,18 @@ impl<'a> TrimmedLine<'a> {
     self.0 == "\"\"\""
   }
 
-  fn is_step_start(&self) -> bool {
-    STEP_STARTERS.iter().any(|word| self.0.starts_with(word))
+  fn is_step_start(&self) -> Result<Option<Keyword>> {
+    for starter in STEP_STARTERS {
+      if !self.0.starts_with(starter) {
+        continue;
+      }
+      let key_text = &self.0[0..starter.len()];
+      let Ok(keyword) = Keyword::try_from(key_text) else {
+        return Err(UserError::UnknownGherkinKeyword(key_text.to_string()));
+      };
+      return Ok(Some(keyword));
+    }
+    Ok(None)
   }
 }
 
@@ -153,30 +187,49 @@ mod tests {
   }
 
   mod trimmed_line {
-    use crate::gherkin::lexer::{LineType, TrimmedLine};
+    use crate::gherkin::lexer::{Keyword, LineType, TrimmedLine};
+    use crate::prelude::UserError;
+    use big_s::S;
 
     #[test]
     fn is_step_start() {
-      assert!(TrimmedLine::from("Given a cucumber").is_step_start());
-      assert!(TrimmedLine::from("When I eat it").is_step_start());
-      assert!(TrimmedLine::from("Then its gone").is_step_start());
-      assert!(TrimmedLine::from("And I am happy").is_step_start());
-      assert!(!TrimmedLine::from("Other text").is_step_start());
+      assert_eq!(
+        Ok(Some(Keyword::Given)),
+        TrimmedLine::from("Given a cucumber").is_step_start()
+      );
+      assert_eq!(
+        Ok(Some(Keyword::When)),
+        TrimmedLine::from("When I eat it").is_step_start()
+      );
+      assert_eq!(
+        Ok(Some(Keyword::Then)),
+        TrimmedLine::from("Then its gone").is_step_start()
+      );
+      assert_eq!(
+        Ok(Some(Keyword::And)),
+        TrimmedLine::from("And I am happy").is_step_start()
+      );
+      assert_eq!(
+        Err(UserError::UnknownGherkinKeyword(S("Other"))),
+        TrimmedLine::from("Other text").is_step_start()
+      );
     }
 
     #[test]
     fn line_type() {
       assert_eq!(
         TrimmedLine::from("Given a cucumber").line_type(),
-        LineType::StepStart
+        Ok(LineType::StepStart {
+          keyword: Keyword::Given
+        })
       );
       assert_eq!(
         TrimmedLine::from("Feature: test").line_type(),
-        LineType::Text
+        Ok(LineType::Text)
       );
       assert_eq!(
         TrimmedLine::from("\"\"\"").line_type(),
-        LineType::DocStringStartStop
+        Ok(LineType::DocStringStartStop),
       );
     }
   }

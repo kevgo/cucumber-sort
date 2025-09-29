@@ -15,20 +15,20 @@ Feature: format unordered steps
       Feature: example
         Comment text
         describing the feature.
-
+      
         Background:
           Given step 2
           And file "foo" with content:
             '''
             bar
             '''
-
+      
         Scenario: result
           Then step 4
           And step 3
-
+      
         # another comment
-
+      
         Scenario: undo
           When step 5
           Then file "foo" now has content:
@@ -44,20 +44,20 @@ Feature: format unordered steps
       Feature: example
         Comment text
         describing the feature.
-
+      
         Background:
           Given file "foo" with content:
             '''
             bar
             '''
           And step 2
-
+      
         Scenario: result
           Then step 3
           And step 4
-
+      
         # another comment
-
+      
         Scenario: undo
           When step 5
           Then file "foo" now has content:

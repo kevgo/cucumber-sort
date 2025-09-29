@@ -1,6 +1,7 @@
 //! stuff that is used in pretty much every file of this crate
 
 use crate::config;
+use big_s::S;
 use camino::Utf8PathBuf;
 
 /// UserError happen when the user uses this linter the wrong way.
@@ -10,6 +11,7 @@ pub enum UserError {
   ConfigFileRead { reason: String },
   FileRead { file: Utf8PathBuf, reason: String },
   FileWrite { file: Utf8PathBuf, reason: String },
+  UnknownGherkinKeyword(String),
 }
 
 impl UserError {
@@ -29,6 +31,10 @@ impl UserError {
       UserError::FileWrite { file, reason } => {
         (format!("cannot write file {file}: {reason}"), None)
       }
+      UserError::UnknownGherkinKeyword(keyword) => (
+        format!("unknown Gherkin keyword: {keyword}"),
+        Some(S("Allowed keywords are: Given, When, Then, And")),
+      ),
     }
   }
 }
