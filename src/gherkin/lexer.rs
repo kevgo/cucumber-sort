@@ -96,7 +96,7 @@ impl Display for Keyword {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     let text = match self {
       Keyword::Given => "Given",
-      Keyword::When => "When ",
+      Keyword::When => "When",
       Keyword::Then => "Then",
       Keyword::And => "And",
     };

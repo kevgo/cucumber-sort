@@ -240,7 +240,7 @@ Feature: test
         S("    When step 6"),
         S("    Then step 7"),
       ]);
-      pretty::assert_eq!(want_lines, have_lines);
+      pretty::assert_eq!(have_lines, want_lines);
 
       // step 4: serialize back into the original string
       let have_text = have_lines.to_string();
@@ -851,7 +851,7 @@ Feature: test
           ]),
         ],
       };
-      pretty::assert_eq!(want_feature, have_feature);
+      pretty::assert_eq!(have_feature, want_feature);
 
       // step 3: serialize the block back into lines
       let have_lines = have_feature.lines();
@@ -866,7 +866,7 @@ Feature: test
         S("      \"\"\""),
         S("    When step 2"),
       ]);
-      pretty::assert_eq!(want_lines, have_lines);
+      pretty::assert_eq!(have_lines, want_lines);
 
       // step 4: serialize back into the original string
       let have_text = have_lines.to_string();
