@@ -139,6 +139,9 @@ async fn main() {
   MyWorld::run("features").await;
 }
 
+/// The Gherkin formatter chokes up when Gherkin docstrings contain Gherkin that contains docstrings themselves.
+/// Hence our end-to-end tests write docstring delimiters as ''' instead of """.
+/// This function changes them back to proper docstrings.
 fn unescape_docstrings(text: &str) -> String {
   text.replace("'''", "\"\"\"")
 }
