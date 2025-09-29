@@ -13,7 +13,7 @@ Feature: check ordered steps
     And file "feature/one.feature" with content:
       """
       Feature: example
-      
+
         Background:
           Given file "foo" with content:
             _"_"_"
@@ -21,7 +21,7 @@ Feature: check ordered steps
             _"_"_"
           And step 2
           When step 3
-      
+
         Scenario: result
           Then file "foo" now has content:
             _"_"_"
