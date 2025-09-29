@@ -319,23 +319,23 @@ mod tests {
         gherkin::Step {
           title: S("step 1"),
           keyword: Keyword::Given,
-          lines: vec![],
+          additional_lines: vec![],
           line_no: 0,
-          indent: 0,
+          indent: S(""),
         },
         gherkin::Step {
           title: S("step 2"),
           keyword: Keyword::When,
-          lines: vec![],
+          additional_lines: vec![],
           line_no: 1,
-          indent: 0,
+          indent: S(""),
         },
         gherkin::Step {
           title: S("step 3"),
           keyword: Keyword::Then,
-          lines: vec![],
+          additional_lines: vec![],
           line_no: 2,
-          indent: 0,
+          indent: S(""),
         },
       ];
       let want_steps = give_steps.clone();
@@ -353,46 +353,46 @@ mod tests {
         gherkin::Step {
           title: S("step 3"),
           keyword: Keyword::Given,
-          lines: vec![],
+          additional_lines: vec![],
           line_no: 0,
-          indent: 0,
+          indent: S(""),
         },
         gherkin::Step {
           title: S("step 2"),
           keyword: Keyword::And,
-          lines: vec![],
+          additional_lines: vec![],
           line_no: 1,
-          indent: 0,
+          indent: S(""),
         },
         gherkin::Step {
           title: S("step 1"),
           keyword: Keyword::And,
-          lines: vec![],
+          additional_lines: vec![],
           line_no: 2,
-          indent: 0,
+          indent: S(""),
         },
       ]);
       let want_block = gherkin::Block::Sortable(vec![
         gherkin::Step {
           title: S("step 1"),
           keyword: Keyword::Given,
-          lines: vec![],
+          additional_lines: vec![],
           line_no: 2,
-          indent: 0,
+          indent: S(""),
         },
         gherkin::Step {
           title: S("step 2"),
           keyword: Keyword::And,
-          lines: vec![],
+          additional_lines: vec![],
           line_no: 1,
-          indent: 0,
+          indent: S(""),
         },
         gherkin::Step {
           title: S("step 3"),
           keyword: Keyword::And,
-          lines: vec![],
+          additional_lines: vec![],
           line_no: 0,
-          indent: 0,
+          indent: S(""),
         },
       ]);
       let (have_block, issues) = sort::sort_block(give_block, &config, "test.feature".into());
@@ -409,39 +409,39 @@ mod tests {
         gherkin::Step {
           title: S("step 2"),
           keyword: Keyword::Given,
-          lines: vec![],
+          additional_lines: vec![],
           line_no: 0,
-          indent: 0,
+          indent: S(""),
         },
         gherkin::Step {
           title: S("step 3"),
           keyword: Keyword::Given,
-          lines: vec![],
+          additional_lines: vec![],
           line_no: 1,
-          indent: 0,
+          indent: S(""),
         },
         gherkin::Step {
           title: S("step 1"),
           keyword: Keyword::Given,
-          lines: vec![],
+          additional_lines: vec![],
           line_no: 2,
-          indent: 0,
+          indent: S(""),
         },
       ]);
       let want_block = gherkin::Block::Sortable(vec![
         gherkin::Step {
           title: S("step 1"),
           keyword: Keyword::Given,
-          lines: vec![],
+          additional_lines: vec![],
           line_no: 2,
-          indent: 0,
+          indent: S(""),
         },
         gherkin::Step {
           title: S("step 2"),
           keyword: Keyword::And,
-          lines: vec![],
+          additional_lines: vec![],
           line_no: 0,
-          indent: 0,
+          indent: S(""),
         },
       ]);
       let (have_block, issues) = sort::sort_block(give_block, &config, "test.feature".into());
@@ -464,9 +464,9 @@ mod tests {
       let step_1 = Step {
         title: S("title"),
         keyword: Keyword::Given,
-        lines: vec![],
+        additional_lines: vec![],
         line_no: 1,
-        indent: 0,
+        indent: S(""),
       };
       let give = DeletableSteps(vec![None, Some(step_1.clone())]);
       let have: Vec<_> = give.elements().collect();

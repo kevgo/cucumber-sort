@@ -58,25 +58,25 @@ Feature: test
         Line {
           number: 0,
           text: S("Feature: test"),
-          indent: 0,
+          indent: S(""),
           line_type: LineType::Text,
         },
         Line {
           number: 1,
           text: S(""),
-          indent: 0,
+          indent: S(""),
           line_type: LineType::Text,
         },
         Line {
           number: 2,
           text: S("  Background:"),
-          indent: 2,
+          indent: S("  "),
           line_type: LineType::Text,
         },
         Line {
           number: 3,
           text: S("    Given step 1"),
-          indent: 4,
+          indent: S("    "),
           line_type: LineType::StepStart {
             keyword: Keyword::Given,
           },
@@ -84,7 +84,7 @@ Feature: test
         Line {
           number: 4,
           text: S("    And step 2"),
-          indent: 4,
+          indent: S("    "),
           line_type: LineType::StepStart {
             keyword: Keyword::And,
           },
@@ -92,7 +92,7 @@ Feature: test
         Line {
           number: 5,
           text: S("    When step 3"),
-          indent: 4,
+          indent: S("    "),
           line_type: LineType::StepStart {
             keyword: Keyword::When,
           },
@@ -100,19 +100,19 @@ Feature: test
         Line {
           number: 6,
           text: S(""),
-          indent: 0,
+          indent: S(""),
           line_type: LineType::Text,
         },
         Line {
           number: 7,
           text: S("  Scenario: result"),
-          indent: 2,
+          indent: S("  "),
           line_type: LineType::Text,
         },
         Line {
           number: 8,
           text: S("    Then step 4"),
-          indent: 4,
+          indent: S("    "),
           line_type: LineType::StepStart {
             keyword: Keyword::Then,
           },
@@ -120,7 +120,7 @@ Feature: test
         Line {
           number: 9,
           text: S("    And step 5"),
-          indent: 4,
+          indent: S("    "),
           line_type: LineType::StepStart {
             keyword: Keyword::And,
           },
@@ -128,19 +128,19 @@ Feature: test
         Line {
           number: 10,
           text: S(""),
-          indent: 0,
+          indent: S(""),
           line_type: LineType::Text,
         },
         Line {
           number: 11,
           text: S("  Scenario: undo"),
-          indent: 2,
+          indent: S("  "),
           line_type: LineType::Text,
         },
         Line {
           number: 12,
           text: S("    When step 6"),
-          indent: 4,
+          indent: S("    "),
           line_type: LineType::StepStart {
             keyword: Keyword::When,
           },
@@ -148,7 +148,7 @@ Feature: test
         Line {
           number: 13,
           text: S("    Then step 7"),
-          indent: 4,
+          indent: S("    "),
           line_type: LineType::StepStart {
             keyword: Keyword::Then,
           },
@@ -165,22 +165,22 @@ Feature: test
             Step {
               title: S("step 1"),
               keyword: Keyword::Given,
-              lines: vec![S("    Given step 1")],
-              indent: 4,
+              additional_lines: vec![S("    Given step 1")],
+              indent: S("    "),
               line_no: 3,
             },
             Step {
               title: S("step 2"),
               keyword: Keyword::And,
-              lines: vec![S("    And step 2")],
-              indent: 4,
+              additional_lines: vec![S("    And step 2")],
+              indent: S("    "),
               line_no: 4,
             },
             Step {
               title: S("step 3"),
               keyword: Keyword::When,
-              lines: vec![S("    When step 3")],
-              indent: 4,
+              additional_lines: vec![S("    When step 3")],
+              indent: S("    "),
               line_no: 5,
             },
           ]),
@@ -189,15 +189,15 @@ Feature: test
             Step {
               title: S("step 4"),
               keyword: Keyword::Then,
-              lines: vec![S("    Then step 4")],
-              indent: 4,
+              additional_lines: vec![S("    Then step 4")],
+              indent: S("    "),
               line_no: 8,
             },
             Step {
               title: S("step 5"),
               keyword: Keyword::And,
-              lines: vec![S("    And step 5")],
-              indent: 4,
+              additional_lines: vec![S("    And step 5")],
+              indent: S("    "),
               line_no: 9,
             },
           ]),
@@ -206,15 +206,15 @@ Feature: test
             Step {
               title: S("step 6"),
               keyword: Keyword::When,
-              lines: vec![S("    When step 6")],
-              indent: 4,
+              additional_lines: vec![S("    When step 6")],
+              indent: S("    "),
               line_no: 12,
             },
             Step {
               title: S("step 7"),
               keyword: Keyword::Then,
-              lines: vec![S("    Then step 7")],
-              indent: 4,
+              additional_lines: vec![S("    Then step 7")],
+              indent: S("    "),
               line_no: 13,
             },
           ]),
@@ -265,37 +265,37 @@ Feature: test
         Line {
           number: 0,
           text: S("Feature: test"),
-          indent: 0,
+          indent: S(""),
           line_type: LineType::Text,
         },
         Line {
           number: 1,
           text: S(""),
-          indent: 0,
+          indent: S(""),
           line_type: LineType::Text,
         },
         Line {
           number: 2,
           text: S("  An example feature file"),
-          indent: 2,
+          indent: S("    "),
           line_type: LineType::Text,
         },
         Line {
           number: 3,
           text: S(""),
-          indent: 0,
+          indent: S(""),
           line_type: LineType::Text,
         },
         Line {
           number: 4,
           text: S("  Scenario:"),
-          indent: 2,
+          indent: S("  "),
           line_type: LineType::Text,
         },
         Line {
           number: 5,
           text: S("    Given step 1:"),
-          indent: 4,
+          indent: S("    "),
           line_type: LineType::StepStart {
             keyword: Keyword::Given,
           },
@@ -303,13 +303,13 @@ Feature: test
         Line {
           number: 6,
           text: S("    # And step 2"),
-          indent: 4,
+          indent: S("    "),
           line_type: LineType::Text,
         },
         Line {
           number: 7,
           text: S("    And step 3"),
-          indent: 4,
+          indent: S("    "),
           line_type: LineType::StepStart {
             keyword: Keyword::And,
           },
@@ -331,16 +331,16 @@ Feature: test
           Block::Sortable(vec![Step {
             title: S("step 1:"),
             keyword: Keyword::Given,
-            lines: vec![S("    Given step 1:")],
-            indent: 4,
+            additional_lines: vec![S("    Given step 1:")],
+            indent: S("    "),
             line_no: 5,
           }]),
           Block::Static(vec![S("    # And step 2")]),
           Block::Sortable(vec![Step {
             title: S("step 3"),
             keyword: Keyword::And,
-            lines: vec![S("    And step 3")],
-            indent: 4,
+            additional_lines: vec![S("    And step 3")],
+            indent: S("    "),
             line_no: 7,
           }]),
         ],
@@ -385,25 +385,25 @@ Feature: test
         Line {
           number: 0,
           text: S("Feature: test"),
-          indent: 0,
+          indent: S(""),
           line_type: LineType::Text,
         },
         Line {
           number: 1,
           text: S(""),
-          indent: 0,
+          indent: S(""),
           line_type: LineType::Text,
         },
         Line {
           number: 2,
           text: S("  Scenario: with docstring"),
-          indent: 2,
+          indent: S("  "),
           line_type: LineType::Text,
         },
         Line {
           number: 3,
           text: S("    Given step 1:"),
-          indent: 4,
+          indent: S("    "),
           line_type: LineType::StepStart {
             keyword: Keyword::Given,
           },
@@ -411,31 +411,31 @@ Feature: test
         Line {
           number: 4,
           text: S(r#"      """"#),
-          indent: 6,
+          indent: S("      "),
           line_type: LineType::DocStringStartStop,
         },
         Line {
           number: 5,
           text: S("      docstring line 1"),
-          indent: 6,
+          indent: S("      "),
           line_type: LineType::Text,
         },
         Line {
           number: 6,
           text: S("      docstring line 2"),
-          indent: 6,
+          indent: S("      "),
           line_type: LineType::Text,
         },
         Line {
           number: 7,
           text: S(r#"      """"#),
-          indent: 6,
+          indent: S("      "),
           line_type: LineType::DocStringStartStop,
         },
         Line {
           number: 8,
           text: S("    And step 2"),
-          indent: 4,
+          indent: S("    "),
           line_type: LineType::StepStart {
             keyword: Keyword::And,
           },
@@ -456,21 +456,21 @@ Feature: test
             Step {
               title: S("step 1:"),
               keyword: Keyword::Given,
-              lines: vec![
+              additional_lines: vec![
                 S("    Given step 1:"),
                 S("      \"\"\""),
                 S("      docstring line 1"),
                 S("      docstring line 2"),
                 S("      \"\"\""),
               ],
-              indent: 4,
+              indent: S("    "),
               line_no: 3,
             },
             Step {
               title: S("step 2"),
               keyword: Keyword::And,
-              lines: vec![S("    And step 2")],
-              indent: 4,
+              additional_lines: vec![S("    And step 2")],
+              indent: S("    "),
               line_no: 8,
             },
           ]),
@@ -516,25 +516,25 @@ Feature: test
         Line {
           number: 0,
           text: S("Feature: test"),
-          indent: 0,
+          indent: S(""),
           line_type: LineType::Text,
         },
         Line {
           number: 1,
           text: S(""),
-          indent: 0,
+          indent: S(""),
           line_type: LineType::Text,
         },
         Line {
           number: 2,
           text: S("  Scenario: with table"),
-          indent: 2,
+          indent: S("  "),
           line_type: LineType::Text,
         },
         Line {
           number: 3,
           text: S("    Given step 1:"),
-          indent: 4,
+          indent: S("    "),
           line_type: LineType::StepStart {
             keyword: Keyword::Given,
           },
@@ -542,25 +542,25 @@ Feature: test
         Line {
           number: 4,
           text: S("      | HEAD A | HEAD B |"),
-          indent: 6,
+          indent: S("      "),
           line_type: LineType::Text,
         },
         Line {
           number: 5,
           text: S("      | row 1A | row 1B |"),
-          indent: 6,
+          indent: S("      "),
           line_type: LineType::Text,
         },
         Line {
           number: 6,
           text: S("      | row 2A | row 2B |"),
-          indent: 6,
+          indent: S("      "),
           line_type: LineType::Text,
         },
         Line {
           number: 7,
           text: S("    And step 2"),
-          indent: 4,
+          indent: S("    "),
           line_type: LineType::StepStart {
             keyword: Keyword::And,
           },
@@ -576,8 +576,8 @@ Feature: test
           Block::Sortable(vec![Step {
             title: S("step 1:"),
             keyword: Keyword::Given,
-            lines: vec![S("    Given step 1:")],
-            indent: 4,
+            additional_lines: vec![S("    Given step 1:")],
+            indent: S("    "),
             line_no: 3,
           }]),
           Block::Static(vec![
@@ -588,8 +588,8 @@ Feature: test
           Block::Sortable(vec![Step {
             title: S("step 2"),
             keyword: Keyword::And,
-            lines: vec![S("    And step 2")],
-            indent: 4,
+            additional_lines: vec![S("    And step 2")],
+            indent: S("    "),
             line_no: 7,
           }]),
         ],
@@ -634,25 +634,25 @@ Feature: test
         Line {
           number: 0,
           text: S("Feature: test"),
-          indent: 0,
+          indent: S(""),
           line_type: LineType::Text,
         },
         Line {
           number: 1,
           text: S(""),
-          indent: 0,
+          indent: S(""),
           line_type: LineType::Text,
         },
         Line {
           number: 2,
           text: S("  Scenario Outline:"),
-          indent: 2,
+          indent: S("  "),
           line_type: LineType::Text,
         },
         Line {
           number: 3,
           text: S("    Given <ALPHA>"),
-          indent: 4,
+          indent: S("    "),
           line_type: LineType::StepStart {
             keyword: Keyword::Given,
           },
@@ -660,7 +660,7 @@ Feature: test
         Line {
           number: 4,
           text: S("    Then <BETA>"),
-          indent: 4,
+          indent: S("    "),
           line_type: LineType::StepStart {
             keyword: Keyword::Then,
           },
@@ -668,25 +668,25 @@ Feature: test
         Line {
           number: 5,
           text: S(""),
-          indent: 0,
+          indent: S(""),
           line_type: LineType::Text,
         },
         Line {
           number: 6,
           text: S("    Examples:"),
-          indent: 4,
+          indent: S("    "),
           line_type: LineType::Text,
         },
         Line {
           number: 7,
           text: S("      | ALPHA | BETA |"),
-          indent: 6,
+          indent: S("      "),
           line_type: LineType::Text,
         },
         Line {
           number: 8,
           text: S("      | one   | two  |"),
-          indent: 6,
+          indent: S("      "),
           line_type: LineType::Text,
         },
       ];
@@ -701,15 +701,15 @@ Feature: test
             Step {
               title: S("<ALPHA>"),
               keyword: Keyword::Given,
-              lines: vec![S("    Given <ALPHA>")],
-              indent: 4,
+              additional_lines: vec![S("    Given <ALPHA>")],
+              indent: S("    "),
               line_no: 3,
             },
             Step {
               title: S("<BETA>"),
               keyword: Keyword::Then,
-              lines: vec![S("    Then <BETA>")],
-              indent: 4,
+              additional_lines: vec![S("    Then <BETA>")],
+              indent: S("    "),
               line_no: 4,
             },
           ]),
@@ -762,25 +762,25 @@ Feature: test
         Line {
           number: 0,
           text: S("Feature: test"),
-          indent: 0,
+          indent: S(""),
           line_type: LineType::Text,
         },
         Line {
           number: 1,
           text: S(""),
-          indent: 0,
+          indent: S(""),
           line_type: LineType::Text,
         },
         Line {
           number: 2,
           text: S("  Scenario: gherkin in docstring"),
-          indent: 2,
+          indent: S("  "),
           line_type: LineType::Text,
         },
         Line {
           number: 3,
           text: S("    Given file \"foo\":"),
-          indent: 4,
+          indent: S("    "),
           line_type: LineType::StepStart {
             keyword: Keyword::Given,
           },
@@ -788,31 +788,31 @@ Feature: test
         Line {
           number: 4,
           text: S(r#"      """"#),
-          indent: 6,
+          indent: S("      "),
           line_type: LineType::DocStringStartStop,
         },
         Line {
           number: 5,
           text: S("      Scenario: embedded"),
-          indent: 6,
+          indent: S("      "),
           line_type: LineType::Text,
         },
         Line {
           number: 6,
           text: S("        Given step 1"),
-          indent: 8,
+          indent: S("        "),
           line_type: LineType::Text,
         },
         Line {
           number: 7,
           text: S("      \"\"\""),
-          indent: 6,
+          indent: S("      "),
           line_type: LineType::DocStringStartStop,
         },
         Line {
           number: 8,
           text: S("    When step 2"),
-          indent: 4,
+          indent: S("    "),
           line_type: LineType::StepStart {
             keyword: Keyword::When,
           },
@@ -833,21 +833,21 @@ Feature: test
             Step {
               title: S("file \"foo\":"),
               keyword: Keyword::Given,
-              lines: vec![
+              additional_lines: vec![
                 S("    Given file \"foo\":"),
                 S("      \"\"\""),
                 S("      Scenario: embedded"),
                 S("        Given step 1"),
                 S("      \"\"\""),
               ],
-              indent: 4,
+              indent: S("    "),
               line_no: 3,
             },
             Step {
               title: S("step 2"),
               keyword: Keyword::When,
-              lines: vec![S("    When step 2")],
-              indent: 4,
+              additional_lines: vec![S("    When step 2")],
+              indent: S("    "),
               line_no: 8,
             },
           ]),

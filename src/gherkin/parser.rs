@@ -21,7 +21,7 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Document> {
         new_open_step = Some(Step {
           title: line.title().to_string(),
           keyword: *keyword,
-          lines: vec![line.text],
+          additional_lines: vec![],
           indent: line.indent,
           line_no: line.number,
         });
@@ -33,14 +33,14 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Document> {
         new_open_step = Some(Step {
           title: line.title().to_string(),
           keyword: *keyword,
-          lines: vec![line.text],
+          additional_lines: vec![],
           indent: line.indent,
           line_no: line.number,
         });
       }
       (LineType::DocStringStartStop, Some(Block::Sortable(steps)), Some(mut step)) => {
         // a docstring start/end while populating a step
-        step.lines.push(line.text);
+        step.additional_lines.push(line.text);
         new_open_block = Some(Block::Sortable(steps));
         new_open_step = Some(step);
         inside_docstring = !inside_docstring
@@ -53,7 +53,7 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Document> {
       (LineType::Text, Some(Block::Sortable(mut steps)), Some(mut step)) => {
         if inside_docstring {
           // we are inside a docstring, this line is part of the docstring content
-          step.lines.push(line.text);
+          step.additional_lines.push(line.text);
           new_open_block = Some(Block::Sortable(steps));
           new_open_step = Some(step);
         } else {
@@ -136,7 +136,8 @@ impl Document {
       match block {
         Block::Sortable(steps) => {
           for step in steps {
-            result.extend(step.lines);
+            result.push(format!("{}{} {}", step.indent, step.keyword, step.title));
+            result.extend(step.additional_lines);
           }
         }
         Block::Static(lines) => {
@@ -206,10 +207,10 @@ pub struct Step {
   pub keyword: Keyword,
 
   /// the textual lines making up this step
-  pub lines: Vec<String>,
+  pub additional_lines: Vec<String>,
 
-  /// the indentation of this step
-  pub indent: usize,
+  /// the whitespace making up the indentation of this step
+  pub indent: String,
 
   /// the absolute line number inside the document at which this step start
   pub line_no: usize,
@@ -221,7 +222,7 @@ impl Default for Step {
     Self {
       title: Default::default(),
       keyword: Keyword::Given,
-      lines: Default::default(),
+      additional_lines: Default::default(),
       indent: Default::default(),
       line_no: Default::default(),
     }

@@ -1,4 +1,5 @@
 use crate::prelude::{UserError, *};
+use std::fmt::Display;
 use std::io::BufRead;
 
 /// the words that lines which start a step can start with
@@ -11,10 +12,10 @@ pub fn file(text: impl BufRead) -> Result<Vec<Line>> {
   for (i, text_line) in text.lines().enumerate() {
     let mut line = Line::new(text_line.unwrap(), i)?;
     if docstring_indentation.is_none() && line.line_type == LineType::DocStringStartStop {
-      docstring_indentation = Some(line.indent);
+      docstring_indentation = Some(line.indent.len());
     } else if let Some(indentation) = &docstring_indentation
       && line.line_type == LineType::DocStringStartStop
-      && line.indent == *indentation
+      && &line.indent.len() == indentation
     {
       docstring_indentation = None
     } else if docstring_indentation.is_some() {
@@ -34,7 +35,7 @@ pub struct Line {
   pub text: String,
 
   /// how much the line is indented
-  pub indent: usize,
+  pub indent: String,
 
   /// whether this is a Given/When/Then line or not
   pub line_type: LineType,
@@ -43,6 +44,7 @@ pub struct Line {
 impl Line {
   fn new(text: String, number: usize) -> Result<Line> {
     let (indent, trimmed) = trim_initial_whitespace(&text);
+    let indent = indent.to_string();
     let line_type = trimmed.line_type()?;
     Ok(Line {
       number,
@@ -53,7 +55,7 @@ impl Line {
   }
 
   pub fn title(&self) -> &str {
-    if let Some((_first_word, remainder)) = self.text[self.indent..].split_once(" ") {
+    if let Some((_first_word, remainder)) = self.text[self.indent.len()..].split_once(" ") {
       remainder
     } else {
       ""
@@ -62,14 +64,14 @@ impl Line {
 }
 
 /// provides the number of leading whitespace characters and the text without that leading whitespace
-fn trim_initial_whitespace<'a>(line: &'a str) -> (usize, TrimmedLine<'a>) {
+fn trim_initial_whitespace(line: &str) -> (&str, TrimmedLine<'_>) {
   for (i, c) in line.char_indices() {
     if c != ' ' && c != '\t' {
-      return (i, TrimmedLine::from(&line[i..]));
+      return (&line[..i], TrimmedLine::from(&line[i..]));
     }
   }
   // here the line is all whitespace or nothing
-  (line.len(), TrimmedLine::from(""))
+  (line, TrimmedLine::from(""))
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -88,6 +90,18 @@ pub enum Keyword {
   When,
   Then,
   And,
+}
+
+impl Display for Keyword {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    let text = match self {
+      Keyword::Given => "Given",
+      Keyword::When => "When ",
+      Keyword::Then => "Then",
+      Keyword::And => "And",
+    };
+    f.write_str(text)
+  }
 }
 
 impl TryFrom<&str> for Keyword {
@@ -159,28 +173,35 @@ mod tests {
     #[test]
     fn no_indent() {
       let (indent, clipped) = trim_initial_whitespace("text");
-      assert_eq!(indent, 0);
+      assert_eq!(indent, "");
       assert_eq!(clipped, "text");
     }
 
     #[test]
-    fn two() {
+    fn two_spaces() {
       let (indent, clipped) = trim_initial_whitespace("  text");
-      assert_eq!(indent, 2);
+      assert_eq!(indent, "  ");
       assert_eq!(clipped, "text");
     }
 
     #[test]
-    fn four() {
+    fn two_tabs() {
+      let (indent, clipped) = trim_initial_whitespace("\t\ttext");
+      assert_eq!(indent, "\t\t");
+      assert_eq!(clipped, "text");
+    }
+
+    #[test]
+    fn four_spaces() {
       let (indent, clipped) = trim_initial_whitespace("    text");
-      assert_eq!(indent, 4);
+      assert_eq!(indent, "    ");
       assert_eq!(clipped, "text");
     }
 
     #[test]
     fn only_spaces() {
       let (indent, clipped) = trim_initial_whitespace("    ");
-      assert_eq!(indent, 4);
+      assert_eq!(indent, "    ");
       assert_eq!(clipped, "");
     }
   }
@@ -239,7 +260,7 @@ mod tests {
       let want = Line {
         number: 12,
         text: S("  Some documentation"),
-        indent: 2,
+        indent: S("  "),
         line_type: LineType::Text,
       };
       pretty::assert_eq!(Ok(want), have);

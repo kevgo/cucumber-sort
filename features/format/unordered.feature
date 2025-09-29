@@ -1,5 +1,6 @@
 Feature: format unordered steps
 
+  @this
   Scenario: unordered step in a scenario
     Given file ".cucumbersortrc" with content:
       """
