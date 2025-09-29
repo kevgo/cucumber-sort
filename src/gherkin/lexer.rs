@@ -1,26 +1,12 @@
-use crate::prelude::{UserError, *};
+use crate::prelude::*;
 use std::fmt::Display;
 use std::io::BufRead;
-
-/// the words that lines which start a step can start with
-pub const STEP_STARTERS: &[&str] = &["Given ", "When ", "Then ", "And "];
 
 /// lexes the given file content
 pub fn file(text: impl BufRead) -> Result<Vec<Line>> {
   let mut result = vec![];
-  let mut docstring_indentation = None;
   for (i, text_line) in text.lines().enumerate() {
-    let mut line = Line::new(text_line.unwrap(), i)?;
-    if docstring_indentation.is_none() && line.line_type == LineType::DocStringStartStop {
-      docstring_indentation = Some(line.indent.len());
-    } else if let Some(indentation) = &docstring_indentation
-      && line.line_type == LineType::DocStringStartStop
-      && &line.indent.len() == indentation
-    {
-      docstring_indentation = None
-    } else if docstring_indentation.is_some() {
-      line.line_type = LineType::Text;
-    }
+    let line = Line::new(text_line.unwrap(), i)?;
     result.push(line);
   }
   Ok(result)
@@ -35,7 +21,9 @@ pub struct Line {
   pub text: String,
 
   /// how much the line is indented
-  pub indent: String,
+  pub indent: usize,
+
+  pub title_start: usize,
 
   /// whether this is a Given/When/Then line or not
   pub line_type: LineType,
@@ -43,35 +31,81 @@ pub struct Line {
 
 impl Line {
   fn new(text: String, number: usize) -> Result<Line> {
-    let (indent, trimmed) = trim_initial_whitespace(&text);
-    let indent = indent.to_string();
-    let line_type = trimmed.line_type()?;
+    let mut chars = text.char_indices();
+    let mut indent = None;
+    let mut end_of_first_word = None;
+    let mut title_start = None;
+    // step 1: find the end of the initial whitespace
+    loop {
+      let Some((i, c)) = chars.next() else { break };
+      if !c.is_whitespace() {
+        indent = Some(i);
+        break;
+      }
+    }
+    // step 2: find the end of the first word
+    loop {
+      let Some((i, c)) = chars.next() else { break };
+      if c.is_whitespace() {
+        end_of_first_word = Some(i);
+        break;
+      }
+    }
+    // step 3: find the beginning of the title
+    loop {
+      let Some((i, c)) = chars.next() else { break };
+      if !c.is_whitespace() {
+        title_start = Some(i);
+        break;
+      }
+    }
+    let indent = indent.unwrap_or(text.len());
+    let end_of_first_word = end_of_first_word.unwrap_or(text.len());
+    let first_word = &text[indent..end_of_first_word];
+    let Some(title_start) = title_start else {
+      if first_word == "\"\"\"" {
+        return Ok(Line {
+          number,
+          text,
+          indent,
+          title_start: indent,
+          line_type: LineType::DocStringStartStop,
+        });
+      }
+      return Ok(Line {
+        number,
+        text,
+        indent: indent,
+        line_type: LineType::Text,
+        title_start: indent,
+      });
+    };
+    let line_type = match Keyword::parse(first_word) {
+      Some(keyword) => LineType::StepStart { keyword },
+      None => LineType::Text,
+    };
+    let title_start = match &line_type {
+      LineType::DocStringStartStop | LineType::Text => indent,
+      LineType::StepStart { keyword: _ } => title_start,
+    };
     Ok(Line {
       number,
       text,
       indent,
       line_type,
+      title_start,
     })
   }
 
-  pub fn title(&self) -> &str {
-    if let Some((_first_word, remainder)) = self.text[self.indent.len()..].split_once(" ") {
-      remainder
-    } else {
-      ""
-    }
+  /// provides the whitespace characters that make up the indentation of this line
+  pub fn indent_text(&self) -> &str {
+    &self.text[..self.indent]
   }
-}
 
-/// provides the number of leading whitespace characters and the text without that leading whitespace
-fn trim_initial_whitespace(line: &str) -> (&str, TrimmedLine<'_>) {
-  for (i, c) in line.char_indices() {
-    if c != ' ' && c != '\t' {
-      return (&line[..i], TrimmedLine::from(&line[i..]));
-    }
+  /// provides the line text without the leading whitespace and Gherkin keyword
+  pub fn title(&self) -> &str {
+    &self.text[self.title_start..]
   }
-  // here the line is all whitespace or nothing
-  (line, TrimmedLine::from(""))
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -92,6 +126,18 @@ pub enum Keyword {
   And,
 }
 
+impl Keyword {
+  pub fn parse(text: &str) -> Option<Keyword> {
+    match text.to_ascii_lowercase().as_str() {
+      "given" => Some(Keyword::Given),
+      "when" => Some(Keyword::When),
+      "then" => Some(Keyword::Then),
+      "and" => Some(Keyword::And),
+      _ => None,
+    }
+  }
+}
+
 impl Display for Keyword {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     let text = match self {
@@ -104,166 +150,78 @@ impl Display for Keyword {
   }
 }
 
-impl TryFrom<&str> for Keyword {
-  type Error = UserError;
-
-  fn try_from(value: &str) -> std::result::Result<Self, Self::Error> {
-    match value.to_ascii_lowercase().as_str() {
-      "given" => Ok(Keyword::Given),
-      "when" => Ok(Keyword::When),
-      "then" => Ok(Keyword::Then),
-      "and" => Ok(Keyword::And),
-      other => Err(UserError::UnknownGherkinKeyword(other.to_string())),
-    }
-  }
-}
-
-/// a line without the initial whitespace
-#[derive(Debug, Eq, PartialEq)]
-pub struct TrimmedLine<'a>(&'a str);
-
-impl<'a> TrimmedLine<'a> {
-  fn line_type(&self) -> Result<LineType> {
-    if self.is_docstring_start() {
-      Ok(LineType::DocStringStartStop)
-    } else if let Some(keyword) = self.is_step_start()? {
-      Ok(LineType::StepStart { keyword })
-    } else {
-      Ok(LineType::Text)
-    }
-  }
-
-  fn is_docstring_start(&self) -> bool {
-    self.0 == "\"\"\""
-  }
-
-  fn is_step_start(&self) -> Result<Option<Keyword>> {
-    for starter in STEP_STARTERS {
-      if !self.0.starts_with(starter) {
-        continue;
-      }
-      let key_text = &self.0[0..starter.len() - 1];
-      let Ok(keyword) = Keyword::try_from(key_text) else {
-        return Err(UserError::UnknownGherkinKeyword(key_text.to_string()));
-      };
-      return Ok(Some(keyword));
-    }
-    Ok(None)
-  }
-}
-
-impl<'a> From<&'a str> for TrimmedLine<'a> {
-  fn from(value: &'a str) -> Self {
-    TrimmedLine(value)
-  }
-}
-
-impl<'a> PartialEq<&str> for TrimmedLine<'a> {
-  fn eq(&self, other: &&str) -> bool {
-    self.0 == *other
-  }
-}
-
 #[cfg(test)]
 mod tests {
 
-  mod trim_initial_whitespace {
-    use crate::gherkin::lexer::trim_initial_whitespace;
-
-    #[test]
-    fn no_indent() {
-      let (indent, clipped) = trim_initial_whitespace("text");
-      assert_eq!(indent, "");
-      assert_eq!(clipped, "text");
-    }
-
-    #[test]
-    fn two_spaces() {
-      let (indent, clipped) = trim_initial_whitespace("  text");
-      assert_eq!(indent, "  ");
-      assert_eq!(clipped, "text");
-    }
-
-    #[test]
-    fn two_tabs() {
-      let (indent, clipped) = trim_initial_whitespace("\t\ttext");
-      assert_eq!(indent, "\t\t");
-      assert_eq!(clipped, "text");
-    }
-
-    #[test]
-    fn four_spaces() {
-      let (indent, clipped) = trim_initial_whitespace("    text");
-      assert_eq!(indent, "    ");
-      assert_eq!(clipped, "text");
-    }
-
-    #[test]
-    fn only_spaces() {
-      let (indent, clipped) = trim_initial_whitespace("    ");
-      assert_eq!(indent, "    ");
-      assert_eq!(clipped, "");
-    }
-  }
-
-  mod trimmed_line {
-    use crate::gherkin::lexer::{Keyword, LineType, TrimmedLine};
-
-    #[test]
-    fn is_step_start() {
-      assert_eq!(
-        Ok(Some(Keyword::Given)),
-        TrimmedLine::from("Given a cucumber").is_step_start()
-      );
-      assert_eq!(
-        Ok(Some(Keyword::When)),
-        TrimmedLine::from("When I eat it").is_step_start()
-      );
-      assert_eq!(
-        Ok(Some(Keyword::Then)),
-        TrimmedLine::from("Then its gone").is_step_start()
-      );
-      assert_eq!(
-        Ok(Some(Keyword::And)),
-        TrimmedLine::from("And I am happy").is_step_start()
-      );
-      assert_eq!(Ok(None), TrimmedLine::from("Other text").is_step_start());
-    }
-
-    #[test]
-    fn line_type() {
-      assert_eq!(
-        TrimmedLine::from("Given a cucumber").line_type(),
-        Ok(LineType::StepStart {
-          keyword: Keyword::Given
-        })
-      );
-      assert_eq!(
-        TrimmedLine::from("Feature: test").line_type(),
-        Ok(LineType::Text)
-      );
-      assert_eq!(
-        TrimmedLine::from("\"\"\"").line_type(),
-        Ok(LineType::DocStringStartStop),
-      );
-    }
-  }
-
   mod line {
-    use crate::gherkin::lexer::{Line, LineType};
+    use crate::gherkin::lexer::Line;
     use big_s::S;
 
-    #[test]
-    fn documentation() {
-      let give = "  Some documentation";
-      let have = Line::new(S(give), 12);
-      let want = Line {
-        number: 12,
-        text: S("  Some documentation"),
-        indent: S("  "),
-        line_type: LineType::Text,
-      };
-      pretty::assert_eq!(Ok(want), have);
+    mod new {
+      use crate::gherkin::Keyword;
+      use crate::gherkin::lexer::{Line, LineType};
+      use big_s::S;
+
+      #[test]
+      fn empty_line() {
+        let have = Line::new(S(""), 12).unwrap();
+        assert_eq!(have.indent_text(), "");
+        assert_eq!(have.line_type, LineType::Text);
+        assert_eq!(have.title(), "");
+      }
+
+      #[test]
+      fn whitespace_only() {
+        let have = Line::new(S("    "), 12).unwrap();
+        assert_eq!(have.indent_text(), "    ");
+        assert_eq!(have.line_type, LineType::Text);
+        assert_eq!(have.title(), "");
+      }
+
+      #[test]
+      fn no_spaces_and_text() {
+        let have = Line::new(S("Feature: test"), 12).unwrap();
+        assert_eq!(have.indent_text(), "");
+        assert_eq!(have.line_type, LineType::Text);
+        assert_eq!(have.title(), "Feature: test");
+      }
+
+      #[test]
+      fn two_spaces_and_text() {
+        let have = Line::new(S("  text"), 12).unwrap();
+        assert_eq!(have.indent_text(), "  ");
+        assert_eq!(have.line_type, LineType::Text);
+        assert_eq!(have.title(), "text");
+      }
+
+      #[test]
+      fn two_tabs_and_text() {
+        let have = Line::new(S("\t\ttext"), 12).unwrap();
+        assert_eq!(have.indent_text(), "\t\t");
+        assert_eq!(have.line_type, LineType::Text);
+        assert_eq!(have.title(), "text");
+      }
+
+      #[test]
+      fn four_spaces_docstring() {
+        let have = Line::new(S("    \"\"\""), 12).unwrap();
+        assert_eq!(have.indent_text(), "    ");
+        assert_eq!(have.line_type, LineType::DocStringStartStop);
+        assert_eq!(have.title(), "\"\"\"");
+      }
+
+      #[test]
+      fn four_spaces_and_step() {
+        let have = Line::new(S("    Given step 1"), 12).unwrap();
+        assert_eq!(have.indent_text(), "    ");
+        assert_eq!(
+          have.line_type,
+          LineType::StepStart {
+            keyword: Keyword::Given
+          }
+        );
+        assert_eq!(have.title(), "step 1");
+      }
     }
 
     #[test]

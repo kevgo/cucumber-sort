@@ -22,7 +22,7 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Document> {
           title: line.title().to_string(),
           keyword: *keyword,
           additional_lines: vec![],
-          indent: line.indent,
+          indent: line.indent_text().to_string(),
           line_no: line.number,
         });
       }
@@ -34,7 +34,7 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Document> {
           title: line.title().to_string(),
           keyword: *keyword,
           additional_lines: vec![],
-          indent: line.indent,
+          indent: line.indent_text().to_string(),
           line_no: line.number,
         });
       }
