@@ -3,6 +3,8 @@ mod parser;
 
 use crate::prelude::*;
 use camino::Utf8Path;
+#[cfg(test)]
+pub use lexer::Keyword;
 pub use parser::{Block, Document, Step};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
@@ -163,18 +165,21 @@ Feature: test
           Block::Sortable(vec![
             Step {
               title: S("step 1"),
+              keyword: Keyword::Given,
               lines: vec![S("    Given step 1")],
               indent: 4,
               line_no: 3,
             },
             Step {
               title: S("step 2"),
+              keyword: Keyword::And,
               lines: vec![S("    And step 2")],
               indent: 4,
               line_no: 4,
             },
             Step {
               title: S("step 3"),
+              keyword: Keyword::When,
               lines: vec![S("    When step 3")],
               indent: 4,
               line_no: 5,
@@ -184,12 +189,14 @@ Feature: test
           Block::Sortable(vec![
             Step {
               title: S("step 4"),
+              keyword: Keyword::Then,
               lines: vec![S("    Then step 4")],
               indent: 4,
               line_no: 8,
             },
             Step {
               title: S("step 5"),
+              keyword: Keyword::And,
               lines: vec![S("    And step 5")],
               indent: 4,
               line_no: 9,
@@ -199,12 +206,14 @@ Feature: test
           Block::Sortable(vec![
             Step {
               title: S("step 6"),
+              keyword: Keyword::When,
               lines: vec![S("    When step 6")],
               indent: 4,
               line_no: 12,
             },
             Step {
               title: S("step 7"),
+              keyword: Keyword::Then,
               lines: vec![S("    Then step 7")],
               indent: 4,
               line_no: 13,
@@ -322,6 +331,7 @@ Feature: test
           ]),
           Block::Sortable(vec![Step {
             title: S("step 1:"),
+            keyword: Keyword::Given,
             lines: vec![S("    Given step 1:")],
             indent: 4,
             line_no: 5,
@@ -329,6 +339,7 @@ Feature: test
           Block::Static(vec![S("    # And step 2")]),
           Block::Sortable(vec![Step {
             title: S("step 3"),
+            keyword: Keyword::And,
             lines: vec![S("    And step 3")],
             indent: 4,
             line_no: 7,
@@ -445,6 +456,7 @@ Feature: test
           Block::Sortable(vec![
             Step {
               title: S("step 1:"),
+              keyword: Keyword::Given,
               lines: vec![
                 S("    Given step 1:"),
                 S("      \"\"\""),
@@ -457,6 +469,7 @@ Feature: test
             },
             Step {
               title: S("step 2"),
+              keyword: Keyword::And,
               lines: vec![S("    And step 2")],
               indent: 4,
               line_no: 8,
@@ -563,6 +576,7 @@ Feature: test
           Block::Static(vec![S("Feature: test"), S(""), S("  Scenario: with table")]),
           Block::Sortable(vec![Step {
             title: S("step 1:"),
+            keyword: Keyword::Given,
             lines: vec![S("    Given step 1:")],
             indent: 4,
             line_no: 3,
@@ -574,6 +588,7 @@ Feature: test
           ]),
           Block::Sortable(vec![Step {
             title: S("step 2"),
+            keyword: Keyword::And,
             lines: vec![S("    And step 2")],
             indent: 4,
             line_no: 7,
@@ -686,12 +701,14 @@ Feature: test
           Block::Sortable(vec![
             Step {
               title: S("<ALPHA>"),
+              keyword: Keyword::Given,
               lines: vec![S("    Given <ALPHA>")],
               indent: 4,
               line_no: 3,
             },
             Step {
               title: S("<BETA>"),
+              keyword: Keyword::Then,
               lines: vec![S("    Then <BETA>")],
               indent: 4,
               line_no: 4,
@@ -816,6 +833,7 @@ Feature: test
           Block::Sortable(vec![
             Step {
               title: S("file \"foo\":"),
+              keyword: Keyword::Given,
               lines: vec![
                 S("    Given file \"foo\":"),
                 S("      \"\"\""),
@@ -828,6 +846,7 @@ Feature: test
             },
             Step {
               title: S("step 2"),
+              keyword: Keyword::When,
               lines: vec![S("    When step 2")],
               indent: 4,
               line_no: 8,

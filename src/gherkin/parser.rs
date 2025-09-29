@@ -1,4 +1,4 @@
-use crate::gherkin::lexer::{self, LineType};
+use crate::gherkin::lexer::{self, Keyword, LineType};
 use crate::prelude::*;
 use crate::sort::Issue;
 use ansi_term::Color::{Green, Red};
@@ -20,6 +20,7 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Document> {
         new_open_block = Some(Block::Sortable(vec![]));
         new_open_step = Some(Step {
           title: line.title().to_string(),
+          keyword: *keyword,
           lines: vec![line.text],
           indent: line.indent,
           line_no: line.number,
@@ -31,6 +32,7 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Document> {
         new_open_block = Some(Block::Sortable(steps));
         new_open_step = Some(Step {
           title: line.title().to_string(),
+          keyword: *keyword,
           lines: vec![line.text],
           indent: line.indent,
           line_no: line.number,
@@ -68,16 +70,16 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Document> {
         new_open_block = Some(Block::Static(lines));
         new_open_step = None;
       }
-      (LineType::StepStart { keyword }, None, None) => {
+      (LineType::StepStart { keyword: _ }, None, None) => {
         panic!("a Gherkin document cannot start with a step");
       }
-      (LineType::StepStart { keyword }, None, Some(_step)) => {
+      (LineType::StepStart { keyword: _ }, None, Some(_step)) => {
         panic!("shouldn't have a current_step without a current_block")
       }
-      (LineType::StepStart { keyword }, Some(Block::Sortable(_steps)), None) => {
+      (LineType::StepStart { keyword: _ }, Some(Block::Sortable(_steps)), None) => {
         panic!("shouldn't have an open steps block without a current step")
       }
-      (LineType::StepStart { keyword }, Some(Block::Static(_lines)), Some(_step)) => {
+      (LineType::StepStart { keyword: _ }, Some(Block::Static(_lines)), Some(_step)) => {
         panic!("should not have an open step while there is an open text block");
       }
       (LineType::DocStringStartStop, None, None) => {
@@ -200,6 +202,8 @@ pub enum Block {
 pub struct Step {
   /// the relevant title of the step (without Given/When/Then)
   pub title: String,
+
+  pub keyword: Keyword,
 
   /// the textual lines making up this step
   pub lines: Vec<String>,

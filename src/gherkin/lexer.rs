@@ -83,7 +83,7 @@ pub enum LineType {
   Text,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Keyword {
   Given,
   When,

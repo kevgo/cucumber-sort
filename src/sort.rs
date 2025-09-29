@@ -106,6 +106,7 @@ mod tests {
 
   mod sort_steps {
     use crate::config::Config;
+    use crate::gherkin::Keyword;
     use crate::sort::Issue;
     use crate::{gherkin, sort};
     use ansi_term::Color::Cyan;
@@ -124,18 +125,21 @@ mod tests {
       let give_steps = vec![
         gherkin::Step {
           title: S("step 1"),
+          keyword: Keyword::Given,
           lines: vec![],
           line_no: 0,
           indent: 0,
         },
         gherkin::Step {
           title: S("step 2"),
+          keyword: Keyword::When,
           lines: vec![],
           line_no: 1,
           indent: 0,
         },
         gherkin::Step {
           title: S("step 3"),
+          keyword: Keyword::Then,
           lines: vec![],
           line_no: 2,
           indent: 0,
@@ -155,18 +159,21 @@ mod tests {
       let give_block = gherkin::Block::Sortable(vec![
         gherkin::Step {
           title: S("step 3"),
+          keyword: Keyword::Given,
           lines: vec![],
           line_no: 0,
           indent: 0,
         },
         gherkin::Step {
           title: S("step 2"),
+          keyword: Keyword::And,
           lines: vec![],
           line_no: 1,
           indent: 0,
         },
         gherkin::Step {
           title: S("step 1"),
+          keyword: Keyword::And,
           lines: vec![],
           line_no: 2,
           indent: 0,
@@ -175,18 +182,21 @@ mod tests {
       let want_block = gherkin::Block::Sortable(vec![
         gherkin::Step {
           title: S("step 1"),
+          keyword: Keyword::Given,
           lines: vec![],
           line_no: 2,
           indent: 0,
         },
         gherkin::Step {
           title: S("step 2"),
+          keyword: Keyword::And,
           lines: vec![],
           line_no: 1,
           indent: 0,
         },
         gherkin::Step {
           title: S("step 3"),
+          keyword: Keyword::And,
           lines: vec![],
           line_no: 0,
           indent: 0,
@@ -205,18 +215,21 @@ mod tests {
       let give_block = gherkin::Block::Sortable(vec![
         gherkin::Step {
           title: S("step 2"),
+          keyword: Keyword::Given,
           lines: vec![],
           line_no: 0,
           indent: 0,
         },
         gherkin::Step {
           title: S("step 3"),
+          keyword: Keyword::Given,
           lines: vec![],
           line_no: 1,
           indent: 0,
         },
         gherkin::Step {
           title: S("step 1"),
+          keyword: Keyword::Given,
           lines: vec![],
           line_no: 2,
           indent: 0,
@@ -225,12 +238,14 @@ mod tests {
       let want_block = gherkin::Block::Sortable(vec![
         gherkin::Step {
           title: S("step 1"),
+          keyword: Keyword::Given,
           lines: vec![],
           line_no: 2,
           indent: 0,
         },
         gherkin::Step {
           title: S("step 2"),
+          keyword: Keyword::Given,
           lines: vec![],
           line_no: 0,
           indent: 0,
@@ -247,7 +262,7 @@ mod tests {
   }
 
   mod steps_collect {
-    use crate::gherkin::Step;
+    use crate::gherkin::{Keyword, Step};
     use crate::sort::DeletableSteps;
     use big_s::S;
 
@@ -255,6 +270,7 @@ mod tests {
     fn some_none() {
       let step_1 = Step {
         title: S("title"),
+        keyword: Keyword::Given,
         lines: vec![],
         line_no: 1,
         indent: 0,
