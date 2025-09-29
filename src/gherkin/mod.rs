@@ -331,7 +331,7 @@ Feature: test
           Block::Sortable(vec![Step {
             title: S("step 1:"),
             keyword: Keyword::Given,
-            additional_lines: vec![S("    Given step 1:")],
+            additional_lines: vec![],
             indent: S("    "),
             line_no: 5,
           }]),
@@ -339,7 +339,7 @@ Feature: test
           Block::Sortable(vec![Step {
             title: S("step 3"),
             keyword: Keyword::And,
-            additional_lines: vec![S("    And step 3")],
+            additional_lines: vec![],
             indent: S("    "),
             line_no: 7,
           }]),
