@@ -1,5 +1,4 @@
-use crate::prelude::UserError;
-use crate::prelude::*;
+use crate::prelude::{UserError, *};
 use std::io::BufRead;
 
 /// the words that lines which start a step can start with
@@ -112,7 +111,7 @@ pub struct TrimmedLine<'a>(&'a str);
 impl<'a> TrimmedLine<'a> {
   fn line_type(&self) -> Result<LineType> {
     if self.is_docstring_start() {
-      return Ok(LineType::DocStringStartStop);
+      Ok(LineType::DocStringStartStop)
     } else if let Some(keyword) = self.is_step_start()? {
       Ok(LineType::StepStart { keyword })
     } else {
