@@ -46,15 +46,15 @@ Feature: format unordered steps
         describing the feature.
 
         Background:
-          And file "foo" with content:
+          Given file "foo" with content:
             '''
             bar
             '''
-          Given step 2
+          And step 2
 
         Scenario: result
-          And step 3
-          Then step 4
+          Then step 3
+          And step 4
 
         # another comment
 
