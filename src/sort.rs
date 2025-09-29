@@ -42,7 +42,7 @@ fn sort_steps(
   filename: &Utf8Path,
 ) -> (Vec<gherkin::Step>, Vec<Issue>) {
   let mut result = Vec::<gherkin::Step>::with_capacity(unordered_steps.len());
-  let mut steps = DeletableSteps::from(make_steps_sortable(unordered_steps));
+  let mut steps = DeletableSteps::from(deoptimize_keywords(unordered_steps));
   for config_step in config_steps {
     let extracted = steps.extract(config_step);
     result.extend(extracted);
@@ -59,10 +59,10 @@ fn sort_steps(
       ),
     });
   }
-  (format_step_keywords(result), issues)
+  (optimize_keywords(result), issues)
 }
 
-fn make_steps_sortable(steps: Vec<gherkin::Step>) -> Vec<gherkin::Step> {
+fn deoptimize_keywords(steps: Vec<gherkin::Step>) -> Vec<gherkin::Step> {
   let mut result = Vec::with_capacity(steps.len());
   let mut previous_keyword: Option<Keyword> = None;
   for mut step in steps {
@@ -77,14 +77,14 @@ fn make_steps_sortable(steps: Vec<gherkin::Step>) -> Vec<gherkin::Step> {
   result
 }
 
-fn format_step_keywords(steps: Vec<gherkin::Step>) -> Vec<gherkin::Step> {
+fn optimize_keywords(steps: Vec<gherkin::Step>) -> Vec<gherkin::Step> {
   let mut result = Vec::with_capacity(steps.len());
   let mut previous_keyword: Option<Keyword> = None;
   for mut step in steps {
     if let Some(prev) = previous_keyword
       && step.keyword == prev
     {
-      step.keyword = prev;
+      step.keyword = Keyword::And;
     } else {
       previous_keyword = Some(step.keyword);
     };
@@ -134,6 +134,168 @@ pub fn sort_issues(issues: &mut [Issue]) {
 
 #[cfg(test)]
 mod tests {
+  use crate::gherkin::{Keyword, Step};
+  use big_s::S;
+
+  #[test]
+  fn deoptimize_keywords() {
+    let give = vec![
+      Step {
+        title: S("step 1"),
+        keyword: Keyword::Given,
+        ..Step::default()
+      },
+      Step {
+        title: S("step 2"),
+        keyword: Keyword::And,
+        ..Step::default()
+      },
+      Step {
+        title: S("step 3"),
+        keyword: Keyword::And,
+        ..Step::default()
+      },
+      Step {
+        title: S("step 3"),
+        keyword: Keyword::When,
+        ..Step::default()
+      },
+      Step {
+        title: S("step 3"),
+        keyword: Keyword::And,
+        ..Step::default()
+      },
+      Step {
+        title: S("step 3"),
+        keyword: Keyword::Then,
+        ..Step::default()
+      },
+      Step {
+        title: S("step 3"),
+        keyword: Keyword::And,
+        ..Step::default()
+      },
+    ];
+    let want = vec![
+      Step {
+        title: S("step 1"),
+        keyword: Keyword::Given,
+        ..Step::default()
+      },
+      Step {
+        title: S("step 2"),
+        keyword: Keyword::Given,
+        ..Step::default()
+      },
+      Step {
+        title: S("step 3"),
+        keyword: Keyword::Given,
+        ..Step::default()
+      },
+      Step {
+        title: S("step 3"),
+        keyword: Keyword::When,
+        ..Step::default()
+      },
+      Step {
+        title: S("step 3"),
+        keyword: Keyword::When,
+        ..Step::default()
+      },
+      Step {
+        title: S("step 3"),
+        keyword: Keyword::Then,
+        ..Step::default()
+      },
+      Step {
+        title: S("step 3"),
+        keyword: Keyword::Then,
+        ..Step::default()
+      },
+    ];
+    let have = super::deoptimize_keywords(give);
+    pretty::assert_eq!(want, have);
+  }
+
+  #[test]
+  fn optimize_keywords() {
+    let give = vec![
+      Step {
+        title: S("step 1"),
+        keyword: Keyword::Given,
+        ..Step::default()
+      },
+      Step {
+        title: S("step 2"),
+        keyword: Keyword::Given,
+        ..Step::default()
+      },
+      Step {
+        title: S("step 3"),
+        keyword: Keyword::Given,
+        ..Step::default()
+      },
+      Step {
+        title: S("step 3"),
+        keyword: Keyword::When,
+        ..Step::default()
+      },
+      Step {
+        title: S("step 3"),
+        keyword: Keyword::When,
+        ..Step::default()
+      },
+      Step {
+        title: S("step 3"),
+        keyword: Keyword::Then,
+        ..Step::default()
+      },
+      Step {
+        title: S("step 3"),
+        keyword: Keyword::Then,
+        ..Step::default()
+      },
+    ];
+    let want = vec![
+      Step {
+        title: S("step 1"),
+        keyword: Keyword::Given,
+        ..Step::default()
+      },
+      Step {
+        title: S("step 2"),
+        keyword: Keyword::And,
+        ..Step::default()
+      },
+      Step {
+        title: S("step 3"),
+        keyword: Keyword::And,
+        ..Step::default()
+      },
+      Step {
+        title: S("step 3"),
+        keyword: Keyword::When,
+        ..Step::default()
+      },
+      Step {
+        title: S("step 3"),
+        keyword: Keyword::And,
+        ..Step::default()
+      },
+      Step {
+        title: S("step 3"),
+        keyword: Keyword::Then,
+        ..Step::default()
+      },
+      Step {
+        title: S("step 3"),
+        keyword: Keyword::And,
+        ..Step::default()
+      },
+    ];
+    let have = super::optimize_keywords(give);
+    pretty::assert_eq!(have, want);
+  }
 
   mod sort_steps {
     use crate::config::Config;
@@ -276,7 +438,7 @@ mod tests {
         },
         gherkin::Step {
           title: S("step 2"),
-          keyword: Keyword::Given,
+          keyword: Keyword::And,
           lines: vec![],
           line_no: 0,
           indent: 0,

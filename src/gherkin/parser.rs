@@ -214,3 +214,16 @@ pub struct Step {
   /// the absolute line number inside the document at which this step start
   pub line_no: usize,
 }
+
+#[cfg(test)]
+impl Default for Step {
+  fn default() -> Self {
+    Self {
+      title: Default::default(),
+      keyword: Keyword::Given,
+      lines: Default::default(),
+      indent: Default::default(),
+      line_no: Default::default(),
+    }
+  }
+}
