@@ -165,21 +165,21 @@ Feature: test
             Step {
               title: S("step 1"),
               keyword: Keyword::Given,
-              additional_lines: vec![S("    Given step 1")],
+              additional_lines: vec![],
               indent: S("    "),
               line_no: 3,
             },
             Step {
               title: S("step 2"),
               keyword: Keyword::And,
-              additional_lines: vec![S("    And step 2")],
+              additional_lines: vec![],
               indent: S("    "),
               line_no: 4,
             },
             Step {
               title: S("step 3"),
               keyword: Keyword::When,
-              additional_lines: vec![S("    When step 3")],
+              additional_lines: vec![],
               indent: S("    "),
               line_no: 5,
             },
@@ -189,14 +189,14 @@ Feature: test
             Step {
               title: S("step 4"),
               keyword: Keyword::Then,
-              additional_lines: vec![S("    Then step 4")],
+              additional_lines: vec![],
               indent: S("    "),
               line_no: 8,
             },
             Step {
               title: S("step 5"),
               keyword: Keyword::And,
-              additional_lines: vec![S("    And step 5")],
+              additional_lines: vec![],
               indent: S("    "),
               line_no: 9,
             },
@@ -206,14 +206,14 @@ Feature: test
             Step {
               title: S("step 6"),
               keyword: Keyword::When,
-              additional_lines: vec![S("    When step 6")],
+              additional_lines: vec![],
               indent: S("    "),
               line_no: 12,
             },
             Step {
               title: S("step 7"),
               keyword: Keyword::Then,
-              additional_lines: vec![S("    Then step 7")],
+              additional_lines: vec![],
               indent: S("    "),
               line_no: 13,
             },
@@ -277,7 +277,7 @@ Feature: test
         Line {
           number: 2,
           text: S("  An example feature file"),
-          indent: S("    "),
+          indent: S("  "),
           line_type: LineType::Text,
         },
         Line {
@@ -457,7 +457,6 @@ Feature: test
               title: S("step 1:"),
               keyword: Keyword::Given,
               additional_lines: vec![
-                S("    Given step 1:"),
                 S("      \"\"\""),
                 S("      docstring line 1"),
                 S("      docstring line 2"),
@@ -469,7 +468,7 @@ Feature: test
             Step {
               title: S("step 2"),
               keyword: Keyword::And,
-              additional_lines: vec![S("    And step 2")],
+              additional_lines: vec![],
               indent: S("    "),
               line_no: 8,
             },
@@ -576,7 +575,7 @@ Feature: test
           Block::Sortable(vec![Step {
             title: S("step 1:"),
             keyword: Keyword::Given,
-            additional_lines: vec![S("    Given step 1:")],
+            additional_lines: vec![],
             indent: S("    "),
             line_no: 3,
           }]),
@@ -588,7 +587,7 @@ Feature: test
           Block::Sortable(vec![Step {
             title: S("step 2"),
             keyword: Keyword::And,
-            additional_lines: vec![S("    And step 2")],
+            additional_lines: vec![],
             indent: S("    "),
             line_no: 7,
           }]),
@@ -701,14 +700,14 @@ Feature: test
             Step {
               title: S("<ALPHA>"),
               keyword: Keyword::Given,
-              additional_lines: vec![S("    Given <ALPHA>")],
+              additional_lines: vec![],
               indent: S("    "),
               line_no: 3,
             },
             Step {
               title: S("<BETA>"),
               keyword: Keyword::Then,
-              additional_lines: vec![S("    Then <BETA>")],
+              additional_lines: vec![],
               indent: S("    "),
               line_no: 4,
             },
@@ -834,7 +833,6 @@ Feature: test
               title: S("file \"foo\":"),
               keyword: Keyword::Given,
               additional_lines: vec![
-                S("    Given file \"foo\":"),
                 S("      \"\"\""),
                 S("      Scenario: embedded"),
                 S("        Given step 1"),
@@ -846,7 +844,7 @@ Feature: test
             Step {
               title: S("step 2"),
               keyword: Keyword::When,
-              additional_lines: vec![S("    When step 2")],
+              additional_lines: vec![],
               indent: S("    "),
               line_no: 8,
             },
