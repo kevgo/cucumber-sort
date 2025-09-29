@@ -697,7 +697,7 @@ Feature: test
           line_type: LineType::StepStart {
             keyword: Keyword::Given,
           },
-          title_start: 4,
+          title_start: 10,
         },
         Line {
           number: 4,
@@ -706,7 +706,7 @@ Feature: test
           line_type: LineType::StepStart {
             keyword: Keyword::Then,
           },
-          title_start: 4,
+          title_start: 9,
         },
         Line {
           number: 5,
