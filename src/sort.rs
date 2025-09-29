@@ -1,5 +1,6 @@
 use crate::config::Config;
-use crate::gherkin;
+use crate::gherkin::{self, Keyword, Step};
+use crate::prelude::*;
 use ansi_term::Color::Cyan;
 use camino::Utf8Path;
 use regex::Regex;
@@ -60,6 +61,33 @@ fn sort_steps(
     });
   }
   (result, issues)
+}
+
+fn make_steps_sortable(steps: Vec<gherkin::Step>, file: &Utf8Path) -> Result<Vec<gherkin::Step>> {
+  let mut result = Vec::with_capacity(steps.len());
+  let mut previous_keyword: Option<Keyword> = None;
+  for step in steps {
+    let new_keyword = if step.keyword == Keyword::And {
+      let Some(prev) = previous_keyword else {
+        return Err(UserError::BlockStartsWithAnd {
+          file: file.to_path_buf(),
+          line: step.line_no,
+        });
+      };
+      prev
+    } else {
+      step.keyword
+    };
+    previous_keyword = Some(new_keyword);
+    result.push(Step {
+      title: step.title,
+      keyword: new_keyword,
+      lines: step.lines,
+      indent: step.indent,
+      line_no: step.line_no,
+    });
+  }
+  Ok(result)
 }
 
 /// a Vec that makes it efficient to delete elements from it
