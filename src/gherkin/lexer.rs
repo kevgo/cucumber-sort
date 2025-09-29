@@ -248,12 +248,12 @@ mod tests {
         indent: 2,
         line_type: LineType::Text,
       };
-      pretty::assert_eq!(want, have);
+      pretty::assert_eq!(Ok(want), have);
     }
 
     #[test]
     fn title() {
-      let line = Line::new(S("    Given a cucumber"), 4);
+      let line = Line::new(S("    Given a cucumber"), 4).unwrap();
       assert_eq!("a cucumber", line.title());
     }
   }

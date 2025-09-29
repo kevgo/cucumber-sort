@@ -18,7 +18,7 @@ pub fn load(filepath: &Utf8Path) -> Result<parser::Document> {
 /// parses the given file content into Gherkin
 pub fn file(text: impl BufRead) -> Result<parser::Document> {
   // step 1: lex the file content into token (lines)
-  let lines = lexer::file(text);
+  let lines = lexer::file(text)?;
   // step 2: parse the tokens (lines) into Gherkin data structures
   parser::file(lines)
 }
@@ -27,7 +27,7 @@ pub fn file(text: impl BufRead) -> Result<parser::Document> {
 mod tests {
 
   mod lex_and_parse {
-    use crate::gherkin::lexer::{self, Line, LineType};
+    use crate::gherkin::lexer::{self, Keyword, Line, LineType};
     use crate::gherkin::parser::Lines;
     use crate::gherkin::{Block, Step, parser};
     use big_s::S;
@@ -52,7 +52,7 @@ Feature: test
     When step 6
     Then step 7
 "#;
-      let have_lines = lexer::file(BufReader::new(&source.as_bytes()[1..]));
+      let have_lines = lexer::file(BufReader::new(&source.as_bytes()[1..])).unwrap();
       let want_lines = vec![
         Line {
           number: 0,
@@ -76,19 +76,25 @@ Feature: test
           number: 3,
           text: S("    Given step 1"),
           indent: 4,
-          line_type: LineType::StepStart,
+          line_type: LineType::StepStart {
+            keyword: Keyword::Given,
+          },
         },
         Line {
           number: 4,
           text: S("    And step 2"),
           indent: 4,
-          line_type: LineType::StepStart,
+          line_type: LineType::StepStart {
+            keyword: Keyword::And,
+          },
         },
         Line {
           number: 5,
           text: S("    When step 3"),
           indent: 4,
-          line_type: LineType::StepStart,
+          line_type: LineType::StepStart {
+            keyword: Keyword::When,
+          },
         },
         Line {
           number: 6,
@@ -106,13 +112,17 @@ Feature: test
           number: 8,
           text: S("    Then step 4"),
           indent: 4,
-          line_type: LineType::StepStart,
+          line_type: LineType::StepStart {
+            keyword: Keyword::Then,
+          },
         },
         Line {
           number: 9,
           text: S("    And step 5"),
           indent: 4,
-          line_type: LineType::StepStart,
+          line_type: LineType::StepStart {
+            keyword: Keyword::And,
+          },
         },
         Line {
           number: 10,
@@ -130,13 +140,17 @@ Feature: test
           number: 12,
           text: S("    When step 6"),
           indent: 4,
-          line_type: LineType::StepStart,
+          line_type: LineType::StepStart {
+            keyword: Keyword::When,
+          },
         },
         Line {
           number: 13,
           text: S("    Then step 7"),
           indent: 4,
-          line_type: LineType::StepStart,
+          line_type: LineType::StepStart {
+            keyword: Keyword::Then,
+          },
         },
       ];
       pretty::assert_eq!(want_lines, have_lines);
@@ -238,7 +252,7 @@ Feature: test
     # And step 2
     And step 3
 "#;
-      let have_lines = lexer::file(BufReader::new(&source.as_bytes()[1..]));
+      let have_lines = lexer::file(BufReader::new(&source.as_bytes()[1..])).unwrap();
       let want_lines = vec![
         Line {
           number: 0,
@@ -274,7 +288,9 @@ Feature: test
           number: 5,
           text: S("    Given step 1:"),
           indent: 4,
-          line_type: LineType::StepStart,
+          line_type: LineType::StepStart {
+            keyword: Keyword::Given,
+          },
         },
         Line {
           number: 6,
@@ -286,7 +302,9 @@ Feature: test
           number: 7,
           text: S("    And step 3"),
           indent: 4,
-          line_type: LineType::StepStart,
+          line_type: LineType::StepStart {
+            keyword: Keyword::And,
+          },
         },
       ];
       pretty::assert_eq!(want_lines, have_lines);
@@ -352,7 +370,7 @@ Feature: test
       """
     And step 2
 "#;
-      let have_lines = lexer::file(BufReader::new(&source.as_bytes()[1..]));
+      let have_lines = lexer::file(BufReader::new(&source.as_bytes()[1..])).unwrap();
       let want_lines = vec![
         Line {
           number: 0,
@@ -376,7 +394,9 @@ Feature: test
           number: 3,
           text: S("    Given step 1:"),
           indent: 4,
-          line_type: LineType::StepStart,
+          line_type: LineType::StepStart {
+            keyword: Keyword::Given,
+          },
         },
         Line {
           number: 4,
@@ -406,7 +426,9 @@ Feature: test
           number: 8,
           text: S("    And step 2"),
           indent: 4,
-          line_type: LineType::StepStart,
+          line_type: LineType::StepStart {
+            keyword: Keyword::And,
+          },
         },
       ];
       pretty::assert_eq!(want_lines, have_lines);
@@ -477,7 +499,7 @@ Feature: test
       | row 2A | row 2B |
     And step 2
 "#;
-      let have_lines = lexer::file(BufReader::new(&source.as_bytes()[1..]));
+      let have_lines = lexer::file(BufReader::new(&source.as_bytes()[1..])).unwrap();
       let want_lines = vec![
         Line {
           number: 0,
@@ -501,7 +523,9 @@ Feature: test
           number: 3,
           text: S("    Given step 1:"),
           indent: 4,
-          line_type: LineType::StepStart,
+          line_type: LineType::StepStart {
+            keyword: Keyword::Given,
+          },
         },
         Line {
           number: 4,
@@ -525,7 +549,9 @@ Feature: test
           number: 7,
           text: S("    And step 2"),
           indent: 4,
-          line_type: LineType::StepStart,
+          line_type: LineType::StepStart {
+            keyword: Keyword::And,
+          },
         },
       ];
       pretty::assert_eq!(want_lines, have_lines);
@@ -589,7 +615,7 @@ Feature: test
       | one   | two  |
 "#;
       let bufread = BufReader::new(&source.as_bytes()[1..]);
-      let have_lines = lexer::file(bufread);
+      let have_lines = lexer::file(bufread).unwrap();
       let want_lines = vec![
         Line {
           number: 0,
@@ -613,13 +639,17 @@ Feature: test
           number: 3,
           text: S("    Given <ALPHA>"),
           indent: 4,
-          line_type: LineType::StepStart,
+          line_type: LineType::StepStart {
+            keyword: Keyword::Given,
+          },
         },
         Line {
           number: 4,
           text: S("    Then <BETA>"),
           indent: 4,
-          line_type: LineType::StepStart,
+          line_type: LineType::StepStart {
+            keyword: Keyword::Then,
+          },
         },
         Line {
           number: 5,
@@ -711,7 +741,7 @@ Feature: test
     When step 2
 "#;
       let bufread = BufReader::new(&source.as_bytes()[1..]);
-      let have_lines = lexer::file(bufread);
+      let have_lines = lexer::file(bufread).unwrap();
       let want_lines = vec![
         Line {
           number: 0,
@@ -735,7 +765,9 @@ Feature: test
           number: 3,
           text: S("    Given file \"foo\":"),
           indent: 4,
-          line_type: LineType::StepStart,
+          line_type: LineType::StepStart {
+            keyword: Keyword::Given,
+          },
         },
         Line {
           number: 4,
@@ -765,7 +797,9 @@ Feature: test
           number: 8,
           text: S("    When step 2"),
           indent: 4,
-          line_type: LineType::StepStart,
+          line_type: LineType::StepStart {
+            keyword: Keyword::When,
+          },
         },
       ];
       pretty::assert_eq!(want_lines, have_lines);
