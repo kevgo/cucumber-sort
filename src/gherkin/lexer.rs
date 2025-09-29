@@ -32,67 +32,49 @@ pub struct Line {
 impl Line {
   fn new(text: String, number: usize) -> Result<Line> {
     let mut chars = text.char_indices();
-    let mut indent = None;
-    let mut end_of_first_word = None;
-    let mut title_start = None;
+    let mut indent = text.len();
+    let mut end_of_first_word = text.len();
+    let mut title_start = text.len();
+
     // step 1: find the end of the initial whitespace
     loop {
       let Some((i, c)) = chars.next() else { break };
       if !c.is_whitespace() {
-        indent = Some(i);
+        indent = i;
         break;
       }
     }
+    let trimmed_text = &text[indent..];
+    if trimmed_text == "\"\"\"" {
+      return docstring_line(number, text, indent);
+    }
+
     // step 2: find the end of the first word
     loop {
       let Some((i, c)) = chars.next() else { break };
       if c.is_whitespace() {
-        end_of_first_word = Some(i);
+        end_of_first_word = i;
         break;
       }
     }
+    let first_word = &text[indent..end_of_first_word];
+    let Some(keyword) = Keyword::parse(first_word) else {
+      return text_line(number, text, indent);
+    };
+
     // step 3: find the beginning of the title
     loop {
       let Some((i, c)) = chars.next() else { break };
       if !c.is_whitespace() {
-        title_start = Some(i);
+        title_start = i;
         break;
       }
     }
-    let indent = indent.unwrap_or(text.len());
-    let end_of_first_word = end_of_first_word.unwrap_or(text.len());
-    let first_word = &text[indent..end_of_first_word];
-    let Some(title_start) = title_start else {
-      if first_word == "\"\"\"" {
-        return Ok(Line {
-          number,
-          text,
-          indent,
-          title_start: indent,
-          line_type: LineType::DocStringStartStop,
-        });
-      }
-      return Ok(Line {
-        number,
-        text,
-        indent: indent,
-        line_type: LineType::Text,
-        title_start: indent,
-      });
-    };
-    let line_type = match Keyword::parse(first_word) {
-      Some(keyword) => LineType::StepStart { keyword },
-      None => LineType::Text,
-    };
-    let title_start = match &line_type {
-      LineType::DocStringStartStop | LineType::Text => indent,
-      LineType::StepStart { keyword: _ } => title_start,
-    };
     Ok(Line {
       number,
       text,
       indent,
-      line_type,
+      line_type: LineType::StepStart { keyword },
       title_start,
     })
   }
@@ -106,6 +88,26 @@ impl Line {
   pub fn title(&self) -> &str {
     &self.text[self.title_start..]
   }
+}
+
+fn text_line(number: usize, text: String, indent: usize) -> Result<Line> {
+  Ok(Line {
+    number,
+    text,
+    indent,
+    title_start: indent,
+    line_type: LineType::Text,
+  })
+}
+
+fn docstring_line(number: usize, text: String, indent: usize) -> Result<Line> {
+  Ok(Line {
+    number,
+    text,
+    indent,
+    title_start: indent,
+    line_type: LineType::DocStringStartStop,
+  })
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]

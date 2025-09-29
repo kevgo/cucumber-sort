@@ -834,7 +834,7 @@ Feature: test
           line_type: LineType::StepStart {
             keyword: Keyword::Given,
           },
-          title_start: 9,
+          title_start: 10,
         },
         Line {
           number: 4,
