@@ -9,7 +9,9 @@ Feature: format already ordered steps
     When I run "cucumber-sort check"
     Then it prints:
       """
-      .cucumbersortrc:1  regex parse error:
+      .cucumbersortrc:1  invalid regular expression
+
+      regex parse error:
           invalid (
                   ^
       error: unclosed group

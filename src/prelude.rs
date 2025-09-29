@@ -37,7 +37,10 @@ impl UserError {
         filepath,
         line,
         message,
-      } => (format!("{}:{}  {}", filepath, line, message), None),
+      } => (
+        format!("{}:{}  invalid regular expression", filepath, line),
+        Some(message.into()),
+      ),
       UserError::ConfigFileRead { reason } => (
         format!("cannot read configuration file: {reason}"),
         Some(format!(
