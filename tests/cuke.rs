@@ -68,7 +68,8 @@ async fn create_file(world: &mut MyWorld, step: &Step, filename: String) {
 #[then(expr = "file {string} now has content:")]
 async fn verify_file(world: &mut MyWorld, step: &Step, filename: String) {
   let filepath = world.dir.path().join(filename);
-  let want = step.docstring.as_ref().unwrap().trim();
+  let raw_want = step.docstring.as_ref().unwrap().trim();
+  let want = raw_want.replace("'''", "\"\"\"");
   let have = fs::read_to_string(filepath).await.unwrap();
   pretty::assert_eq!(want, have.trim());
 }
