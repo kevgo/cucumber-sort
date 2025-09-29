@@ -54,15 +54,15 @@ async fn files_not_changed(world: &mut MyWorld) {
 #[given(expr = "file {string} with content:")]
 async fn create_file(world: &mut MyWorld, step: &Step, filename: String) {
   let filepath = world.dir.path().join(filename);
-  let content = step.docstring.as_ref().unwrap().trim();
-  let fixed_content = unescape_docstrings(content);
+  let raw_content = step.docstring.as_ref().unwrap().trim();
+  let content = unescape_docstrings(raw_content);
   if let Some(parent) = filepath.parent()
     && parent != world.dir.path()
   {
     fs::create_dir_all(parent).await.unwrap();
   }
-  fs::write(&filepath, fixed_content).await.unwrap();
-  world.files.push((filepath, content.to_string()));
+  fs::write(&filepath, content).await.unwrap();
+  world.files.push((filepath, raw_content.to_string()));
 }
 
 #[then(expr = "file {string} now has content:")]
