@@ -128,7 +128,7 @@ impl<'a> TrimmedLine<'a> {
       if !self.0.starts_with(starter) {
         continue;
       }
-      let key_text = &self.0[0..starter.len()];
+      let key_text = &self.0[0..starter.len() - 1];
       let Ok(keyword) = Keyword::try_from(key_text) else {
         return Err(UserError::UnknownGherkinKeyword(key_text.to_string()));
       };
@@ -187,8 +187,6 @@ mod tests {
 
   mod trimmed_line {
     use crate::gherkin::lexer::{Keyword, LineType, TrimmedLine};
-    use crate::prelude::UserError;
-    use big_s::S;
 
     #[test]
     fn is_step_start() {
@@ -208,10 +206,7 @@ mod tests {
         Ok(Some(Keyword::And)),
         TrimmedLine::from("And I am happy").is_step_start()
       );
-      assert_eq!(
-        Err(UserError::UnknownGherkinKeyword(S("Other"))),
-        TrimmedLine::from("Other text").is_step_start()
-      );
+      assert_eq!(Ok(None), TrimmedLine::from("Other text").is_step_start());
     }
 
     #[test]

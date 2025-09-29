@@ -182,7 +182,7 @@ mod tests {
       let want_block = gherkin::Block::Sortable(vec![
         gherkin::Step {
           title: S("step 1"),
-          keyword: Keyword::Given,
+          keyword: Keyword::And,
           lines: vec![],
           line_no: 2,
           indent: 0,
@@ -196,7 +196,7 @@ mod tests {
         },
         gherkin::Step {
           title: S("step 3"),
-          keyword: Keyword::And,
+          keyword: Keyword::Given,
           lines: vec![],
           line_no: 0,
           indent: 0,
