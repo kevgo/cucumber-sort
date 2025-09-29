@@ -853,9 +853,9 @@ Feature: test
         Line {
           number: 6,
           text: S("        Given step 1"),
-          indent: 6,
+          indent: 8,
           line_type: LineType::Text,
-          title_start: 12,
+          title_start: 14,
         },
         Line {
           number: 7,

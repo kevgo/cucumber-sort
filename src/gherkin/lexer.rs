@@ -1,12 +1,21 @@
 use crate::prelude::*;
 use std::fmt::Display;
 use std::io::BufRead;
+use std::usize;
 
 /// lexes the given file content
 pub fn file(text: impl BufRead) -> Result<Vec<Line>> {
   let mut result = vec![];
+  let mut last_step_indent = usize::MAX;
   for (i, text_line) in text.lines().enumerate() {
-    let line = Line::new(text_line.unwrap(), i)?;
+    let mut line = Line::new(text_line.unwrap(), i)?;
+    if let LineType::StepStart { keyword: _ } = &line.line_type {
+      if line.indent > last_step_indent {
+        line.line_type = LineType::Text;
+      } else {
+        last_step_indent = line.indent;
+      }
+    }
     result.push(line);
   }
   Ok(result)
