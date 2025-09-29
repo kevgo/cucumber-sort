@@ -8,7 +8,7 @@ pub fn file(text: impl BufRead) -> Result<Vec<Line>> {
   let mut last_step_indent = usize::MAX;
   for (i, text_line) in text.lines().enumerate() {
     let mut line = Line::new(text_line.unwrap(), i)?;
-    if let LineType::StepStart { keyword: _ } = &line.line_type {
+    if line.is_step_start() {
       if line.indent > last_step_indent {
         line.line_type = LineType::Text;
       } else {
@@ -90,6 +90,10 @@ impl Line {
   /// provides the whitespace characters that make up the indentation of this line
   pub fn indent_text(&self) -> &str {
     &self.text[..self.indent]
+  }
+
+  pub fn is_step_start(&self) -> bool {
+    matches!(self.line_type, LineType::StepStart { keyword: _ })
   }
 
   /// provides the line text without the leading whitespace and Gherkin keyword
