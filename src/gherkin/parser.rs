@@ -14,7 +14,7 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Document> {
     let new_open_block: Option<Block>; // the new value of open_block at the end of this loop
     let new_open_step: Option<Step>; // the new value of open_step at the end of this loop
     match (&line.line_type, open_block, open_step) {
-      (LineType::StepStart, Some(Block::Static(lines)), None) => {
+      (LineType::StepStart { keyword }, Some(Block::Static(lines)), None) => {
         // the first step after a static text block
         blocks.push(Block::Static(lines));
         new_open_block = Some(Block::Sortable(vec![]));
@@ -25,7 +25,7 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Document> {
           line_no: line.number,
         });
       }
-      (LineType::StepStart, Some(Block::Sortable(mut steps)), Some(step)) => {
+      (LineType::StepStart { keyword }, Some(Block::Sortable(mut steps)), Some(step)) => {
         // a step in the middle of populating a sortable block
         steps.push(step);
         new_open_block = Some(Block::Sortable(steps));
@@ -68,16 +68,16 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Document> {
         new_open_block = Some(Block::Static(lines));
         new_open_step = None;
       }
-      (LineType::StepStart, None, None) => {
+      (LineType::StepStart { keyword }, None, None) => {
         panic!("a Gherkin document cannot start with a step");
       }
-      (LineType::StepStart, None, Some(_step)) => {
+      (LineType::StepStart { keyword }, None, Some(_step)) => {
         panic!("shouldn't have a current_step without a current_block")
       }
-      (LineType::StepStart, Some(Block::Sortable(_steps)), None) => {
+      (LineType::StepStart { keyword }, Some(Block::Sortable(_steps)), None) => {
         panic!("shouldn't have an open steps block without a current step")
       }
-      (LineType::StepStart, Some(Block::Static(_lines)), Some(_step)) => {
+      (LineType::StepStart { keyword }, Some(Block::Static(_lines)), Some(_step)) => {
         panic!("should not have an open step while there is an open text block");
       }
       (LineType::DocStringStartStop, None, None) => {
