@@ -1,10 +1,12 @@
 mod lexer;
 mod parser;
+mod sorter;
 
-use crate::prelude::*;
+use crate::errors::{Result, UserError};
 use camino::Utf8Path;
 pub use lexer::Keyword;
 pub use parser::{Block, Document, Step};
+pub use sorter::Sorter;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
