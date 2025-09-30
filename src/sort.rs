@@ -163,50 +163,50 @@ mod tests {
         ..Step::default()
       },
       Step {
-        title: S("step 6"),
         keyword: Keyword::Then,
+        title: S("step 6"),
         ..Step::default()
       },
       Step {
-        title: S("step 7"),
         keyword: Keyword::And,
+        title: S("step 7"),
         ..Step::default()
       },
     ];
     let want = vec![
       Step {
+        keyword: Keyword::Given,
         title: S("step 1"),
-        keyword: Keyword::Given,
         ..Step::default()
       },
       Step {
+        keyword: Keyword::Given,
         title: S("step 2"),
-        keyword: Keyword::Given,
         ..Step::default()
       },
       Step {
+        keyword: Keyword::Given,
         title: S("step 3"),
-        keyword: Keyword::Given,
         ..Step::default()
       },
       Step {
+        keyword: Keyword::When,
         title: S("step 4"),
-        keyword: Keyword::When,
         ..Step::default()
       },
       Step {
+        keyword: Keyword::When,
         title: S("step 5"),
-        keyword: Keyword::When,
         ..Step::default()
       },
       Step {
+        keyword: Keyword::Then,
         title: S("step 6"),
-        keyword: Keyword::Then,
         ..Step::default()
       },
       Step {
-        title: S("step 7"),
         keyword: Keyword::Then,
+        title: S("step 7"),
         ..Step::default()
       },
     ];
@@ -218,75 +218,75 @@ mod tests {
   fn optimize_keywords() {
     let give = vec![
       Step {
+        keyword: Keyword::Given,
         title: S("step 1"),
-        keyword: Keyword::Given,
         ..Step::default()
       },
       Step {
+        keyword: Keyword::Given,
         title: S("step 2"),
-        keyword: Keyword::Given,
         ..Step::default()
       },
       Step {
+        keyword: Keyword::Given,
         title: S("step 3"),
-        keyword: Keyword::Given,
         ..Step::default()
       },
       Step {
+        keyword: Keyword::When,
         title: S("step 4"),
-        keyword: Keyword::When,
         ..Step::default()
       },
       Step {
+        keyword: Keyword::When,
         title: S("step 5"),
-        keyword: Keyword::When,
         ..Step::default()
       },
       Step {
+        keyword: Keyword::Then,
         title: S("step 6"),
-        keyword: Keyword::Then,
         ..Step::default()
       },
       Step {
-        title: S("step 7"),
         keyword: Keyword::Then,
+        title: S("step 7"),
         ..Step::default()
       },
     ];
     let want = vec![
       Step {
-        title: S("step 1"),
         keyword: Keyword::Given,
+        title: S("step 1"),
         ..Step::default()
       },
       Step {
+        keyword: Keyword::And,
         title: S("step 2"),
-        keyword: Keyword::And,
         ..Step::default()
       },
       Step {
+        keyword: Keyword::And,
         title: S("step 3"),
-        keyword: Keyword::And,
         ..Step::default()
       },
       Step {
-        title: S("step 4"),
         keyword: Keyword::When,
+        title: S("step 4"),
         ..Step::default()
       },
       Step {
+        keyword: Keyword::And,
         title: S("step 5"),
-        keyword: Keyword::And,
         ..Step::default()
       },
       Step {
-        title: S("step 6"),
         keyword: Keyword::Then,
+        title: S("step 6"),
         ..Step::default()
       },
       Step {
-        title: S("step 7"),
         keyword: Keyword::And,
+        title: S("step 7"),
         ..Step::default()
       },
     ];
