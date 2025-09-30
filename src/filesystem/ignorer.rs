@@ -4,7 +4,7 @@ use std::fs;
 use std::io::ErrorKind;
 
 /// the filename of the ignore file
-pub const IGNORE_FILE_NAME: &str = ".cucumbersortignore";
+const IGNORE_FILE_NAME: &str = ".cucumbersortignore";
 
 /// Ignorer encapsulates the minutiae around ignoring file paths.
 /// You give it an ignore config file, and it tells you whether

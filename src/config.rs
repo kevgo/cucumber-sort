@@ -1,4 +1,4 @@
-use crate::filesystem::ignorer::Ignorer;
+use crate::filesystem::Ignorer;
 use crate::prelude::*;
 use camino::Utf8PathBuf;
 use regex::Regex;

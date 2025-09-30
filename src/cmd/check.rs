@@ -14,7 +14,7 @@ pub fn check(filepath: Option<Utf8PathBuf>) -> Result<ExitCode> {
 
 /// checks all files in the current folder
 fn all(config: &config::Config) -> Result<ExitCode> {
-  for filepath in filesystem::find_files::all(&config.ignorer)? {
+  for filepath in filesystem::find_matching(&config.ignorer)? {
     let exit_code = file(filepath, config)?;
     if exit_code != ExitCode::SUCCESS {
       return Ok(exit_code);

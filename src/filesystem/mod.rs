@@ -1,2 +1,5 @@
-pub mod find_files;
-pub mod ignorer;
+mod find_files;
+mod ignorer;
+
+pub use find_files::find_matching;
+pub use ignorer::Ignorer;
