@@ -134,8 +134,7 @@ impl Sorter {
   fn parse(text: &str) -> Result<Sorter> {
     let mut entries = vec![];
     for (i, line) in text.lines().enumerate() {
-      if line.is_empty() {
-        // TODO: also ignore lines starting with # here
+      if line.is_empty() || line.starts_with('#') {
         continue;
       }
       match Regex::new(line) {
