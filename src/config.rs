@@ -26,7 +26,7 @@ pub fn load() -> Result<Config> {
       Ok(regex) => steps.push(regex),
       Err(err) => {
         return Err(UserError::ConfigFileInvalidRegex {
-          filepath: Utf8PathBuf::from(FILE_NAME),
+          file: Utf8PathBuf::from(FILE_NAME),
           line: i,
           message: err.to_string(),
         });

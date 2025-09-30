@@ -8,7 +8,7 @@ use camino::Utf8PathBuf;
 #[derive(Eq, Debug, PartialEq)]
 pub enum UserError {
   ConfigFileInvalidRegex {
-    filepath: Utf8PathBuf,
+    file: Utf8PathBuf,
     line: usize,
     message: String,
   },
@@ -32,11 +32,11 @@ impl UserError {
   pub fn messages(&self) -> (String, Option<String>) {
     match self {
       UserError::ConfigFileInvalidRegex {
-        filepath,
+        file,
         line,
         message,
       } => (
-        format!("{}:{}  invalid regular expression", filepath, line),
+        format!("{}:{}  invalid regular expression", file, line),
         Some(message.into()),
       ),
       UserError::ConfigFileRead { reason } => (
