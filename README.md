@@ -24,8 +24,13 @@ extract/install manually. Or install from source:
 
 ### Configuration file
 
-Run `cucumber-sort init` to create the configuration files. This creates two
-files:
+To create the configuration files for cucumber-sort, run:
+
+```
+cucumber-sort init
+```
+
+This creates two files:
 
 - File **.cucumber-sort-rc** contains the step names without
   `Given`/`When`/`Then` in the order you want them to appear in the`.feature`
