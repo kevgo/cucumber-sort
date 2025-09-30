@@ -8,6 +8,15 @@ use std::io::ErrorKind;
 
 /// the filename of the configuration file
 const FILE_NAME: &str = ".cucumbersortrc";
+const TEMPLATE: &str = r#"
+# More info at https://github.com/kevgo/cucumber-sort
+#
+# This file lists Gherkin steps in the desired order
+# without Given/When/Then, using regular expressions.
+
+# step 1
+# step 2
+"#;
 
 /// Sorter encapsulates the minutiae around checking the order of Gherkin steps.
 /// You give it a config file and it sorts Steps for you.
@@ -39,6 +48,13 @@ impl Sorter {
         }),
       },
     }
+  }
+
+  pub fn create() -> Result<()> {
+    fs::write(FILE_NAME, &TEMPLATE[1..]).map_err(|err| UserError::ConfigFileCreate {
+      file: FILE_NAME.into(),
+      message: err.to_string(),
+    })
   }
 
   /// provides a copy of the given document with all Gherkin steps sorted the same way as in the given configuration

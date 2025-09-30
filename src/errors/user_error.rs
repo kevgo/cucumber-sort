@@ -5,6 +5,10 @@ use camino::Utf8PathBuf;
 /// They do not include problems that the linter finds in Gherkin files.
 #[derive(Eq, Debug, PartialEq)]
 pub enum UserError {
+  ConfigFileCreate {
+    file: Utf8PathBuf,
+    message: String,
+  },
   ConfigFileInvalidRegex {
     file: Utf8PathBuf,
     line: usize,
@@ -38,6 +42,9 @@ impl UserError {
   /// The second result is an optional description providing additional details.
   pub fn messages(self) -> (String, Option<String>) {
     match self {
+      UserError::ConfigFileCreate { file, message } => {
+        (format!("cannot create config file {file}: {message}"), None)
+      }
       UserError::ConfigFileInvalidRegex {
         file,
         line,
