@@ -30,7 +30,7 @@ files:
 - File **.cucumber-sort-rc** contains the step names without
   `Given`/`When`/`Then` in the order you want them to appear in the`.feature`
   files. You can use regular expressions for placeholders. These regular
-  expressions only need to match the steps and don't need to contain captures,
+  expressions only need to match the steps. They don't need to contain captures,
   since cucumber-sort doesn't capture any data out of Cucumber steps.
 
 - File **.cucumber-sort-ignore** lists files that cucumber-sort should ignore.
