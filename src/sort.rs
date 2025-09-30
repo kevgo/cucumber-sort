@@ -68,8 +68,9 @@ fn deoptimize_keywords(steps: Vec<gherkin::Step>) -> Vec<gherkin::Step> {
   for mut step in steps {
     if step.keyword == Keyword::And {
       step.keyword = previous_keyword;
+    } else {
+      previous_keyword = step.keyword;
     }
-    previous_keyword = step.keyword;
     result.push(step);
   }
   result
