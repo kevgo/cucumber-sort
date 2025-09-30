@@ -7,9 +7,22 @@ use camino::Utf8PathBuf;
 /// They do not include problems that the linter finds in Gherkin files.
 #[derive(Eq, Debug, PartialEq)]
 pub enum UserError {
-  ConfigFileRead { reason: String },
-  FileRead { file: Utf8PathBuf, reason: String },
-  FileWrite { file: Utf8PathBuf, reason: String },
+  ConfigFileInvalidRegex {
+    file: Utf8PathBuf,
+    line: usize,
+    message: String,
+  },
+  ConfigFileRead {
+    reason: String,
+  },
+  FileRead {
+    file: Utf8PathBuf,
+    reason: String,
+  },
+  FileWrite {
+    file: Utf8PathBuf,
+    reason: String,
+  },
 }
 
 impl UserError {
@@ -18,6 +31,14 @@ impl UserError {
   /// the second result is an optional description providing additional details.
   pub fn messages(&self) -> (String, Option<String>) {
     match self {
+      UserError::ConfigFileInvalidRegex {
+        file,
+        line,
+        message,
+      } => (
+        format!("{}:{}  invalid regular expression", file, line),
+        Some(message.into()),
+      ),
       UserError::ConfigFileRead { reason } => (
         format!("cannot read configuration file: {reason}"),
         Some(format!(
