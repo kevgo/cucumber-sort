@@ -1,4 +1,4 @@
-Feature: format unordered steps
+Feature: list unused steps while checking
 
   Scenario: unordered step in a scenario
     Given file ".cucumbersortrc" with content:
