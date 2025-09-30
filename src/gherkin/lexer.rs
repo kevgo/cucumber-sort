@@ -38,8 +38,7 @@ impl Line {
     let mut title_start = text.len(); // at which character the step title starts
 
     // step 1: find the end of the initial whitespace
-    loop {
-      let Some((i, c)) = chars.next() else { break };
+    for (i, c) in chars.by_ref() {
       if !c.is_whitespace() {
         indent = i;
         break;
@@ -54,8 +53,7 @@ impl Line {
     }
 
     // step 2: find the end of the first word
-    loop {
-      let Some((i, c)) = chars.next() else { break };
+    for (i, c) in chars.by_ref() {
       if c.is_whitespace() {
         end_of_first_word = i;
         break;
@@ -67,8 +65,7 @@ impl Line {
     };
 
     // step 3: find the beginning of the title
-    loop {
-      let Some((i, c)) = chars.next() else { break };
+    for (i, c) in chars.by_ref() {
       if !c.is_whitespace() {
         title_start = i;
         break;
