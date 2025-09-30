@@ -2,6 +2,7 @@ use crate::config::Config;
 use crate::gherkin;
 use ansi_term::Color::Cyan;
 use camino::Utf8Path;
+use regex::Regex;
 
 /// provides a copy of the given document with all Gherkin steps sorted the same way as in the given configuration
 pub fn file(
@@ -37,7 +38,7 @@ fn sort_block(
 /// orders the given have_steps to follow the same order as the given config_steps
 fn sort_steps(
   unordered_steps: Vec<gherkin::Step>,
-  config_steps: &[String],
+  config_steps: &[Regex],
   filename: &Utf8Path,
 ) -> (Vec<gherkin::Step>, Vec<Issue>) {
   let mut result = Vec::<gherkin::Step>::with_capacity(unordered_steps.len());
@@ -61,21 +62,17 @@ fn sort_steps(
   (result, issues)
 }
 
-fn matches_config_step(gherkin_step: &gherkin::Step, config_step: &str) -> bool {
-  gherkin_step.title.starts_with(config_step)
-}
-
 /// a Vec that makes it efficient to delete elements from it
 struct DeletableSteps(Vec<Option<gherkin::Step>>);
 
 impl DeletableSteps {
   /// moves all steps from self that match the given config_step
   /// into the given result Vec
-  fn extract(&mut self, config_step: &str) -> Vec<gherkin::Step> {
+  fn extract(&mut self, regex: &Regex) -> Vec<gherkin::Step> {
     let mut result = vec![];
     for entry_opt in self.0.iter_mut() {
       if let Some(entry) = &entry_opt
-        && matches_config_step(entry, config_step)
+        && regex.is_match(&entry.title)
       {
         result.push(entry_opt.take().unwrap());
       }
@@ -113,10 +110,17 @@ mod tests {
     use crate::{gherkin, sort};
     use ansi_term::Color::Cyan;
     use big_s::S;
+    use regex::Regex;
+
+    macro_rules! regex {
+      ($pattern:expr) => {
+        Regex::new($pattern).unwrap()
+      };
+    }
 
     #[test]
     fn already_ordered() {
-      let config_steps = vec![S("step 1"), S("step 2"), S("step 3")];
+      let config_steps = vec![regex!("step 1"), regex!("step 2"), regex!("step 3")];
       let give_steps = vec![
         gherkin::Step {
           title: S("step 1"),
@@ -146,7 +150,7 @@ mod tests {
     #[test]
     fn unordered() {
       let config = Config {
-        steps: vec![S("step 1"), S("step 2"), S("step 3")],
+        steps: vec![regex!("step 1"), regex!("step 2"), regex!("step 3")],
       };
       let give_block = gherkin::Block::Sortable(vec![
         gherkin::Step {
@@ -196,7 +200,7 @@ mod tests {
     #[test]
     fn unknown_step() {
       let config = Config {
-        steps: vec![S("step 1"), S("step 2")],
+        steps: vec![regex!("step 1"), regex!("step 2")],
       };
       let give_block = gherkin::Block::Sortable(vec![
         gherkin::Step {

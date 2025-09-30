@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use regex::Regex;
 use std::fs;
 use std::io::{BufRead, BufReader};
 
@@ -6,7 +7,7 @@ use std::io::{BufRead, BufReader};
 pub const FILE_NAME: &str = ".cucumbersortrc";
 
 pub struct Config {
-  pub steps: Vec<String>,
+  pub steps: Vec<Regex>,
 }
 
 pub fn load() -> Result<Config> {
@@ -18,6 +19,7 @@ pub fn load() -> Result<Config> {
       .lines()
       .map(|e| e.unwrap())
       .filter(|line| !line.is_empty())
+      .map(|line| Regex::new(&line).unwrap())
       .collect(),
   })
 }

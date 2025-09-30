@@ -3,10 +3,10 @@ Feature: check ordered steps
   Scenario:
     Given file ".cucumbersortrc" with content:
       """
-      step 1
+      file .* with content:
       step 2
       step 3
-      step 4
+      file .* now has content:
       step 5
       """
     And file "feature/one.feature" with content:
@@ -14,12 +14,18 @@ Feature: check ordered steps
       Feature: example
 
         Background:
-          Given step 1
+          Given file "foo" with content:
+            '''
+            bar
+            '''
           And step 2
           When step 3
 
         Scenario: result
-          Then step 4
+          Then file "foo" now has content:
+            '''
+            bar
+            '''
           And step 5
       """
     When I run "cucumber-sort check"

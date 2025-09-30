@@ -3,12 +3,12 @@ Feature: format unordered steps
   Scenario: unordered step in a scenario
     Given file ".cucumbersortrc" with content:
       """
-      step 1
+      file .* with content:
       step 2
       step 3
       step 4
       step 5
-      step 6
+      file .* now has content:
       """
     And file "feature/one.feature" with content:
       """
@@ -18,7 +18,10 @@ Feature: format unordered steps
 
         Background:
           Given step 2
-          And step 1
+          And file "foo" with content:
+            '''
+            bar
+            '''
 
         Scenario: result
           Then step 4
@@ -27,8 +30,11 @@ Feature: format unordered steps
         # another comment
 
         Scenario: undo
-          When step 6
-          Then step 5
+          When step 5
+          Then file "foo" now has content:
+            '''
+            baz
+            '''
       """
     When I run "cucumber-sort format"
     Then it prints nothing
@@ -40,7 +46,10 @@ Feature: format unordered steps
         describing the feature.
 
         Background:
-          And step 1
+          And file "foo" with content:
+            '''
+            bar
+            '''
           Given step 2
 
         Scenario: result
@@ -50,6 +59,9 @@ Feature: format unordered steps
         # another comment
 
         Scenario: undo
-          Then step 5
-          When step 6
+          When step 5
+          Then file "foo" now has content:
+            '''
+            baz
+            '''
       """
