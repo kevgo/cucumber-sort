@@ -20,21 +20,21 @@ pub struct Line {
   /// complete text of the line, as it is in the file
   pub text: String,
 
-  /// how much the line is indented
+  /// the number of whitespace characters at the beginning of the line
   pub indent: usize,
 
+  /// where in the text the step title (the part after Given/When/Then) starts
   pub title_start: usize,
 
-  /// whether this is a Given/When/Then line or not
   pub line_type: LineType,
 }
 
 impl Line {
   fn new(text: String, number: usize) -> Result<Line> {
     let mut chars = text.char_indices();
-    let mut indent = text.len();
-    let mut end_of_first_word = text.len();
-    let mut title_start = text.len();
+    let mut indent = text.len(); // counts how many whitespace characters this line has at the beginning
+    let mut end_of_first_word = text.len(); // at which character the first word ends
+    let mut title_start = text.len(); // at which character the step title starts
 
     // step 1: find the end of the initial whitespace
     loop {
