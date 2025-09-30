@@ -854,7 +854,9 @@ Feature: test
           number: 6,
           text: S("        Given step 1"),
           indent: 8,
-          line_type: LineType::Text,
+          line_type: LineType::StepStart {
+            keyword: Keyword::Given,
+          },
           title_start: 14,
         },
         Line {

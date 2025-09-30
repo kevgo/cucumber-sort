@@ -5,16 +5,8 @@ use std::io::BufRead;
 /// lexes the given file content
 pub fn file(text: impl BufRead) -> Result<Vec<Line>> {
   let mut result = vec![];
-  let mut last_step_indent = usize::MAX;
   for (i, text_line) in text.lines().enumerate() {
-    let mut line = Line::new(text_line.unwrap(), i)?;
-    if line.is_step_start() {
-      if line.indent > last_step_indent {
-        line.line_type = LineType::Text;
-      } else {
-        last_step_indent = line.indent;
-      }
-    }
+    let line = Line::new(text_line.unwrap(), i)?;
     result.push(line);
   }
   Ok(result)
@@ -92,11 +84,6 @@ impl Line {
     &self.text[..self.indent]
   }
 
-  pub fn is_step_start(&self) -> bool {
-    matches!(self.line_type, LineType::StepStart { keyword: _ })
-  }
-
-  /// provides the line text without the leading whitespace and Gherkin keyword
   pub fn title(&self) -> &str {
     &self.text[self.title_start..]
   }

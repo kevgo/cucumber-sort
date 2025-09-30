@@ -9,7 +9,7 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Document> {
   let mut blocks: Vec<Block> = vec![];
   let mut open_block: Option<Block> = None; // the block that is currently being populated
   let mut open_step: Option<Step> = None; // the step that is currently being populated
-  let mut inside_docstring = false; // whether we are inside a docstring
+  let mut docstring_indent = None; // if we are inside a docstring, contains the indentation of that docstring
   for line in lines {
     let new_open_block: Option<Block>; // the new value of open_block at the end of this loop
     let new_open_step: Option<Step>; // the new value of open_step at the end of this loop
@@ -26,6 +26,14 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Document> {
           line_no: line.number,
         });
       }
+      (LineType::StepStart { keyword: _ }, Some(Block::Sortable(steps)), Some(mut step))
+        if docstring_indent.is_some() =>
+      {
+        // a line that looks like a step in the middle of populating a docstring
+        step.additional_lines.push(line.text);
+        new_open_block = Some(Block::Sortable(steps));
+        new_open_step = Some(step);
+      }
       (LineType::StepStart { keyword }, Some(Block::Sortable(mut steps)), Some(step)) => {
         // a step in the middle of populating a sortable block
         steps.push(step);
@@ -39,11 +47,18 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Document> {
         });
       }
       (LineType::DocStringStartStop, Some(Block::Sortable(steps)), Some(mut step)) => {
-        // a docstring start/end while populating a step
+        if let Some(wrapper_indent) = &docstring_indent {
+          if *wrapper_indent == step.indent.len() {
+            // we found the closing docstring delimiter
+            docstring_indent = None;
+          }
+        } else {
+          // we found a starting docstring delimiter
+          docstring_indent = Some(step.indent.len());
+        }
         step.additional_lines.push(line.text);
         new_open_block = Some(Block::Sortable(steps));
         new_open_step = Some(step);
-        inside_docstring = !inside_docstring
       }
       (LineType::Text, None, None) => {
         // the first line of the document
@@ -51,7 +66,7 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Document> {
         new_open_step = None;
       }
       (LineType::Text, Some(Block::Sortable(mut steps)), Some(mut step)) => {
-        if inside_docstring {
+        if docstring_indent.is_some() {
           // we are inside a docstring, this line is part of the docstring content
           step.additional_lines.push(line.text);
           new_open_block = Some(Block::Sortable(steps));
