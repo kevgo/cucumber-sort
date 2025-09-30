@@ -32,19 +32,22 @@ cucumber-sort init
 
 This creates two files:
 
-- **.cucumber-sort-rc**<br>Populate this file with the step names (without
-  `Given`/`When`/`Then`) in the order you want them to appear in the`.feature`
-  files.
+#### .cucumber-sort-rc
 
-  You can use regular expressions for placeholders. These regular expressions
-  only need to match the steps. They don't need to contain captures, since
-  cucumber-sort doesn't capture any data out of Cucumber steps.
+Populate this file with the step names (without `Given`/`When`/`Then`) in the
+order you want them to appear in the`.feature` files.
 
-  As an example, take a look at our own
-  [.cucumber-sort-rc file](.cucumber-sort-rc).
+You can use regular expressions for placeholders. These regular expressions only
+need to match the steps. They don't need to contain captures, since
+cucumber-sort doesn't capture any data out of Cucumber steps.
 
-- **.cucumber-sort-ignore** Populate this file with glob expressions that
-  describe files that cucumber-sort should ignore.
+As an example, take a look at our own
+[.cucumber-sort-rc file](.cucumber-sort-rc).
+
+#### .cucumber-sort-ignore
+
+Populate this file with glob expressions that describe files that cucumber-sort
+should ignore.
 
 ### Usage
 
