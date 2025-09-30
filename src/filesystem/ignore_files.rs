@@ -49,9 +49,7 @@ impl Ignorer {
 
   pub fn is_ignored(&self, file: &str) -> bool {
     for glob in &self.globs {
-      println!("11111111111111111 {}", glob);
       if glob.matches(file) {
-        println!("2222222222222222222222222222");
         return true;
       }
     }
