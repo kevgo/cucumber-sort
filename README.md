@@ -27,11 +27,11 @@ can also install from source:
 Run `cucumber-sort init` to create the configuration files. This creates two
 files:
 
-- File **.cucumber-sort-rc** contains the step names without Given/When/Then in
-  the order you want them to appear in the`.feature` files. You can use regular
-  expressions for placeholders. They only need to match the steps and don't need
-  to contain captures, since cucumber-sort doesn't capture any data out of
-  Cucumber steps.
+- File **.cucumber-sort-rc** contains the step names without
+  `Given`/`When`/`Then` in the order you want them to appear in the`.feature`
+  files. You can use regular expressions for placeholders. They only need to
+  match the steps and don't need to contain captures, since cucumber-sort
+  doesn't capture any data out of Cucumber steps.
 
 - File **.cucumber-sort-ignore** lists files that cucumber-sort should ignore.
   You can use glob expressions in it.
