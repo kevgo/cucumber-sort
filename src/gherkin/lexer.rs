@@ -12,6 +12,7 @@ pub fn file(text: impl BufRead) -> Result<Vec<Line>> {
   Ok(result)
 }
 
+/// Line represents all lexed information about a line of text from a Gherkin file.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Line {
   /// the line number in the file
@@ -87,6 +88,7 @@ impl Line {
     &self.text[..self.indent]
   }
 
+  /// provides the title of the step (the part after Given/When/Then)
   pub fn title(&self) -> &str {
     &self.text[self.title_start..]
   }
