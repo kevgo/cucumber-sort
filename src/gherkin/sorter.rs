@@ -7,7 +7,7 @@ use std::fs;
 use std::io::ErrorKind;
 
 /// the filename of the configuration file
-const FILE_NAME: &str = ".cucumbersortrc";
+const FILE_NAME: &str = ".cucumber-sort-rc";
 const TEMPLATE: &str = r#"
 # More info at https://github.com/kevgo/cucumber-sort
 #

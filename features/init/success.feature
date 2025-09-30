@@ -6,7 +6,7 @@ Feature: creating the config files
       """
       config files created
       """
-    And file ".cucumbersortrc" now has content:
+    And file ".cucumber-sort-rc" now has content:
       """
       # More info at https://github.com/kevgo/cucumber-sort
       #
@@ -16,7 +16,7 @@ Feature: creating the config files
       # step 1
       # step 2
       """
-    And file ".cucumbersortignore" now has content:
+    And file ".cucumber-sort-ignore" now has content:
       """
       # More info at https://github.com/kevgo/cucumber-sort
       #
