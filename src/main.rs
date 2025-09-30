@@ -4,7 +4,6 @@ mod config;
 mod errors;
 mod feature_finder;
 mod gherkin;
-mod prelude;
 
 use crate::errors::Result;
 use ansi_term::Color::Red;
