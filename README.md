@@ -2,8 +2,8 @@
 
 ![build status](https://github.com/kevgo/cucumber-sort/actions/workflows/ci.yml/badge.svg)
 
-This tool sorts steps in [Cucumber](https://cucumber.io) files in an order that
-you define.
+This tool organizes steps in [Cucumber](https://cucumber.io) files in an order
+that you define.
 
 ### Installation
 
@@ -36,7 +36,7 @@ files:
 - File **.cucumber-sort-ignore** lists files that cucumber-sort should ignore.
   You can use glob expressions in it.
 
-### Fixing the order
+### Fixing the step order in .feature files
 
 To format your `.feature` files to have the correct step order, run:
 
@@ -44,7 +44,7 @@ To format your `.feature` files to have the correct step order, run:
 cucumber-sort format
 ```
 
-### Verifying the order
+### Verifying the order of .feature files
 
 To verify that all your `.feature` files have the correct step order, run:
 
