@@ -11,6 +11,7 @@ Feature: requesting help
       Commands:
         check   Check if Cucumber files are properly sorted
         format  Format Cucumber files by sorting them
+        init    Create the configuration files
         help    Print this message or the help of the given subcommand(s)
 
       Options:

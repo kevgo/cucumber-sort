@@ -19,4 +19,6 @@ pub enum Command {
     /// The file to format (optional)
     file: Option<Utf8PathBuf>,
   },
+  /// Create the configuration files
+  Init,
 }

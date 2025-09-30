@@ -6,6 +6,15 @@ use std::io::ErrorKind;
 /// the filename of the ignore file
 const IGNORE_FILE_NAME: &str = ".cucumbersortignore";
 
+const TEMPLATE: &str = r#"
+# More info at https://github.com/kevgo/cucumber-sort
+#
+# This file lists files that cucumber-sort should ignore,
+# using glob expressions.
+
+# features/foo.feature
+"#;
+
 /// Ignorer encapsulates the minutiae around ignoring file paths.
 /// You give it an ignore config file, and it tells you whether
 /// particular file paths are ignored according to it or not.
@@ -46,6 +55,13 @@ impl FeatureFinder {
       result.push(entry_path.to_path_buf());
     }
     Ok(result)
+  }
+
+  pub fn create() -> Result<()> {
+    fs::write(IGNORE_FILE_NAME, &TEMPLATE[1..]).map_err(|err| UserError::ConfigFileCreate {
+      file: IGNORE_FILE_NAME.into(),
+      message: err.to_string(),
+    })
   }
 
   /// indicates whether the given file path is ignored

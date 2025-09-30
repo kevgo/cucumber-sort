@@ -7,7 +7,7 @@ mod gherkin;
 
 use crate::errors::Result;
 use ansi_term::Color::Red;
-use cli::Command::{Check, Format};
+use cli::Command::{Check, Format, Init};
 use feature_finder::FeatureFinder;
 use std::process::ExitCode;
 
@@ -29,5 +29,6 @@ fn inner() -> Result<ExitCode> {
   match cli::parse() {
     Check { file } => cmd::check(file),
     Format { file } => cmd::format(file),
+    Init => cmd::init(),
   }
 }
