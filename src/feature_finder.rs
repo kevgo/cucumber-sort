@@ -32,7 +32,7 @@ impl FeatureFinder {
     let mut result = vec![];
     for entry in dir.as_ref().read_dir_utf8().unwrap() {
       let entry = entry.unwrap();
-      let entry_path = entry.path();
+      let entry_path = entry.path().strip_prefix(".").unwrap_or(entry.path());
       if entry_path.is_dir() {
         result.extend(self.search_folder(entry_path)?);
         continue;
@@ -40,7 +40,6 @@ impl FeatureFinder {
       if entry_path.extension() != Some("feature") {
         continue;
       }
-      let entry_path = entry_path.strip_prefix(".").unwrap_or(entry_path);
       if self.is_ignored(entry_path.as_str()) {
         continue;
       }
