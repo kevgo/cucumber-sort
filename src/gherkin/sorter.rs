@@ -116,14 +116,14 @@ impl Sorter {
   }
 
   fn parse(text: &str) -> Result<Sorter> {
-    let mut steps = vec![];
+    let mut entries = vec![];
     for (i, line) in text.lines().enumerate() {
       if line.is_empty() {
         // TODO: also ignore lines starting with # here
         continue;
       }
       match Regex::new(line) {
-        Ok(regex) => steps.push(Entry {
+        Ok(regex) => entries.push(Entry {
           regex,
           used: false,
           line_no: i + 1,
@@ -137,7 +137,7 @@ impl Sorter {
         }
       }
     }
-    Ok(Sorter { entries: steps })
+    Ok(Sorter { entries })
   }
 }
 
