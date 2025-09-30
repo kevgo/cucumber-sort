@@ -15,9 +15,8 @@ rta cucumber-sort
 ```
 
 If you want to run the tool standalone, download and extract/install the
-[latest release](https://github.com/kevgo/cucumber-sort/releases/latest).
-
-You can also install from source:
+[latest release](https://github.com/kevgo/cucumber-sort/releases/latest). You
+can also install from source:
 
 - [install Rust](https://rustup.rs)
 - clone the repo and cd into the directory
