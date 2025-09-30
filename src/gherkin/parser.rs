@@ -216,19 +216,19 @@ pub enum Block {
 /// a Gherkin step, to be sorted by this app
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Step {
-  /// the relevant title of the step (without Given/When/Then)
-  pub title: String,
-
-  pub keyword: Keyword,
-
-  /// the textual lines making up this step
-  pub additional_lines: Vec<String>,
+  /// the absolute line number inside the document at which this step start
+  pub line_no: usize,
 
   /// the whitespace making up the indentation of this step
   pub indent: String,
 
-  /// the absolute line number inside the document at which this step start
-  pub line_no: usize,
+  pub keyword: Keyword,
+
+  /// the relevant title of the step (without Given/When/Then)
+  pub title: String,
+
+  /// the textual lines making up this step
+  pub additional_lines: Vec<String>,
 }
 
 #[cfg(test)]
