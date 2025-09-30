@@ -1,6 +1,6 @@
 Feature: list unused steps while formatting
 
-  Scenario: unordered step in a scenario
+  Scenario: unused steps
     Given file ".cucumbersortrc" with content:
       """
       file .* with content:
