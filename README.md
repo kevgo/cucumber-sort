@@ -14,12 +14,12 @@ The easiest way to execute this tool is through
 rta cucumber-sort
 ```
 
-If you want to run the tool standalone, download and extract/install the
-[latest release](https://github.com/kevgo/cucumber-sort/releases/latest). You
-can also install from source:
+You can also download the
+[latest release](https://github.com/kevgo/cucumber-sort/releases/latest) and
+extract/install manually. Or install from source:
 
 - [install Rust](https://rustup.rs)
-- clone the repo and cd into the directory
+- clone the repo and cd into the cloned directory
 - compile the executable: `cargo install --locked --path .`
 
 ### Configuration file
