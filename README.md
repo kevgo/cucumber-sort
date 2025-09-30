@@ -32,7 +32,7 @@ expressions for placeholders. They only need to match the steps and don't need
 to contain captures, since cucumber-sort doesn't capture any data out of
 Cucumber steps.
 
-File `.cucumber-sort-ignore` lists files that cucumber-sort should ignore. You
+File **.cucumber-sort-ignore** lists files that cucumber-sort should ignore. You
 can use glob expressions in it.
 
 ### Fixing the order
