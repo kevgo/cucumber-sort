@@ -2,8 +2,8 @@
 
 ![build status](https://github.com/kevgo/cucumber-sort/actions/workflows/ci.yml/badge.svg)
 
-This tool sorts steps in [Gherkin](https://cucumber.io/docs/gherkin/reference)
-files according to an order that you define.
+This tool sorts steps in [Cucumber](https://cucumber.io) files in an order that
+you define.
 
 ### Installation
 
