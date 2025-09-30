@@ -32,7 +32,7 @@ cucumber-sort init
 
 This creates two files:
 
-- **.cucumber-sort-rc** Populate this file with the step names (without
+- **.cucumber-sort-rc**<br>Populate this file with the step names (without
   `Given`/`When`/`Then`) in the order you want them to appear in the`.feature`
   files.
 
