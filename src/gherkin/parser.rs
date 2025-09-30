@@ -19,11 +19,11 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Document> {
         blocks.push(Block::Static(lines));
         new_open_block = Some(Block::Sortable(vec![]));
         new_open_step = Some(Step {
-          title: line.title().to_string(),
-          keyword: *keyword,
-          additional_lines: vec![],
-          indent: line.indent_text().to_string(),
           line_no: line.number,
+          indent: line.indent_text().to_string(),
+          keyword: *keyword,
+          title: line.title().to_string(),
+          additional_lines: vec![],
         });
       }
       (LineType::StepStart { keyword: _ }, Some(Block::Sortable(steps)), Some(mut step))
@@ -39,11 +39,11 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Document> {
         steps.push(step);
         new_open_block = Some(Block::Sortable(steps));
         new_open_step = Some(Step {
-          title: line.title().to_string(),
-          keyword: *keyword,
-          additional_lines: vec![],
-          indent: line.indent_text().to_string(),
           line_no: line.number,
+          indent: line.indent_text().to_string(),
+          keyword: *keyword,
+          title: line.title().to_string(),
+          additional_lines: vec![],
         });
       }
       (LineType::DocStringStartStop, Some(Block::Sortable(steps)), Some(mut step)) => {
@@ -65,19 +65,20 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Document> {
         new_open_block = Some(Block::Static(vec![line.text]));
         new_open_step = None;
       }
-      (LineType::Text, Some(Block::Sortable(mut steps)), Some(mut step)) => {
-        if docstring_indent.is_some() {
-          // we are inside a docstring, this line is part of the docstring content
-          step.additional_lines.push(line.text);
-          new_open_block = Some(Block::Sortable(steps));
-          new_open_step = Some(step);
-        } else {
-          // the first static line after a sortable block
-          steps.push(step);
-          blocks.push(Block::Sortable(steps));
-          new_open_block = Some(Block::Static(vec![line.text]));
-          new_open_step = None;
-        }
+      (LineType::Text, Some(Block::Sortable(steps)), Some(mut step))
+        if docstring_indent.is_some() =>
+      {
+        // we are inside a docstring, this line is part of the docstring content
+        step.additional_lines.push(line.text);
+        new_open_block = Some(Block::Sortable(steps));
+        new_open_step = Some(step);
+      }
+      (LineType::Text, Some(Block::Sortable(mut steps)), Some(step)) => {
+        // the first static line after a sortable block
+        steps.push(step);
+        blocks.push(Block::Sortable(steps));
+        new_open_block = Some(Block::Static(vec![line.text]));
+        new_open_step = None;
       }
       (LineType::Text, Some(Block::Static(mut lines)), None) => {
         // another line of text while populating an unsortable block
