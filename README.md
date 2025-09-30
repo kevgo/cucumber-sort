@@ -27,21 +27,27 @@ You can also install from source:
 
 Run `cucumber-sort init` to create the configuration files.
 
+File `.cucumber-sort-rc`contains the step names without Given/When/Then in the
+order you want them to appear in the`.feature` files. You can use regular
+expressions for placeholders. They only need to match the steps and don't need
+to contain captures, since cucumber-sort doesn't capture any data out of
+Cucumber steps.
+
+File `.cucumber-sort-ignore` lists files that cucumber-sort should ignore. You
+can use glob expressions in it.
+
+### Fixing the order
+
+To format your `.feature` files in the correct step order, run:
+
 ```
-a Git repo with origin
-a local Git repo
-I am outside a Git repo
-the branches
-the local branch is {string}
-the commits
-I ran {string}
-I run {string}
-I run {string} and enter into the dialog
+cucumber-sort format
 ```
 
-### Challenges:
+### Verifying the order
 
-- duplication of step definition regexes: once in the step definition, and again
-  in the config file for this tool
-  - that's probably okay, this is a linter
-- creating the config file
+To verify that all your `.feature` files have the correct step order, run:
+
+```
+cucumber-sort check
+```
