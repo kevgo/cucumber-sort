@@ -47,9 +47,11 @@ impl Ignorer {
     }
   }
 
-  pub fn is_ignored(&self, file: &Utf8Path) -> bool {
+  pub fn is_ignored(&self, file: &str) -> bool {
     for glob in &self.globs {
-      if glob.matches(file.as_str()) {
+      println!("11111111111111111 {}", glob);
+      if glob.matches(file) {
+        println!("2222222222222222222222222222");
         return true;
       }
     }
@@ -63,19 +65,22 @@ mod tests {
   #[test]
   fn is_ignored_file() {
     let config = r#"
-    feature/unordered*.feature
-    feature/weird*.feature
-    "#;
+features/unordered*.feature
+features/weird*.feature
+"#;
     let ignorer = super::Ignorer::parse(config, super::IGNORE_FILE_NAME.into()).unwrap();
-    assert!(ignorer.is_ignored("features/unordered1.feature".into()));
-    assert!(ignorer.is_ignored("features/unordered2.feature".into()));
-    assert!(ignorer.is_ignored("features/weird1.feature".into()));
-    assert!(ignorer.is_ignored("features/weird2.feature".into()));
-    assert!(!ignorer.is_ignored("features/ordered.feature".into()));
+    assert!(ignorer.is_ignored("features/unordered1.feature"));
+    assert!(ignorer.is_ignored("features/unordered2.feature"));
+    assert!(ignorer.is_ignored("features/weird1.feature"));
+    assert!(ignorer.is_ignored("features/weird2.feature"));
+    assert!(!ignorer.is_ignored("features/ordered.feature"));
   }
 
   mod parse {
+    use core::panic;
+
     use crate::filesystem::ignore_files::Ignorer;
+    use crate::prelude::UserError;
 
     #[test]
     fn correct() {
@@ -89,9 +94,20 @@ mod tests {
     #[test]
     fn incorrect() {
       let config = r#"
-        file[name
-      "#;
-      Ignorer::parse(config, "somefile".into()).unwrap();
+feature/valid.feature
+file[name
+"#;
+      let Err(UserError::IgnoreFileInvalidGlob { file, line, reason }) =
+        Ignorer::parse(config, "somefile".into())
+      else {
+        panic!()
+      };
+      assert_eq!(file, "somefile");
+      assert_eq!(line, 2);
+      assert_eq!(
+        reason,
+        "Invalid glob pattern 'file[name': Pattern syntax error near position 4: invalid range pattern"
+      );
     }
   }
 }
