@@ -45,6 +45,9 @@ impl Line {
       }
     }
     let trimmed_text = &text[indent..];
+    if trimmed_text.is_empty() {
+      return text_line(number, text, indent);
+    }
     if trimmed_text == "\"\"\"" {
       return docstring_line(number, text, indent);
     }
