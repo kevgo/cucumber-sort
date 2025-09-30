@@ -29,7 +29,7 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Document> {
       (LineType::StepStart { keyword: _ }, Some(Block::Sortable(steps)), Some(mut step))
         if docstring_indent.is_some() =>
       {
-        // a line that looks like a step in the middle of populating a docstring
+        // part of a docstring that looks like a step
         step.additional_lines.push(line.text);
         new_open_block = Some(Block::Sortable(steps));
         new_open_step = Some(step);
@@ -68,7 +68,7 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Document> {
       (LineType::Text, Some(Block::Sortable(steps)), Some(mut step))
         if docstring_indent.is_some() =>
       {
-        // we are inside a docstring, this line is part of the docstring content
+        // we are inside a docstring, this text line does not start a text block, it is part of the docstring content
         step.additional_lines.push(line.text);
         new_open_block = Some(Block::Sortable(steps));
         new_open_step = Some(step);
