@@ -22,8 +22,7 @@ fn all(mut config: config::Config) -> Result<ExitCode> {
       return Ok(exit_code);
     }
   }
-  let unused_regexes = config.sorter.unused_regexes();
-  for unused in unused_regexes {
+  for unused in config.sorter.unused_regexes() {
     println!("{}", unused);
   }
   Ok(ExitCode::SUCCESS)
