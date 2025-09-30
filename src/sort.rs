@@ -135,8 +135,8 @@ mod tests {
   use big_s::S;
 
   #[test]
-  fn deoptimize_keywords() {
-    let give = vec![
+  fn deoptimize_and_optimize_keywords() {
+    let steps = vec![
       Step {
         keyword: Keyword::Given,
         title: S("step 1"),
@@ -173,7 +173,7 @@ mod tests {
         ..Step::default()
       },
     ];
-    let want = vec![
+    let want_deoptimized = vec![
       Step {
         keyword: Keyword::Given,
         title: S("step 1"),
@@ -210,88 +210,10 @@ mod tests {
         ..Step::default()
       },
     ];
-    let have = super::deoptimize_keywords(give);
-    pretty::assert_eq!(want, have);
-  }
-
-  #[test]
-  fn optimize_keywords() {
-    let give = vec![
-      Step {
-        keyword: Keyword::Given,
-        title: S("step 1"),
-        ..Step::default()
-      },
-      Step {
-        keyword: Keyword::Given,
-        title: S("step 2"),
-        ..Step::default()
-      },
-      Step {
-        keyword: Keyword::Given,
-        title: S("step 3"),
-        ..Step::default()
-      },
-      Step {
-        keyword: Keyword::When,
-        title: S("step 4"),
-        ..Step::default()
-      },
-      Step {
-        keyword: Keyword::When,
-        title: S("step 5"),
-        ..Step::default()
-      },
-      Step {
-        keyword: Keyword::Then,
-        title: S("step 6"),
-        ..Step::default()
-      },
-      Step {
-        keyword: Keyword::Then,
-        title: S("step 7"),
-        ..Step::default()
-      },
-    ];
-    let want = vec![
-      Step {
-        keyword: Keyword::Given,
-        title: S("step 1"),
-        ..Step::default()
-      },
-      Step {
-        keyword: Keyword::And,
-        title: S("step 2"),
-        ..Step::default()
-      },
-      Step {
-        keyword: Keyword::And,
-        title: S("step 3"),
-        ..Step::default()
-      },
-      Step {
-        keyword: Keyword::When,
-        title: S("step 4"),
-        ..Step::default()
-      },
-      Step {
-        keyword: Keyword::And,
-        title: S("step 5"),
-        ..Step::default()
-      },
-      Step {
-        keyword: Keyword::Then,
-        title: S("step 6"),
-        ..Step::default()
-      },
-      Step {
-        keyword: Keyword::And,
-        title: S("step 7"),
-        ..Step::default()
-      },
-    ];
-    let have = super::optimize_keywords(give);
-    pretty::assert_eq!(have, want);
+    let have_deoptimized = super::deoptimize_keywords(steps.clone());
+    pretty::assert_eq!(want_deoptimized, have_deoptimized);
+    let have_optimized = super::optimize_keywords(have_deoptimized);
+    pretty::assert_eq!(have_optimized, steps);
   }
 
   mod sort_steps {
