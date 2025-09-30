@@ -7,17 +7,17 @@ use std::process::ExitCode;
 
 /// updates the given or all files to contain sorted steps
 pub fn format(filepath: Option<Utf8PathBuf>) -> Result<ExitCode> {
-  let config = config::load()?;
+  let mut config = config::load()?;
   match filepath {
-    Some(filepath) => file(filepath, &config.sorter),
-    None => all(&config),
+    Some(filepath) => file(filepath, &mut config.sorter),
+    None => all(&mut config),
   }
 }
 
 /// updates all files in the current folder to contain sorted steps
-fn all(config: &config::Config) -> Result<ExitCode> {
+fn all(config: &mut config::Config) -> Result<ExitCode> {
   for filepath in config.finder.search_folder(".")? {
-    let exit_code = file(filepath, &config.sorter)?;
+    let exit_code = file(filepath, &mut config.sorter)?;
     if exit_code != ExitCode::SUCCESS {
       return Ok(exit_code);
     }
@@ -26,7 +26,7 @@ fn all(config: &config::Config) -> Result<ExitCode> {
 }
 
 /// updates the given file to contain sorted steps
-fn file(filepath: Utf8PathBuf, sorter: &Sorter) -> Result<ExitCode> {
+fn file(filepath: Utf8PathBuf, sorter: &mut Sorter) -> Result<ExitCode> {
   let gherkin = gherkin::load(&filepath)?;
   let (sorted_file, issues) = sorter.sort_file(gherkin.clone(), &filepath);
   let sorted_lines = sorted_file.lines();
