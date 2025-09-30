@@ -8,7 +8,11 @@ files according to an order that you define.
 ### Installation
 
 The easiest way to execute this tool is through
-[run-that-app](https://github.com/kevgo/run-that-app).
+[run-that-app](https://github.com/kevgo/run-that-app):
+
+```
+rta cucumber-sort
+```
 
 If you want to run the tool standalone, download and extract/install the
 [latest release](https://github.com/kevgo/cucumber-sort/releases/latest).
@@ -20,6 +24,8 @@ You can also install from source:
 - compile the executable: `cargo install --locked --path .`
 
 ### Configuration file
+
+Run `cucumber-sort init` to create the configuration files.
 
 ```
 a Git repo with origin
