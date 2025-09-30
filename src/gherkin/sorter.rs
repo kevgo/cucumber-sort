@@ -12,7 +12,17 @@ const FILE_NAME: &str = ".cucumbersortrc";
 /// Sorter encapsulates the minutiae around checking the order of Gherkin steps.
 /// You give it a config file and it sorts Steps for you.
 pub struct Sorter {
-  pub steps: Vec<Regex>,
+  pub entries: Vec<Entry>,
+}
+
+pub struct Entry {
+  regex: Regex,
+
+  /// whether this regex was used in the current invocation of the tool
+  used: bool,
+
+  /// where in the config file this regex is defined
+  line_no: usize,
 }
 
 impl Sorter {
@@ -33,7 +43,7 @@ impl Sorter {
 
   /// provides a copy of the given document with all Gherkin steps sorted the same way as in the given configuration
   pub fn sort_file(
-    &self,
+    &mut self,
     file: gherkin::Document,
     filename: &Utf8Path,
   ) -> (gherkin::Document, Vec<Issue>) {
@@ -47,7 +57,26 @@ impl Sorter {
     (gherkin::Document { blocks: new_blocks }, doc_issues)
   }
 
-  fn sort_block(&self, block: gherkin::Block, filename: &Utf8Path) -> (gherkin::Block, Vec<Issue>) {
+  pub fn unused_regexes(self) -> Vec<String> {
+    let mut result = vec![];
+    for entry in self.entries {
+      if !entry.used {
+        result.push(format!(
+          "{}:{}  unused regex: {}",
+          FILE_NAME,
+          entry.line_no,
+          Cyan.paint(entry.regex.as_str())
+        ));
+      }
+    }
+    result
+  }
+
+  fn sort_block(
+    &mut self,
+    block: gherkin::Block,
+    filename: &Utf8Path,
+  ) -> (gherkin::Block, Vec<Issue>) {
     match block {
       gherkin::Block::Sortable(block_steps) => {
         let (sorted_steps, issues) = self.sort_steps(block_steps, filename);
@@ -58,14 +87,17 @@ impl Sorter {
   }
 
   pub fn sort_steps(
-    &self,
+    &mut self,
     unordered_steps: Vec<gherkin::Step>,
     filename: &Utf8Path,
   ) -> (Vec<gherkin::Step>, Vec<Issue>) {
     let mut result = Vec::<gherkin::Step>::with_capacity(unordered_steps.len());
     let mut deletable_steps = DeletableSteps::from(deoptimize_keywords(unordered_steps));
-    for config_step in &self.steps {
-      let extracted = deletable_steps.extract(config_step);
+    for config_step in &mut self.entries {
+      let extracted = deletable_steps.extract(&config_step.regex);
+      if !extracted.is_empty() {
+        config_step.used = true;
+      }
       result.extend(extracted);
     }
     // report the remaining unextracted steps as unknown steps
@@ -84,14 +116,18 @@ impl Sorter {
   }
 
   fn parse(text: &str) -> Result<Sorter> {
-    let mut steps = vec![];
+    let mut entries = vec![];
     for (i, line) in text.lines().enumerate() {
       if line.is_empty() {
         // TODO: also ignore lines starting with # here
         continue;
       }
       match Regex::new(line) {
-        Ok(regex) => steps.push(regex),
+        Ok(regex) => entries.push(Entry {
+          regex,
+          used: false,
+          line_no: i + 1,
+        }),
         Err(err) => {
           return Err(UserError::ConfigFileInvalidRegex {
             file: FILE_NAME.into(),
@@ -101,7 +137,7 @@ impl Sorter {
         }
       }
     }
-    Ok(Sorter { steps })
+    Ok(Sorter { entries })
   }
 }
 
@@ -258,7 +294,7 @@ mod tests {
 
     #[test]
     fn already_ordered() {
-      let sorter = Sorter::parse("step 1\nstep 2\nstep 3").unwrap();
+      let mut sorter = Sorter::parse("step 1\nstep 2\nstep 3").unwrap();
       let give_steps = vec![
         gherkin::Step {
           line_no: 0,
@@ -290,7 +326,7 @@ mod tests {
 
     #[test]
     fn unordered() {
-      let sorter = Sorter::parse("step 1\nstep 2\nstep 3").unwrap();
+      let mut sorter = Sorter::parse("step 1\nstep 2\nstep 3").unwrap();
       let give_block = gherkin::Block::Sortable(vec![
         gherkin::Step {
           title: S("step 3"),
@@ -344,7 +380,7 @@ mod tests {
 
     #[test]
     fn unknown_step() {
-      let sorter = Sorter::parse("step 1\nstep 2").unwrap();
+      let mut sorter = Sorter::parse("step 1\nstep 2").unwrap();
       let give_block = gherkin::Block::Sortable(vec![
         gherkin::Step {
           title: S("step 2"),
