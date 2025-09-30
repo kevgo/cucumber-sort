@@ -64,7 +64,7 @@ impl Sorter {
         result.push(format!(
           "{}:{}  unused regex: {}",
           FILE_NAME,
-          entry.line_no + 1,
+          entry.line_no,
           Cyan.paint(entry.regex.as_str())
         ));
       }
@@ -126,7 +126,7 @@ impl Sorter {
         Ok(regex) => steps.push(Entry {
           regex,
           count: 0,
-          line_no: i,
+          line_no: i + 1,
         }),
         Err(err) => {
           return Err(UserError::ConfigFileInvalidRegex {
