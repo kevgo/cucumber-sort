@@ -1,7 +1,7 @@
 Feature: ignoring regexes
 
   Scenario: comment out a regex
-    Given file ".cucumbersortrc" with content:
+    Given file ".cucumber-sort-rc" with content:
       """
       step 1
       step 2
@@ -10,7 +10,7 @@ Feature: ignoring regexes
     And file "features/ordered.feature" with content:
       """
       Feature: example
-
+      
         Scenario: steps out of order
           When step 1
           And step 2

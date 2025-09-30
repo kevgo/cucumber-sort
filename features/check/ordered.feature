@@ -1,7 +1,7 @@
 Feature: check ordered steps
 
   Scenario:
-    Given file ".cucumbersortrc" with content:
+    Given file ".cucumber-sort-rc" with content:
       """
       file .* with content:
       step 2
@@ -12,7 +12,7 @@ Feature: check ordered steps
     And file "feature/one.feature" with content:
       """
       Feature: example
-
+      
         Background:
           Given file "foo" with content:
             '''
@@ -20,7 +20,7 @@ Feature: check ordered steps
             '''
           And step 2
           When step 3
-
+      
         Scenario: result
           Then file "foo" now has content:
             '''

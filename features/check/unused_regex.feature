@@ -1,7 +1,7 @@
 Feature: list unused steps while checking
 
   Scenario: unused steps
-    Given file ".cucumbersortrc" with content:
+    Given file ".cucumber-sort-rc" with content:
       """
       file .* with content:
       file .* now has content:
@@ -9,7 +9,7 @@ Feature: list unused steps while checking
     And file "feature/one.feature" with content:
       """
       Feature: example
-
+      
         Scenario: test
           Given file "foo" with content:
             '''
@@ -19,6 +19,6 @@ Feature: list unused steps while checking
     When I run "cucumber-sort check"
     Then it prints:
       """
-      .cucumbersortrc:2  unused regex: file .* now has content:
+      .cucumber-sort-rc:2  unused regex: file .* now has content:
       """
     And the exit code is success

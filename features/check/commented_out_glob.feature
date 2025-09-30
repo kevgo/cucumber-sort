@@ -1,19 +1,19 @@
 Feature: ignoring globs
 
   Scenario: comment out a regex
-    Given file ".cucumbersortrc" with content:
+    Given file ".cucumber-sort-rc" with content:
       """
       step 1
       step 2
       """
-    And file ".cucumbersortignore" with content:
+    And file ".cucumber-sort-ignore" with content:
       """
       # features/unordered.feature
       """
     And file "features/unordered.feature" with content:
       """
       Feature: example
-
+      
         Scenario: steps out of order
           When step 2
           And step 1

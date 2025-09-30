@@ -4,7 +4,7 @@ use std::fs;
 use std::io::ErrorKind;
 
 /// the filename of the ignore file
-const IGNORE_FILE_NAME: &str = ".cucumbersortignore";
+const IGNORE_FILE_NAME: &str = ".cucumber-sort-ignore";
 
 const TEMPLATE: &str = r#"
 # More info at https://github.com/kevgo/cucumber-sort

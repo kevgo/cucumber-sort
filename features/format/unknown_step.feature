@@ -1,7 +1,7 @@
 Feature: format unknown steps
 
   Scenario:
-    Given file ".cucumbersortrc" with content:
+    Given file ".cucumber-sort-rc" with content:
       """
       step 1
       step 2
@@ -9,7 +9,7 @@ Feature: format unknown steps
     And file "feature/one.feature" with content:
       """
       Feature: example
-
+      
         Background:
           Given step 1
           And step 3
