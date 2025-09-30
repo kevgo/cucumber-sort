@@ -138,37 +138,37 @@ mod tests {
   fn deoptimize_keywords() {
     let give = vec![
       Step {
-        title: S("step 1"),
         keyword: Keyword::Given,
+        title: S("step 1"),
         ..Step::default()
       },
       Step {
+        keyword: Keyword::And,
         title: S("step 2"),
-        keyword: Keyword::And,
         ..Step::default()
       },
       Step {
-        title: S("step 3"),
         keyword: Keyword::And,
+        title: S("step 3"),
         ..Step::default()
       },
       Step {
-        title: S("step 3"),
         keyword: Keyword::When,
+        title: S("step 4"),
         ..Step::default()
       },
       Step {
-        title: S("step 3"),
         keyword: Keyword::And,
+        title: S("step 5"),
         ..Step::default()
       },
       Step {
-        title: S("step 3"),
+        title: S("step 6"),
         keyword: Keyword::Then,
         ..Step::default()
       },
       Step {
-        title: S("step 3"),
+        title: S("step 7"),
         keyword: Keyword::And,
         ..Step::default()
       },
@@ -190,22 +190,22 @@ mod tests {
         ..Step::default()
       },
       Step {
-        title: S("step 3"),
+        title: S("step 4"),
         keyword: Keyword::When,
         ..Step::default()
       },
       Step {
-        title: S("step 3"),
+        title: S("step 5"),
         keyword: Keyword::When,
         ..Step::default()
       },
       Step {
-        title: S("step 3"),
+        title: S("step 6"),
         keyword: Keyword::Then,
         ..Step::default()
       },
       Step {
-        title: S("step 3"),
+        title: S("step 7"),
         keyword: Keyword::Then,
         ..Step::default()
       },
@@ -233,22 +233,22 @@ mod tests {
         ..Step::default()
       },
       Step {
-        title: S("step 3"),
+        title: S("step 4"),
         keyword: Keyword::When,
         ..Step::default()
       },
       Step {
-        title: S("step 3"),
+        title: S("step 5"),
         keyword: Keyword::When,
         ..Step::default()
       },
       Step {
-        title: S("step 3"),
+        title: S("step 6"),
         keyword: Keyword::Then,
         ..Step::default()
       },
       Step {
-        title: S("step 3"),
+        title: S("step 7"),
         keyword: Keyword::Then,
         ..Step::default()
       },
@@ -270,22 +270,22 @@ mod tests {
         ..Step::default()
       },
       Step {
-        title: S("step 3"),
+        title: S("step 4"),
         keyword: Keyword::When,
         ..Step::default()
       },
       Step {
-        title: S("step 3"),
+        title: S("step 5"),
         keyword: Keyword::And,
         ..Step::default()
       },
       Step {
-        title: S("step 3"),
+        title: S("step 6"),
         keyword: Keyword::Then,
         ..Step::default()
       },
       Step {
-        title: S("step 3"),
+        title: S("step 7"),
         keyword: Keyword::And,
         ..Step::default()
       },
