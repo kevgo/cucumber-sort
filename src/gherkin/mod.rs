@@ -351,19 +351,19 @@ Feature: test
             S("  Scenario:"),
           ]),
           Block::Sortable(vec![Step {
-            title: S("step 1:"),
-            keyword: Keyword::Given,
-            additional_lines: vec![],
-            indent: S("    "),
             line_no: 5,
+            indent: S("    "),
+            keyword: Keyword::Given,
+            title: S("step 1:"),
+            additional_lines: vec![],
           }]),
           Block::Static(vec![S("    # And step 2")]),
           Block::Sortable(vec![Step {
-            title: S("step 3"),
-            keyword: Keyword::And,
-            additional_lines: vec![],
-            indent: S("    "),
             line_no: 7,
+            indent: S("    "),
+            keyword: Keyword::And,
+            title: S("step 3"),
+            additional_lines: vec![],
           }]),
         ],
       };
@@ -406,8 +406,8 @@ Feature: test
       let want_lines = vec![
         Line {
           number: 0,
-          text: S("Feature: test"),
           indent: 0,
+          text: S("Feature: test"),
           line_type: LineType::Text,
           title_start: 0,
         },
