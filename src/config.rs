@@ -15,12 +15,12 @@ pub struct Config {
 
 pub fn load() -> Result<Config> {
   Ok(Config {
-    steps: load_config_file()?,
+    steps: load_steps()?,
     ignorer: Ignorer::load()?,
   })
 }
 
-fn load_config_file() -> Result<Vec<Regex>> {
+fn load_steps() -> Result<Vec<Regex>> {
   let mut result = vec![];
   let file = fs::File::open(FILE_NAME).map_err(|e| UserError::ConfigFileRead {
     file: FILE_NAME.into(),
