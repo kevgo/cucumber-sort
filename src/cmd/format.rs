@@ -16,7 +16,7 @@ pub fn format(filepath: Option<Utf8PathBuf>) -> Result<ExitCode> {
 
 /// updates all files in the current folder to contain sorted steps
 fn all(config: &config::Config) -> Result<ExitCode> {
-  for filepath in config.globber.search_folder(".")? {
+  for filepath in config.finder.search_folder(".")? {
     let exit_code = file(filepath, &config.sorter)?;
     if exit_code != ExitCode::SUCCESS {
       return Ok(exit_code);

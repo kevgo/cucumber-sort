@@ -4,12 +4,12 @@ use crate::gherkin::Sorter;
 
 pub struct Config {
   pub sorter: Sorter,
-  pub globber: FeatureFinder,
+  pub finder: FeatureFinder,
 }
 
 pub fn load() -> Result<Config> {
   Ok(Config {
     sorter: Sorter::load()?,
-    globber: FeatureFinder::load()?,
+    finder: FeatureFinder::load()?,
   })
 }
