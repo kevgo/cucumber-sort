@@ -88,7 +88,7 @@ mod tests {
 features/unordered*.feature
 features/weird*.feature
 "#;
-    let ignorer = super::FeatureFinder::parse(config, super::IGNORE_FILE_NAME.into()).unwrap();
+    let ignorer = super::FeatureFinder::parse(config, "config file name".into()).unwrap();
     assert!(ignorer.is_ignored("features/unordered1.feature".into()));
     assert!(ignorer.is_ignored("features/unordered2.feature".into()));
     assert!(ignorer.is_ignored("features/weird1.feature".into()));
