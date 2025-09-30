@@ -19,6 +19,9 @@ fix: tools/rta@${RUN_THAT_APP_VERSION}  # auto-corrects issues
 	cargo +nightly fix --allow-dirty --quiet
 	tools/rta ghokin fmt replace features/
 
+install:  # installs the binary on the local machine
+	cargo install --locked --path .
+
 lint: tools/node_modules tools/rta@${RUN_THAT_APP_VERSION}  # checks formatting
 	tools/rta dprint check
 	cargo clippy --all-targets --all-features -- --deny=warnings
