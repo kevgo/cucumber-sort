@@ -1,12 +1,12 @@
 Feature: ignoring files
 
   Scenario: unordered step in a scenario
-    Given file ".cucumbersortrc" with content:
+    Given file ".cucumber-sort-rc" with content:
       """
       step 1
       step 2
       """
-    And file ".cucumbersortignore" with content:
+    And file ".cucumber-sort-ignore" with content:
       """
       features/unordered*.feature
       """
@@ -21,7 +21,7 @@ Feature: ignoring files
     When I run "cucumber-sort format"
     Then it prints:
       """
-      .cucumbersortrc:1  unused regex: step 1
-      .cucumbersortrc:2  unused regex: step 2
+      .cucumber-sort-rc:1  unused regex: step 1
+      .cucumber-sort-rc:2  unused regex: step 2
       """
     And the exit code is success

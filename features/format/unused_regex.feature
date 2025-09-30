@@ -1,7 +1,7 @@
 Feature: list unused steps while formatting
 
   Scenario: unused steps
-    Given file ".cucumbersortrc" with content:
+    Given file ".cucumber-sort-rc" with content:
       """
       file .* with content:
       step 1
@@ -21,7 +21,7 @@ Feature: list unused steps while formatting
     When I run "cucumber-sort format"
     Then it prints:
       """
-      .cucumbersortrc:3  unused regex: file .* now has content:
+      .cucumber-sort-rc:3  unused regex: file .* now has content:
       """
     And the exit code is success
     And file "feature/one.feature" now has content:

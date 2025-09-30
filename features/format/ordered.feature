@@ -1,7 +1,7 @@
 Feature: format already ordered steps
 
   Scenario:
-    Given file ".cucumbersortrc" with content:
+    Given file ".cucumber-sort-rc" with content:
       """
       step 1
       step 2

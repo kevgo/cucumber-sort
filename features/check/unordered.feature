@@ -1,7 +1,7 @@
 Feature: check unordered steps
 
   Scenario: unordered step in a scenario
-    Given file ".cucumbersortrc" with content:
+    Given file ".cucumber-sort-rc" with content:
       """
       step 1
       step 2
