@@ -9,17 +9,17 @@ const IGNORE_FILE_NAME: &str = ".cucumbersortignore";
 /// Ignorer encapsulates the minutiae around ignoring file paths.
 /// You give it an ignore config file, and it tells you whether
 /// particular file paths are ignored according to it or not.
-pub struct Globber {
+pub struct FeatureFinder {
   globs: Vec<glob::Pattern>,
 }
 
-impl Globber {
+impl FeatureFinder {
   /// loads a new Ignorer instance from the default ignore file
-  pub fn load() -> Result<Globber> {
+  pub fn load() -> Result<FeatureFinder> {
     match fs::read_to_string(IGNORE_FILE_NAME) {
-      Ok(text) => Globber::parse(&text, IGNORE_FILE_NAME.into()),
+      Ok(text) => FeatureFinder::parse(&text, IGNORE_FILE_NAME.into()),
       Err(err) => match err.kind() {
-        ErrorKind::NotFound => Ok(Globber { globs: vec![] }),
+        ErrorKind::NotFound => Ok(FeatureFinder { globs: vec![] }),
         _ => Err(UserError::ConfigFileRead {
           file: IGNORE_FILE_NAME.into(),
           reason: err.to_string(),
@@ -59,7 +59,7 @@ impl Globber {
     false
   }
 
-  fn parse(config: &str, source: &Utf8Path) -> Result<Globber> {
+  fn parse(config: &str, source: &Utf8Path) -> Result<FeatureFinder> {
     let mut globs = vec![];
     for (i, line) in config.lines().enumerate() {
       if line.is_empty() || line.starts_with('#') {
@@ -76,7 +76,7 @@ impl Globber {
         }
       }
     }
-    Ok(Globber { globs })
+    Ok(FeatureFinder { globs })
   }
 }
 
@@ -89,7 +89,7 @@ mod tests {
 features/unordered*.feature
 features/weird*.feature
 "#;
-    let ignorer = super::Globber::parse(config, super::IGNORE_FILE_NAME.into()).unwrap();
+    let ignorer = super::FeatureFinder::parse(config, super::IGNORE_FILE_NAME.into()).unwrap();
     assert!(ignorer.is_ignored("features/unordered1.feature"));
     assert!(ignorer.is_ignored("features/unordered2.feature"));
     assert!(ignorer.is_ignored("features/weird1.feature"));
@@ -98,8 +98,8 @@ features/weird*.feature
   }
 
   mod parse {
+    use crate::FeatureFinder;
     use crate::errors::UserError;
-    use crate::filesystem::globber::Globber;
     use core::panic;
 
     #[test]
@@ -108,7 +108,7 @@ features/weird*.feature
         feature/unordered*.feature
         feature/weird*.feature
       "#;
-      Globber::parse(config, "somefile".into()).unwrap();
+      FeatureFinder::parse(config, "somefile".into()).unwrap();
     }
 
     #[test]
@@ -118,7 +118,7 @@ feature/valid.feature
 file[name
 "#;
       let Err(UserError::IgnoreFileInvalidGlob { file, line, reason }) =
-        Globber::parse(config, "somefile".into())
+        FeatureFinder::parse(config, "somefile".into())
       else {
         panic!()
       };

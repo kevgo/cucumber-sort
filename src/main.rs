@@ -2,13 +2,14 @@ mod cli;
 mod cmd;
 mod config;
 mod errors;
-mod filesystem;
+mod feature_finder;
 mod gherkin;
 mod prelude;
 
 use crate::errors::Result;
 use ansi_term::Color::Red;
 use cli::Command::{Check, Format};
+use feature_finder::FeatureFinder;
 use std::process::ExitCode;
 
 fn main() -> ExitCode {
