@@ -2,29 +2,63 @@
 
 ![build status](https://github.com/kevgo/cucumber-sort/actions/workflows/ci.yml/badge.svg)
 
-- checks that steps are in the right order
-- checks that scenarios don't contain duplicate steps?
-- enforces the steps only within `Given`, `When`, and `Then` blocks
-- relies that the user labels Given, When, and Then correctly, and that tooling
-  enforces this
+This tool organizes steps in [Cucumber](https://cucumber.io) files in an order
+that you define.
+
+### Installation
+
+The easiest way to execute this tool is through
+[run-that-app](https://github.com/kevgo/run-that-app):
+
+```
+rta cucumber-sort
+```
+
+You can also download the
+[latest release](https://github.com/kevgo/cucumber-sort/releases/latest) and
+extract/install manually. Or install from source:
+
+- [install Rust](https://rustup.rs)
+- clone the repo and cd into the cloned directory
+- compile the executable: `cargo install --locked --path .`
 
 ### Configuration file
 
+To create the configuration files for cucumber-sort, run:
+
 ```
-a Git repo with origin
-a local Git repo
-I am outside a Git repo
-the branches
-the local branch is {string}
-the commits
-I ran {string}
-I run {string}
-I run {string} and enter into the dialog
+cucumber-sort init
 ```
 
-### Challenges:
+This creates two files:
 
-- duplication of step definition regexes: once in the step definition, and again
-  in the config file for this tool
-  - that's probably okay, this is a linter
-- creating the config file
+#### .cucumber-sort-rc
+
+Populate this file with the step names (without `Given`/`When`/`Then`) in the
+order you want them to appear in the`.feature` files.
+
+You can use regular expressions for placeholders. These regular expressions only
+need to match the steps. They don't need to contain captures, since
+cucumber-sort doesn't capture any data out of Cucumber steps.
+
+As an example, take a look at our own
+[.cucumber-sort-rc file](.cucumber-sort-rc).
+
+#### .cucumber-sort-ignore
+
+Populate this file with glob expressions that describe files that cucumber-sort
+should ignore.
+
+### Usage
+
+To format your `.feature` files to have the correct step order, run:
+
+```
+cucumber-sort format
+```
+
+To verify that all your `.feature` files have the correct step order, run:
+
+```
+cucumber-sort check
+```
