@@ -1,5 +1,5 @@
 use crate::config::Config;
-use crate::gherkin;
+use crate::gherkin::{self, Keyword};
 use ansi_term::Color::Cyan;
 use camino::Utf8Path;
 use regex::Regex;
@@ -42,7 +42,7 @@ fn sort_steps(
   filename: &Utf8Path,
 ) -> (Vec<gherkin::Step>, Vec<Issue>) {
   let mut result = Vec::<gherkin::Step>::with_capacity(unordered_steps.len());
-  let mut steps = DeletableSteps::from(unordered_steps);
+  let mut steps = DeletableSteps::from(deoptimize_keywords(unordered_steps));
   for config_step in config_steps {
     let extracted = steps.extract(config_step);
     result.extend(extracted);
@@ -59,7 +59,35 @@ fn sort_steps(
       ),
     });
   }
-  (result, issues)
+  (optimize_keywords(result), issues)
+}
+
+fn deoptimize_keywords(steps: Vec<gherkin::Step>) -> Vec<gherkin::Step> {
+  let mut result = Vec::with_capacity(steps.len());
+  let mut previous_keyword = Keyword::And;
+  for mut step in steps {
+    if step.keyword == Keyword::And {
+      step.keyword = previous_keyword;
+    } else {
+      previous_keyword = step.keyword;
+    }
+    result.push(step);
+  }
+  result
+}
+
+fn optimize_keywords(steps: Vec<gherkin::Step>) -> Vec<gherkin::Step> {
+  let mut result = Vec::with_capacity(steps.len());
+  let mut previous_keyword = Keyword::And;
+  for mut step in steps {
+    if step.keyword == previous_keyword {
+      step.keyword = Keyword::And;
+    } else {
+      previous_keyword = step.keyword;
+    };
+    result.push(step);
+  }
+  result
 }
 
 /// a Vec that makes it efficient to delete elements from it
@@ -103,9 +131,94 @@ pub fn sort_issues(issues: &mut [Issue]) {
 
 #[cfg(test)]
 mod tests {
+  use crate::gherkin::{Keyword, Step};
+  use big_s::S;
+
+  #[test]
+  fn deoptimize_and_optimize_keywords() {
+    let steps = vec![
+      Step {
+        keyword: Keyword::Given,
+        title: S("step 1"),
+        ..Step::default()
+      },
+      Step {
+        keyword: Keyword::And,
+        title: S("step 2"),
+        ..Step::default()
+      },
+      Step {
+        keyword: Keyword::And,
+        title: S("step 3"),
+        ..Step::default()
+      },
+      Step {
+        keyword: Keyword::When,
+        title: S("step 4"),
+        ..Step::default()
+      },
+      Step {
+        keyword: Keyword::And,
+        title: S("step 5"),
+        ..Step::default()
+      },
+      Step {
+        keyword: Keyword::Then,
+        title: S("step 6"),
+        ..Step::default()
+      },
+      Step {
+        keyword: Keyword::And,
+        title: S("step 7"),
+        ..Step::default()
+      },
+    ];
+    let want_deoptimized = vec![
+      Step {
+        keyword: Keyword::Given,
+        title: S("step 1"),
+        ..Step::default()
+      },
+      Step {
+        keyword: Keyword::Given,
+        title: S("step 2"),
+        ..Step::default()
+      },
+      Step {
+        keyword: Keyword::Given,
+        title: S("step 3"),
+        ..Step::default()
+      },
+      Step {
+        keyword: Keyword::When,
+        title: S("step 4"),
+        ..Step::default()
+      },
+      Step {
+        keyword: Keyword::When,
+        title: S("step 5"),
+        ..Step::default()
+      },
+      Step {
+        keyword: Keyword::Then,
+        title: S("step 6"),
+        ..Step::default()
+      },
+      Step {
+        keyword: Keyword::Then,
+        title: S("step 7"),
+        ..Step::default()
+      },
+    ];
+    let have_deoptimized = super::deoptimize_keywords(steps.clone());
+    pretty::assert_eq!(want_deoptimized, have_deoptimized);
+    let have_optimized = super::optimize_keywords(have_deoptimized);
+    pretty::assert_eq!(have_optimized, steps);
+  }
 
   mod sort_steps {
     use crate::config::Config;
+    use crate::gherkin::Keyword;
     use crate::sort::Issue;
     use crate::{gherkin, sort};
     use ansi_term::Color::Cyan;
@@ -124,21 +237,24 @@ mod tests {
       let give_steps = vec![
         gherkin::Step {
           title: S("step 1"),
-          lines: vec![],
+          keyword: Keyword::Given,
+          additional_lines: vec![],
           line_no: 0,
-          indent: 0,
+          indent: S(""),
         },
         gherkin::Step {
           title: S("step 2"),
-          lines: vec![],
+          keyword: Keyword::When,
+          additional_lines: vec![],
           line_no: 1,
-          indent: 0,
+          indent: S(""),
         },
         gherkin::Step {
           title: S("step 3"),
-          lines: vec![],
+          keyword: Keyword::Then,
+          additional_lines: vec![],
           line_no: 2,
-          indent: 0,
+          indent: S(""),
         },
       ];
       let want_steps = give_steps.clone();
@@ -155,41 +271,47 @@ mod tests {
       let give_block = gherkin::Block::Sortable(vec![
         gherkin::Step {
           title: S("step 3"),
-          lines: vec![],
+          keyword: Keyword::Given,
+          additional_lines: vec![],
           line_no: 0,
-          indent: 0,
+          indent: S(""),
         },
         gherkin::Step {
           title: S("step 2"),
-          lines: vec![],
+          keyword: Keyword::And,
+          additional_lines: vec![],
           line_no: 1,
-          indent: 0,
+          indent: S(""),
         },
         gherkin::Step {
           title: S("step 1"),
-          lines: vec![],
+          keyword: Keyword::And,
+          additional_lines: vec![],
           line_no: 2,
-          indent: 0,
+          indent: S(""),
         },
       ]);
       let want_block = gherkin::Block::Sortable(vec![
         gherkin::Step {
           title: S("step 1"),
-          lines: vec![],
+          keyword: Keyword::Given,
+          additional_lines: vec![],
           line_no: 2,
-          indent: 0,
+          indent: S(""),
         },
         gherkin::Step {
           title: S("step 2"),
-          lines: vec![],
+          keyword: Keyword::And,
+          additional_lines: vec![],
           line_no: 1,
-          indent: 0,
+          indent: S(""),
         },
         gherkin::Step {
           title: S("step 3"),
-          lines: vec![],
+          keyword: Keyword::And,
+          additional_lines: vec![],
           line_no: 0,
-          indent: 0,
+          indent: S(""),
         },
       ]);
       let (have_block, issues) = sort::sort_block(give_block, &config, "test.feature".into());
@@ -205,35 +327,40 @@ mod tests {
       let give_block = gherkin::Block::Sortable(vec![
         gherkin::Step {
           title: S("step 2"),
-          lines: vec![],
+          keyword: Keyword::Given,
+          additional_lines: vec![],
           line_no: 0,
-          indent: 0,
+          indent: S(""),
         },
         gherkin::Step {
           title: S("step 3"),
-          lines: vec![],
+          keyword: Keyword::Given,
+          additional_lines: vec![],
           line_no: 1,
-          indent: 0,
+          indent: S(""),
         },
         gherkin::Step {
           title: S("step 1"),
-          lines: vec![],
+          keyword: Keyword::Given,
+          additional_lines: vec![],
           line_no: 2,
-          indent: 0,
+          indent: S(""),
         },
       ]);
       let want_block = gherkin::Block::Sortable(vec![
         gherkin::Step {
           title: S("step 1"),
-          lines: vec![],
+          keyword: Keyword::Given,
+          additional_lines: vec![],
           line_no: 2,
-          indent: 0,
+          indent: S(""),
         },
         gherkin::Step {
           title: S("step 2"),
-          lines: vec![],
+          keyword: Keyword::And,
+          additional_lines: vec![],
           line_no: 0,
-          indent: 0,
+          indent: S(""),
         },
       ]);
       let (have_block, issues) = sort::sort_block(give_block, &config, "test.feature".into());
@@ -247,7 +374,7 @@ mod tests {
   }
 
   mod steps_collect {
-    use crate::gherkin::Step;
+    use crate::gherkin::{Keyword, Step};
     use crate::sort::DeletableSteps;
     use big_s::S;
 
@@ -255,9 +382,10 @@ mod tests {
     fn some_none() {
       let step_1 = Step {
         title: S("title"),
-        lines: vec![],
+        keyword: Keyword::Given,
+        additional_lines: vec![],
         line_no: 1,
-        indent: 0,
+        indent: S(""),
       };
       let give = DeletableSteps(vec![None, Some(step_1.clone())]);
       let have: Vec<_> = give.elements().collect();

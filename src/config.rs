@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use camino::Utf8PathBuf;
 use regex::Regex;
 use std::fs;
 use std::io::{BufRead, BufReader};
@@ -14,12 +15,23 @@ pub fn load() -> Result<Config> {
   let file = fs::File::open(FILE_NAME).map_err(|e| UserError::ConfigFileRead {
     reason: e.to_string(),
   })?;
-  Ok(Config {
-    steps: BufReader::new(file)
-      .lines()
-      .map(|e| e.unwrap())
-      .filter(|line| !line.is_empty())
-      .map(|line| Regex::new(&line).unwrap())
-      .collect(),
-  })
+  let lines = BufReader::new(file).lines();
+  let mut steps = vec![];
+  for (i, line) in lines.enumerate() {
+    let line = line.unwrap();
+    if line.is_empty() {
+      continue;
+    }
+    match Regex::new(&line) {
+      Ok(regex) => steps.push(regex),
+      Err(err) => {
+        return Err(UserError::ConfigFileInvalidRegex {
+          file: Utf8PathBuf::from(FILE_NAME),
+          line: i,
+          message: err.to_string(),
+        });
+      }
+    }
+  }
+  Ok(Config { steps })
 }

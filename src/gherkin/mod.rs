@@ -3,6 +3,7 @@ mod parser;
 
 use crate::prelude::*;
 use camino::Utf8Path;
+pub use lexer::Keyword;
 pub use parser::{Block, Document, Step};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
@@ -18,7 +19,7 @@ pub fn load(filepath: &Utf8Path) -> Result<parser::Document> {
 /// parses the given file content into Gherkin
 pub fn file(text: impl BufRead) -> Result<parser::Document> {
   // step 1: lex the file content into token (lines)
-  let lines = lexer::file(text);
+  let lines = lexer::file(text)?;
   // step 2: parse the tokens (lines) into Gherkin data structures
   parser::file(lines)
 }
@@ -27,7 +28,7 @@ pub fn file(text: impl BufRead) -> Result<parser::Document> {
 mod tests {
 
   mod lex_and_parse {
-    use crate::gherkin::lexer::{self, Line, LineType};
+    use crate::gherkin::lexer::{self, Keyword, Line, LineType};
     use crate::gherkin::parser::Lines;
     use crate::gherkin::{Block, Step, parser};
     use big_s::S;
@@ -52,91 +53,119 @@ Feature: test
     When step 6
     Then step 7
 "#;
-      let have_lines = lexer::file(BufReader::new(&source.as_bytes()[1..]));
+      let have_lines = lexer::file(BufReader::new(&source.as_bytes()[1..])).unwrap();
       let want_lines = vec![
         Line {
           number: 0,
           text: S("Feature: test"),
           indent: 0,
           line_type: LineType::Text,
+          title_start: 0,
         },
         Line {
           number: 1,
           text: S(""),
           indent: 0,
           line_type: LineType::Text,
+          title_start: 0,
         },
         Line {
           number: 2,
           text: S("  Background:"),
           indent: 2,
           line_type: LineType::Text,
+          title_start: 2,
         },
         Line {
           number: 3,
           text: S("    Given step 1"),
           indent: 4,
-          line_type: LineType::StepStart,
+          line_type: LineType::StepStart {
+            keyword: Keyword::Given,
+          },
+          title_start: 10,
         },
         Line {
           number: 4,
           text: S("    And step 2"),
           indent: 4,
-          line_type: LineType::StepStart,
+          line_type: LineType::StepStart {
+            keyword: Keyword::And,
+          },
+          title_start: 8,
         },
         Line {
           number: 5,
           text: S("    When step 3"),
           indent: 4,
-          line_type: LineType::StepStart,
+          line_type: LineType::StepStart {
+            keyword: Keyword::When,
+          },
+          title_start: 9,
         },
         Line {
           number: 6,
           text: S(""),
           indent: 0,
           line_type: LineType::Text,
+          title_start: 0,
         },
         Line {
           number: 7,
           text: S("  Scenario: result"),
           indent: 2,
           line_type: LineType::Text,
+          title_start: 2,
         },
         Line {
           number: 8,
           text: S("    Then step 4"),
           indent: 4,
-          line_type: LineType::StepStart,
+          line_type: LineType::StepStart {
+            keyword: Keyword::Then,
+          },
+          title_start: 9,
         },
         Line {
           number: 9,
           text: S("    And step 5"),
           indent: 4,
-          line_type: LineType::StepStart,
+          line_type: LineType::StepStart {
+            keyword: Keyword::And,
+          },
+          title_start: 8,
         },
         Line {
           number: 10,
           text: S(""),
           indent: 0,
           line_type: LineType::Text,
+          title_start: 0,
         },
         Line {
           number: 11,
           text: S("  Scenario: undo"),
           indent: 2,
           line_type: LineType::Text,
+          title_start: 2,
         },
         Line {
           number: 12,
           text: S("    When step 6"),
           indent: 4,
-          line_type: LineType::StepStart,
+          line_type: LineType::StepStart {
+            keyword: Keyword::When,
+          },
+          title_start: 9,
         },
         Line {
           number: 13,
           text: S("    Then step 7"),
           indent: 4,
-          line_type: LineType::StepStart,
+          line_type: LineType::StepStart {
+            keyword: Keyword::Then,
+          },
+          title_start: 9,
         },
       ];
       pretty::assert_eq!(want_lines, have_lines);
@@ -148,52 +177,59 @@ Feature: test
           Block::Static(vec![S("Feature: test"), S(""), S("  Background:")]),
           Block::Sortable(vec![
             Step {
-              title: S("step 1"),
-              lines: vec![S("    Given step 1")],
-              indent: 4,
               line_no: 3,
+              indent: S("    "),
+              keyword: Keyword::Given,
+              title: S("step 1"),
+              additional_lines: vec![],
             },
             Step {
-              title: S("step 2"),
-              lines: vec![S("    And step 2")],
-              indent: 4,
               line_no: 4,
+              indent: S("    "),
+              keyword: Keyword::And,
+              title: S("step 2"),
+              additional_lines: vec![],
             },
             Step {
-              title: S("step 3"),
-              lines: vec![S("    When step 3")],
-              indent: 4,
+              indent: S("    "),
               line_no: 5,
+              keyword: Keyword::When,
+              title: S("step 3"),
+              additional_lines: vec![],
             },
           ]),
           Block::Static(vec![S(""), S("  Scenario: result")]),
           Block::Sortable(vec![
             Step {
-              title: S("step 4"),
-              lines: vec![S("    Then step 4")],
-              indent: 4,
               line_no: 8,
+              indent: S("    "),
+              keyword: Keyword::Then,
+              title: S("step 4"),
+              additional_lines: vec![],
             },
             Step {
-              title: S("step 5"),
-              lines: vec![S("    And step 5")],
-              indent: 4,
               line_no: 9,
+              indent: S("    "),
+              keyword: Keyword::And,
+              title: S("step 5"),
+              additional_lines: vec![],
             },
           ]),
           Block::Static(vec![S(""), S("  Scenario: undo")]),
           Block::Sortable(vec![
             Step {
-              title: S("step 6"),
-              lines: vec![S("    When step 6")],
-              indent: 4,
               line_no: 12,
+              indent: S("    "),
+              keyword: Keyword::When,
+              title: S("step 6"),
+              additional_lines: vec![],
             },
             Step {
-              title: S("step 7"),
-              lines: vec![S("    Then step 7")],
-              indent: 4,
               line_no: 13,
+              indent: S("    "),
+              keyword: Keyword::Then,
+              title: S("step 7"),
+              additional_lines: vec![],
             },
           ]),
         ],
@@ -218,7 +254,7 @@ Feature: test
         S("    When step 6"),
         S("    Then step 7"),
       ]);
-      pretty::assert_eq!(want_lines, have_lines);
+      pretty::assert_eq!(have_lines, want_lines);
 
       // step 4: serialize back into the original string
       let have_text = have_lines.to_string();
@@ -238,55 +274,67 @@ Feature: test
     # And step 2
     And step 3
 "#;
-      let have_lines = lexer::file(BufReader::new(&source.as_bytes()[1..]));
+      let have_lines = lexer::file(BufReader::new(&source.as_bytes()[1..])).unwrap();
       let want_lines = vec![
         Line {
           number: 0,
           text: S("Feature: test"),
           indent: 0,
           line_type: LineType::Text,
+          title_start: 0,
         },
         Line {
           number: 1,
           text: S(""),
           indent: 0,
           line_type: LineType::Text,
+          title_start: 0,
         },
         Line {
           number: 2,
           text: S("  An example feature file"),
           indent: 2,
           line_type: LineType::Text,
+          title_start: 2,
         },
         Line {
           number: 3,
           text: S(""),
           indent: 0,
           line_type: LineType::Text,
+          title_start: 0,
         },
         Line {
           number: 4,
           text: S("  Scenario:"),
           indent: 2,
           line_type: LineType::Text,
+          title_start: 2,
         },
         Line {
           number: 5,
           text: S("    Given step 1:"),
           indent: 4,
-          line_type: LineType::StepStart,
+          line_type: LineType::StepStart {
+            keyword: Keyword::Given,
+          },
+          title_start: 10,
         },
         Line {
           number: 6,
           text: S("    # And step 2"),
           indent: 4,
           line_type: LineType::Text,
+          title_start: 4,
         },
         Line {
           number: 7,
           text: S("    And step 3"),
           indent: 4,
-          line_type: LineType::StepStart,
+          line_type: LineType::StepStart {
+            keyword: Keyword::And,
+          },
+          title_start: 8,
         },
       ];
       pretty::assert_eq!(want_lines, have_lines);
@@ -303,17 +351,19 @@ Feature: test
             S("  Scenario:"),
           ]),
           Block::Sortable(vec![Step {
-            title: S("step 1:"),
-            lines: vec![S("    Given step 1:")],
-            indent: 4,
             line_no: 5,
+            indent: S("    "),
+            keyword: Keyword::Given,
+            title: S("step 1:"),
+            additional_lines: vec![],
           }]),
           Block::Static(vec![S("    # And step 2")]),
           Block::Sortable(vec![Step {
-            title: S("step 3"),
-            lines: vec![S("    And step 3")],
-            indent: 4,
             line_no: 7,
+            indent: S("    "),
+            keyword: Keyword::And,
+            title: S("step 3"),
+            additional_lines: vec![],
           }]),
         ],
       };
@@ -352,61 +402,74 @@ Feature: test
       """
     And step 2
 "#;
-      let have_lines = lexer::file(BufReader::new(&source.as_bytes()[1..]));
+      let have_lines = lexer::file(BufReader::new(&source.as_bytes()[1..])).unwrap();
       let want_lines = vec![
         Line {
           number: 0,
-          text: S("Feature: test"),
           indent: 0,
+          text: S("Feature: test"),
           line_type: LineType::Text,
+          title_start: 0,
         },
         Line {
           number: 1,
           text: S(""),
           indent: 0,
           line_type: LineType::Text,
+          title_start: 0,
         },
         Line {
           number: 2,
           text: S("  Scenario: with docstring"),
           indent: 2,
           line_type: LineType::Text,
+          title_start: 2,
         },
         Line {
           number: 3,
           text: S("    Given step 1:"),
           indent: 4,
-          line_type: LineType::StepStart,
+          line_type: LineType::StepStart {
+            keyword: Keyword::Given,
+          },
+          title_start: 10,
         },
         Line {
           number: 4,
           text: S(r#"      """"#),
           indent: 6,
           line_type: LineType::DocStringStartStop,
+          title_start: 6,
         },
         Line {
           number: 5,
           text: S("      docstring line 1"),
           indent: 6,
           line_type: LineType::Text,
+          title_start: 6,
         },
         Line {
           number: 6,
           text: S("      docstring line 2"),
           indent: 6,
           line_type: LineType::Text,
+          title_start: 6,
         },
         Line {
           number: 7,
           text: S(r#"      """"#),
           indent: 6,
           line_type: LineType::DocStringStartStop,
+          title_start: 6,
         },
         Line {
           number: 8,
           text: S("    And step 2"),
           indent: 4,
-          line_type: LineType::StepStart,
+          line_type: LineType::StepStart {
+            keyword: Keyword::And,
+          },
+          title_start: 8,
         },
       ];
       pretty::assert_eq!(want_lines, have_lines);
@@ -423,20 +486,21 @@ Feature: test
           Block::Sortable(vec![
             Step {
               title: S("step 1:"),
-              lines: vec![
-                S("    Given step 1:"),
+              keyword: Keyword::Given,
+              additional_lines: vec![
                 S("      \"\"\""),
                 S("      docstring line 1"),
                 S("      docstring line 2"),
                 S("      \"\"\""),
               ],
-              indent: 4,
+              indent: S("    "),
               line_no: 3,
             },
             Step {
               title: S("step 2"),
-              lines: vec![S("    And step 2")],
-              indent: 4,
+              keyword: Keyword::And,
+              additional_lines: vec![],
+              indent: S("    "),
               line_no: 8,
             },
           ]),
@@ -477,55 +541,67 @@ Feature: test
       | row 2A | row 2B |
     And step 2
 "#;
-      let have_lines = lexer::file(BufReader::new(&source.as_bytes()[1..]));
+      let have_lines = lexer::file(BufReader::new(&source.as_bytes()[1..])).unwrap();
       let want_lines = vec![
         Line {
           number: 0,
           text: S("Feature: test"),
           indent: 0,
           line_type: LineType::Text,
+          title_start: 0,
         },
         Line {
           number: 1,
           text: S(""),
           indent: 0,
           line_type: LineType::Text,
+          title_start: 0,
         },
         Line {
           number: 2,
           text: S("  Scenario: with table"),
           indent: 2,
           line_type: LineType::Text,
+          title_start: 2,
         },
         Line {
           number: 3,
           text: S("    Given step 1:"),
           indent: 4,
-          line_type: LineType::StepStart,
+          line_type: LineType::StepStart {
+            keyword: Keyword::Given,
+          },
+          title_start: 10,
         },
         Line {
           number: 4,
           text: S("      | HEAD A | HEAD B |"),
           indent: 6,
           line_type: LineType::Text,
+          title_start: 6,
         },
         Line {
           number: 5,
           text: S("      | row 1A | row 1B |"),
           indent: 6,
           line_type: LineType::Text,
+          title_start: 6,
         },
         Line {
           number: 6,
           text: S("      | row 2A | row 2B |"),
           indent: 6,
           line_type: LineType::Text,
+          title_start: 6,
         },
         Line {
           number: 7,
           text: S("    And step 2"),
           indent: 4,
-          line_type: LineType::StepStart,
+          line_type: LineType::StepStart {
+            keyword: Keyword::And,
+          },
+          title_start: 8,
         },
       ];
       pretty::assert_eq!(want_lines, have_lines);
@@ -537,8 +613,9 @@ Feature: test
           Block::Static(vec![S("Feature: test"), S(""), S("  Scenario: with table")]),
           Block::Sortable(vec![Step {
             title: S("step 1:"),
-            lines: vec![S("    Given step 1:")],
-            indent: 4,
+            keyword: Keyword::Given,
+            additional_lines: vec![],
+            indent: S("    "),
             line_no: 3,
           }]),
           Block::Static(vec![
@@ -548,8 +625,9 @@ Feature: test
           ]),
           Block::Sortable(vec![Step {
             title: S("step 2"),
-            lines: vec![S("    And step 2")],
-            indent: 4,
+            keyword: Keyword::And,
+            additional_lines: vec![],
+            indent: S("    "),
             line_no: 7,
           }]),
         ],
@@ -589,61 +667,74 @@ Feature: test
       | one   | two  |
 "#;
       let bufread = BufReader::new(&source.as_bytes()[1..]);
-      let have_lines = lexer::file(bufread);
+      let have_lines = lexer::file(bufread).unwrap();
       let want_lines = vec![
         Line {
           number: 0,
           text: S("Feature: test"),
           indent: 0,
           line_type: LineType::Text,
+          title_start: 0,
         },
         Line {
           number: 1,
           text: S(""),
           indent: 0,
           line_type: LineType::Text,
+          title_start: 0,
         },
         Line {
           number: 2,
           text: S("  Scenario Outline:"),
           indent: 2,
           line_type: LineType::Text,
+          title_start: 2,
         },
         Line {
           number: 3,
           text: S("    Given <ALPHA>"),
           indent: 4,
-          line_type: LineType::StepStart,
+          line_type: LineType::StepStart {
+            keyword: Keyword::Given,
+          },
+          title_start: 10,
         },
         Line {
           number: 4,
           text: S("    Then <BETA>"),
           indent: 4,
-          line_type: LineType::StepStart,
+          line_type: LineType::StepStart {
+            keyword: Keyword::Then,
+          },
+          title_start: 9,
         },
         Line {
           number: 5,
           text: S(""),
           indent: 0,
           line_type: LineType::Text,
+          title_start: 0,
         },
         Line {
           number: 6,
           text: S("    Examples:"),
           indent: 4,
           line_type: LineType::Text,
+          title_start: 4,
         },
         Line {
           number: 7,
           text: S("      | ALPHA | BETA |"),
           indent: 6,
           line_type: LineType::Text,
+          title_start: 6,
         },
         Line {
           number: 8,
           text: S("      | one   | two  |"),
           indent: 6,
           line_type: LineType::Text,
+          title_start: 6,
         },
       ];
       pretty::assert_eq!(want_lines, have_lines);
@@ -656,14 +747,16 @@ Feature: test
           Block::Sortable(vec![
             Step {
               title: S("<ALPHA>"),
-              lines: vec![S("    Given <ALPHA>")],
-              indent: 4,
+              keyword: Keyword::Given,
+              additional_lines: vec![],
+              indent: S("    "),
               line_no: 3,
             },
             Step {
               title: S("<BETA>"),
-              lines: vec![S("    Then <BETA>")],
-              indent: 4,
+              keyword: Keyword::Then,
+              additional_lines: vec![],
+              indent: S("    "),
               line_no: 4,
             },
           ]),
@@ -711,61 +804,76 @@ Feature: test
     When step 2
 "#;
       let bufread = BufReader::new(&source.as_bytes()[1..]);
-      let have_lines = lexer::file(bufread);
+      let have_lines = lexer::file(bufread).unwrap();
       let want_lines = vec![
         Line {
           number: 0,
           text: S("Feature: test"),
           indent: 0,
           line_type: LineType::Text,
+          title_start: 0,
         },
         Line {
           number: 1,
           text: S(""),
           indent: 0,
           line_type: LineType::Text,
+          title_start: 0,
         },
         Line {
           number: 2,
           text: S("  Scenario: gherkin in docstring"),
           indent: 2,
           line_type: LineType::Text,
+          title_start: 2,
         },
         Line {
           number: 3,
           text: S("    Given file \"foo\":"),
           indent: 4,
-          line_type: LineType::StepStart,
+          line_type: LineType::StepStart {
+            keyword: Keyword::Given,
+          },
+          title_start: 10,
         },
         Line {
           number: 4,
           text: S(r#"      """"#),
           indent: 6,
           line_type: LineType::DocStringStartStop,
+          title_start: 6,
         },
         Line {
           number: 5,
           text: S("      Scenario: embedded"),
           indent: 6,
           line_type: LineType::Text,
+          title_start: 6,
         },
         Line {
           number: 6,
           text: S("        Given step 1"),
           indent: 8,
-          line_type: LineType::Text,
+          line_type: LineType::StepStart {
+            keyword: Keyword::Given,
+          },
+          title_start: 14,
         },
         Line {
           number: 7,
           text: S("      \"\"\""),
           indent: 6,
           line_type: LineType::DocStringStartStop,
+          title_start: 6,
         },
         Line {
           number: 8,
           text: S("    When step 2"),
           indent: 4,
-          line_type: LineType::StepStart,
+          line_type: LineType::StepStart {
+            keyword: Keyword::When,
+          },
+          title_start: 9,
         },
       ];
       pretty::assert_eq!(want_lines, have_lines);
@@ -782,26 +890,27 @@ Feature: test
           Block::Sortable(vec![
             Step {
               title: S("file \"foo\":"),
-              lines: vec![
-                S("    Given file \"foo\":"),
+              keyword: Keyword::Given,
+              additional_lines: vec![
                 S("      \"\"\""),
                 S("      Scenario: embedded"),
                 S("        Given step 1"),
                 S("      \"\"\""),
               ],
-              indent: 4,
+              indent: S("    "),
               line_no: 3,
             },
             Step {
               title: S("step 2"),
-              lines: vec![S("    When step 2")],
-              indent: 4,
+              keyword: Keyword::When,
+              additional_lines: vec![],
+              indent: S("    "),
               line_no: 8,
             },
           ]),
         ],
       };
-      pretty::assert_eq!(want_feature, have_feature);
+      pretty::assert_eq!(have_feature, want_feature);
 
       // step 3: serialize the block back into lines
       let have_lines = have_feature.lines();
@@ -816,7 +925,7 @@ Feature: test
         S("      \"\"\""),
         S("    When step 2"),
       ]);
-      pretty::assert_eq!(want_lines, have_lines);
+      pretty::assert_eq!(have_lines, want_lines);
 
       // step 4: serialize back into the original string
       let have_text = have_lines.to_string();
