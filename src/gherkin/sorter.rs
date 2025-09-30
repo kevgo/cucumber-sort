@@ -17,7 +17,11 @@ pub struct Sorter {
 
 pub struct Entry {
   regex: Regex,
+
+  /// how often this regex was used in the current invocation of the tool
   count: usize,
+
+  /// where in the config file this regex is defined
   line_no: usize,
 }
 
