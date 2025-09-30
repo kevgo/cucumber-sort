@@ -1,4 +1,4 @@
-Feature: ignoring files
+Feature: ignoring regexes
 
   Scenario: comment out a regex
     Given file ".cucumbersortrc" with content:
