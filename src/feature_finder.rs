@@ -14,7 +14,7 @@ pub struct FeatureFinder {
 }
 
 impl FeatureFinder {
-  /// loads a new Ignorer instance from the default ignore file
+  /// loads a new instance from the default ignore file
   pub fn load() -> Result<FeatureFinder> {
     match fs::read_to_string(IGNORE_FILE_NAME) {
       Ok(text) => FeatureFinder::parse(&text, IGNORE_FILE_NAME.into()),
