@@ -19,7 +19,7 @@ pub struct Entry {
   regex: Regex,
 
   /// how often this regex was used in the current invocation of the tool
-  count: usize,
+  used: bool,
 
   /// where in the config file this regex is defined
   line_no: usize,
@@ -60,7 +60,7 @@ impl Sorter {
   pub fn unused_regexes(self) -> Vec<String> {
     let mut result = vec![];
     for entry in self.entries {
-      if entry.count == 0 {
+      if !entry.used {
         result.push(format!(
           "{}:{}  unused regex: {}",
           FILE_NAME,
@@ -96,7 +96,7 @@ impl Sorter {
     for config_step in &mut self.entries {
       let extracted = deletable_steps.extract(&config_step.regex);
       if !extracted.is_empty() {
-        config_step.count += 1;
+        config_step.used = true;
       }
       result.extend(extracted);
     }
@@ -125,7 +125,7 @@ impl Sorter {
       match Regex::new(line) {
         Ok(regex) => steps.push(Entry {
           regex,
-          count: 0,
+          used: false,
           line_no: i + 1,
         }),
         Err(err) => {
