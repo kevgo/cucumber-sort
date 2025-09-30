@@ -6,7 +6,7 @@ use std::fs;
 use std::io::{BufRead, BufReader};
 
 /// the filename of the configuration file
-pub const CONFIG_FILE_NAME: &str = ".cucumbersortrc";
+pub const FILE_NAME: &str = ".cucumbersortrc";
 
 pub struct Config {
   pub steps: Vec<Regex>,
@@ -22,8 +22,8 @@ pub fn load() -> Result<Config> {
 
 fn load_config_file() -> Result<Vec<Regex>> {
   let mut result = vec![];
-  let file = fs::File::open(CONFIG_FILE_NAME).map_err(|e| UserError::ConfigFileRead {
-    file: CONFIG_FILE_NAME.into(),
+  let file = fs::File::open(FILE_NAME).map_err(|e| UserError::ConfigFileRead {
+    file: FILE_NAME.into(),
     reason: e.to_string(),
   })?;
   for (i, line) in BufReader::new(file).lines().enumerate() {
@@ -36,7 +36,7 @@ fn load_config_file() -> Result<Vec<Regex>> {
       Ok(regex) => result.push(regex),
       Err(err) => {
         return Err(UserError::ConfigFileInvalidRegex {
-          file: Utf8PathBuf::from(CONFIG_FILE_NAME),
+          file: Utf8PathBuf::from(FILE_NAME),
           line: i,
           message: err.to_string(),
         });
