@@ -77,14 +77,12 @@ fn deoptimize_keywords(steps: Vec<gherkin::Step>) -> Vec<gherkin::Step> {
 
 fn optimize_keywords(steps: Vec<gherkin::Step>) -> Vec<gherkin::Step> {
   let mut result = Vec::with_capacity(steps.len());
-  let mut previous_keyword: Option<Keyword> = None;
+  let mut previous_keyword = Keyword::And;
   for mut step in steps {
-    if let Some(prev) = previous_keyword
-      && step.keyword == prev
-    {
+    if step.keyword == previous_keyword {
       step.keyword = Keyword::And;
     } else {
-      previous_keyword = Some(step.keyword);
+      previous_keyword = step.keyword;
     };
     result.push(step);
   }
