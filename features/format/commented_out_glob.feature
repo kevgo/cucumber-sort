@@ -18,10 +18,14 @@ Feature: ignoring globs
           When step 2
           And step 1
       """
-    When I run "cucumber-sort check"
-    Then it prints:
+    When I run "cucumber-sort format"
+    Then it prints nothing
+    And the exit code is success
+    And file "features/unordered.feature" now has content:
       """
-      features/unordered.feature:4  expected When step 1 but found When step 2
-      features/unordered.feature:5  expected And step 2 but found And step 1
+      Feature: example
+
+        Scenario: steps out of order
+          When step 1
+          And step 2
       """
-    And the exit code is failure

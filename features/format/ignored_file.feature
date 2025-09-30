@@ -1,6 +1,6 @@
-Feature: ignoring globs
+Feature: ignoring files
 
-  Scenario: comment out a regex
+  Scenario: unordered step in a scenario
     Given file ".cucumbersortrc" with content:
       """
       step 1
@@ -8,7 +8,7 @@ Feature: ignoring globs
       """
     And file ".cucumbersortignore" with content:
       """
-      # features/unordered.feature
+      features/unordered*.feature
       """
     And file "features/unordered.feature" with content:
       """
@@ -18,10 +18,10 @@ Feature: ignoring globs
           When step 2
           And step 1
       """
-    When I run "cucumber-sort check"
+    When I run "cucumber-sort format"
     Then it prints:
       """
-      features/unordered.feature:4  expected When step 1 but found When step 2
-      features/unordered.feature:5  expected And step 2 but found And step 1
+      .cucumbersortrc:1  unused regex: step 1
+      .cucumbersortrc:2  unused regex: step 2
       """
-    And the exit code is failure
+    And the exit code is success
