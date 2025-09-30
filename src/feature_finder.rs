@@ -40,7 +40,7 @@ impl FeatureFinder {
       if entry_path.extension() != Some("feature") {
         continue;
       }
-      if self.is_ignored(entry_path.as_str()) {
+      if self.is_ignored(entry_path) {
         continue;
       }
       result.push(entry_path.to_path_buf());
@@ -49,9 +49,9 @@ impl FeatureFinder {
   }
 
   /// indicates whether the given file path is ignored
-  fn is_ignored(&self, file: &str) -> bool {
+  fn is_ignored(&self, file: &Utf8Path) -> bool {
     for glob in &self.globs {
-      if glob.matches(file) {
+      if glob.matches(file.as_str()) {
         return true;
       }
     }
@@ -89,11 +89,11 @@ features/unordered*.feature
 features/weird*.feature
 "#;
     let ignorer = super::FeatureFinder::parse(config, super::IGNORE_FILE_NAME.into()).unwrap();
-    assert!(ignorer.is_ignored("features/unordered1.feature"));
-    assert!(ignorer.is_ignored("features/unordered2.feature"));
-    assert!(ignorer.is_ignored("features/weird1.feature"));
-    assert!(ignorer.is_ignored("features/weird2.feature"));
-    assert!(!ignorer.is_ignored("features/ordered.feature"));
+    assert!(ignorer.is_ignored("features/unordered1.feature".into()));
+    assert!(ignorer.is_ignored("features/unordered2.feature".into()));
+    assert!(ignorer.is_ignored("features/weird1.feature".into()));
+    assert!(ignorer.is_ignored("features/weird2.feature".into()));
+    assert!(!ignorer.is_ignored("features/ordered.feature".into()));
   }
 
   mod parse {
