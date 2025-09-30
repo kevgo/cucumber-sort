@@ -34,8 +34,8 @@ pub enum UserError {
 
 impl UserError {
   /// Provides human-readable descriptions for the various errors variants.
-  /// The first result is the actual error message,
-  /// the second result is an optional description providing additional details.
+  /// The first result is the actual error message.
+  /// The second result is an optional description providing additional details.
   pub fn messages(self) -> (String, Option<String>) {
     match self {
       UserError::ConfigFileInvalidRegex {
