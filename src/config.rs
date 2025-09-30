@@ -1,20 +1,20 @@
-use crate::FeatureFinder;
+use crate::FileFinder;
 use crate::errors::Result;
 use crate::gherkin::Sorter;
 
 pub struct Config {
-  pub finder: FeatureFinder,
+  pub finder: FileFinder,
   pub sorter: Sorter,
 }
 
 pub fn load() -> Result<Config> {
   Ok(Config {
-    finder: FeatureFinder::load()?,
+    finder: FileFinder::load()?,
     sorter: Sorter::load()?,
   })
 }
 
 pub fn create() -> Result<()> {
-  FeatureFinder::create()?;
+  FileFinder::create()?;
   Sorter::create()
 }
