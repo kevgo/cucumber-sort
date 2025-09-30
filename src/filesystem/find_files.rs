@@ -18,10 +18,11 @@ fn search_folder(dir: impl AsRef<Utf8Path>, ignorer: &Ignorer) -> Result<Vec<Utf
     if entry_path.extension() != Some("feature") {
       continue;
     }
+    let entry_path = entry_path.strip_prefix(".").unwrap_or(entry_path);
     if ignorer.is_ignored(entry_path.as_str()) {
       continue;
     }
-    result.push(entry_path.strip_prefix(".").unwrap().to_path_buf());
+    result.push(entry_path.to_path_buf());
   }
   Ok(result)
 }

@@ -27,7 +27,7 @@ fn sort_block(
 ) -> (gherkin::Block, Vec<Issue>) {
   match block {
     gherkin::Block::Sortable(block_steps) => {
-      let (sorted_steps, issues) = sort_steps(block_steps, &order, filename);
+      let (sorted_steps, issues) = sort_steps(block_steps, order, filename);
       (gherkin::Block::Sortable(sorted_steps), issues)
     }
     gherkin::Block::Static(lines) => (gherkin::Block::Static(lines), vec![]),

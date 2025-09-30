@@ -1,6 +1,5 @@
-use crate::filesystem;
 use crate::prelude::*;
-use crate::{config, gherkin, sort};
+use crate::{config, filesystem, gherkin, sort};
 use camino::Utf8PathBuf;
 use std::process::ExitCode;
 

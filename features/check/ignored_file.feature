@@ -8,9 +8,9 @@ Feature: ignoring files
       """
     And file ".cucumbersortignore" with content:
       """
-      feature/unordered*.feature
+      features/unordered*.feature
       """
-    And file "feature/ordered.feature" with content:
+    And file "features/ordered.feature" with content:
       """
       Feature: example
 
@@ -18,7 +18,7 @@ Feature: ignoring files
           Then step 1
           And step 2
       """
-    And file "feature/unordered.feature" with content:
+    And file "features/unordered.feature" with content:
       """
       Feature: example
 

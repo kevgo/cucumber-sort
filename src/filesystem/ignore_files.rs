@@ -20,7 +20,7 @@ impl Ignorer {
       if line.is_empty() || line.starts_with('#') {
         continue;
       }
-      match glob::Pattern::new(&line) {
+      match glob::Pattern::new(line) {
         Ok(pattern) => globs.push(pattern),
         Err(err) => {
           return Err(UserError::IgnoreFileInvalidGlob {
@@ -75,10 +75,9 @@ features/weird*.feature
   }
 
   mod parse {
-    use core::panic;
-
     use crate::filesystem::ignore_files::Ignorer;
     use crate::prelude::UserError;
+    use core::panic;
 
     #[test]
     fn correct() {
