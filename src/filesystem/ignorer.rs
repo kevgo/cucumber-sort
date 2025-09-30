@@ -14,7 +14,31 @@ pub struct Ignorer {
 }
 
 impl Ignorer {
-  pub fn parse(config: &str, source: &Utf8Path) -> Result<Ignorer> {
+  /// loads a new Ignorer instance from the default ignore file
+  pub fn load() -> Result<Ignorer> {
+    match fs::read_to_string(IGNORE_FILE_NAME) {
+      Ok(text) => Ignorer::parse(&text, IGNORE_FILE_NAME.into()),
+      Err(err) => match err.kind() {
+        ErrorKind::NotFound => Ok(Ignorer { globs: vec![] }),
+        _ => Err(UserError::ConfigFileRead {
+          file: IGNORE_FILE_NAME.into(),
+          reason: err.to_string(),
+        }),
+      },
+    }
+  }
+
+  /// indicates whether the given file path is ignored
+  pub fn is_ignored(&self, file: &str) -> bool {
+    for glob in &self.globs {
+      if glob.matches(file) {
+        return true;
+      }
+    }
+    false
+  }
+
+  fn parse(config: &str, source: &Utf8Path) -> Result<Ignorer> {
     let mut globs = vec![];
     for (i, line) in config.lines().enumerate() {
       if line.is_empty() || line.starts_with('#') {
@@ -32,28 +56,6 @@ impl Ignorer {
       }
     }
     Ok(Ignorer { globs })
-  }
-
-  pub fn load() -> Result<Ignorer> {
-    match fs::read_to_string(IGNORE_FILE_NAME) {
-      Ok(text) => Ignorer::parse(&text, IGNORE_FILE_NAME.into()),
-      Err(err) => match err.kind() {
-        ErrorKind::NotFound => Ok(Ignorer { globs: vec![] }),
-        _ => Err(UserError::ConfigFileRead {
-          file: IGNORE_FILE_NAME.into(),
-          reason: err.to_string(),
-        }),
-      },
-    }
-  }
-
-  pub fn is_ignored(&self, file: &str) -> bool {
-    for glob in &self.globs {
-      if glob.matches(file) {
-        return true;
-      }
-    }
-    false
   }
 }
 
@@ -75,7 +77,7 @@ features/weird*.feature
   }
 
   mod parse {
-    use crate::filesystem::ignore_files::Ignorer;
+    use crate::filesystem::ignorer::Ignorer;
     use crate::prelude::UserError;
     use core::panic;
 

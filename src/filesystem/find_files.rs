@@ -1,4 +1,4 @@
-use crate::filesystem::ignore_files::Ignorer;
+use crate::filesystem::ignorer::Ignorer;
 use crate::prelude::*;
 use camino::{Utf8Path, Utf8PathBuf};
 
