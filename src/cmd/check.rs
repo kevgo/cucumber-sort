@@ -1,5 +1,5 @@
-use crate::prelude::*;
-use crate::{config, filesystem, gherkin, sort};
+use crate::errors::{Result, sort_issues};
+use crate::{config, filesystem, gherkin};
 use camino::Utf8PathBuf;
 use std::process::ExitCode;
 
@@ -26,11 +26,11 @@ fn all(config: &config::Config) -> Result<ExitCode> {
 /// checks the file with the given path
 fn file(filepath: Utf8PathBuf, config: &config::Config) -> Result<ExitCode> {
   let gherkin = gherkin::load(&filepath)?;
-  let (sorted_file, mut issues) = sort::file(gherkin.clone(), &config.steps, &filepath);
+  let (sorted_file, mut issues) = config.sorter.sort_file(gherkin.clone(), &filepath);
   let sorted_lines = sorted_file.lines();
   let original_lines = gherkin.lines();
   issues.extend(original_lines.find_mismatching(&sorted_lines, &filepath));
-  sort::sort_issues(&mut issues);
+  sort_issues(&mut issues);
   for issue in &issues {
     println!("{}", issue.problem);
   }

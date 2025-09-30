@@ -1,5 +1,5 @@
+use crate::errors::Result;
 use crate::filesystem::ignorer::Ignorer;
-use crate::prelude::*;
 use camino::{Utf8Path, Utf8PathBuf};
 
 pub fn find_matching(ignorer: &Ignorer) -> Result<Vec<Utf8PathBuf>> {

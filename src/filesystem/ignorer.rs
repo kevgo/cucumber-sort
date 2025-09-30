@@ -1,4 +1,4 @@
-use crate::prelude::*;
+use crate::errors::{Result, UserError};
 use camino::Utf8Path;
 use std::fs;
 use std::io::ErrorKind;
@@ -77,8 +77,8 @@ features/weird*.feature
   }
 
   mod parse {
+    use crate::errors::UserError;
     use crate::filesystem::ignorer::Ignorer;
-    use crate::prelude::UserError;
     use core::panic;
 
     #[test]

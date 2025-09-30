@@ -1,5 +1,5 @@
-use crate::prelude::*;
-use crate::{config, filesystem, gherkin, sort};
+use crate::errors::{Result, UserError};
+use crate::{config, filesystem, gherkin};
 use camino::Utf8PathBuf;
 use std::fs;
 use std::process::ExitCode;
@@ -27,7 +27,7 @@ fn all(config: &config::Config) -> Result<ExitCode> {
 /// updates the given file to contain sorted steps
 fn file(filepath: Utf8PathBuf, config: &config::Config) -> Result<ExitCode> {
   let gherkin = gherkin::load(&filepath)?;
-  let (sorted_file, issues) = sort::file(gherkin.clone(), &config.steps, &filepath);
+  let (sorted_file, issues) = config.sorter.sort_file(gherkin.clone(), &filepath);
   let sorted_lines = sorted_file.lines();
   let sorted_text = sorted_lines.to_string();
   for issue in &issues {

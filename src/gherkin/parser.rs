@@ -1,6 +1,5 @@
+use crate::errors::{Issue, Result};
 use crate::gherkin::lexer::{self, Keyword, LineType};
-use crate::prelude::*;
-use crate::sort::Issue;
 use ansi_term::Color::{Green, Red};
 use camino::Utf8Path;
 use std::fmt::{Display, Write};
