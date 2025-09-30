@@ -10,17 +10,21 @@ pub fn format(filepath: Option<Utf8PathBuf>) -> Result<ExitCode> {
   let mut config = config::load()?;
   match filepath {
     Some(filepath) => file(filepath, &mut config.sorter),
-    None => all(&mut config),
+    None => all(config),
   }
 }
 
 /// updates all files in the current folder to contain sorted steps
-fn all(config: &mut config::Config) -> Result<ExitCode> {
+fn all(mut config: config::Config) -> Result<ExitCode> {
   for filepath in config.finder.search_folder(".")? {
     let exit_code = file(filepath, &mut config.sorter)?;
     if exit_code != ExitCode::SUCCESS {
       return Ok(exit_code);
     }
+  }
+  let unused_regexes = config.sorter.unused_regexes();
+  for unused in unused_regexes {
+    println!("{}", unused);
   }
   Ok(ExitCode::SUCCESS)
 }
