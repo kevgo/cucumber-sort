@@ -32,7 +32,7 @@ cucumber-sort init
 
 This creates two files:
 
-- Populate file **.cucumber-sort-rc** with the step names (without
+- **.cucumber-sort-rc:** Populate this file with the step names (without
   `Given`/`When`/`Then`) in the order you want them to appear in the`.feature`
   files.
 
@@ -43,8 +43,8 @@ This creates two files:
   As an example, take a look at our own
   [.cucumber-sort-rc file](.cucumber-sort-rc).
 
-- Populate file **.cucumber-sort-ignore** with glob expressions that describe
-  files that cucumber-sort should ignore.
+- **.cucumber-sort-ignore:** Populate this file with glob expressions that
+  describe files that cucumber-sort should ignore.
 
 ### Usage
 
