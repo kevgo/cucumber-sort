@@ -1,5 +1,5 @@
 mod find_files;
-mod ignorer;
+mod globber;
 
 pub use find_files::find_matching;
-pub use ignorer::Ignorer;
+pub use globber::Globber;
