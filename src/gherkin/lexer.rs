@@ -33,11 +33,9 @@ pub struct Line {
 impl Line {
   fn new(text: String, number: usize) -> Result<Line> {
     let mut chars = text.char_indices();
-    let mut indent = text.len(); // counts how many whitespace characters this line has at the beginning
-    let mut end_of_first_word = text.len(); // at which character the first word ends
-    let mut title_start = text.len(); // at which character the step title starts
 
     // step 1: find the end of the initial whitespace
+    let mut indent = text.len(); // counts how many whitespace characters this line has at the beginning
     for (i, c) in chars.by_ref() {
       if !c.is_whitespace() {
         indent = i;
@@ -53,6 +51,7 @@ impl Line {
     }
 
     // step 2: find the end of the first word
+    let mut end_of_first_word = text.len(); // at which character the first word ends
     for (i, c) in chars.by_ref() {
       if c.is_whitespace() {
         end_of_first_word = i;
@@ -64,7 +63,8 @@ impl Line {
       return text_line(number, text, indent);
     };
 
-    // step 3: find the beginning of the title
+    // step 3: at this point we know we have a step, find the beginning of the title
+    let mut title_start = text.len(); // at which character the step title starts
     for (i, c) in chars.by_ref() {
       if !c.is_whitespace() {
         title_start = i;
