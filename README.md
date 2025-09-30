@@ -37,7 +37,7 @@ can use glob expressions in it.
 
 ### Fixing the order
 
-To format your `.feature` files in the correct step order, run:
+To format your `.feature` files to have the correct step order, run:
 
 ```
 cucumber-sort format
