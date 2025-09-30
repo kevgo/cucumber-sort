@@ -1,5 +1,5 @@
 use crate::errors::{Result, UserError};
-use camino::Utf8Path;
+use camino::{Utf8Path, Utf8PathBuf};
 use std::fs;
 use std::io::ErrorKind;
 
@@ -28,8 +28,29 @@ impl Globber {
     }
   }
 
+  pub fn search_folder(&self, dir: impl AsRef<Utf8Path>) -> Result<Vec<Utf8PathBuf>> {
+    let mut result = vec![];
+    for entry in dir.as_ref().read_dir_utf8().unwrap() {
+      let entry = entry.unwrap();
+      let entry_path = entry.path();
+      if entry_path.is_dir() {
+        result.extend(self.search_folder(entry_path)?);
+        continue;
+      }
+      if entry_path.extension() != Some("feature") {
+        continue;
+      }
+      let entry_path = entry_path.strip_prefix(".").unwrap_or(entry_path);
+      if self.is_ignored(entry_path.as_str()) {
+        continue;
+      }
+      result.push(entry_path.to_path_buf());
+    }
+    Ok(result)
+  }
+
   /// indicates whether the given file path is ignored
-  pub fn is_ignored(&self, file: &str) -> bool {
+  fn is_ignored(&self, file: &str) -> bool {
     for glob in &self.globs {
       if glob.matches(file) {
         return true;

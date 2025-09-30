@@ -1,6 +1,6 @@
 use crate::errors::{Result, sort_issues};
 use crate::gherkin::Sorter;
-use crate::{config, filesystem, gherkin};
+use crate::{config, gherkin};
 use camino::Utf8PathBuf;
 use std::process::ExitCode;
 
@@ -15,7 +15,7 @@ pub fn check(filepath: Option<Utf8PathBuf>) -> Result<ExitCode> {
 
 /// checks all files in the current folder
 fn all(config: &config::Config) -> Result<ExitCode> {
-  for filepath in filesystem::find_matching(&config.globber)? {
+  for filepath in config.globber.search_folder(".")? {
     let exit_code = file(filepath, &config.sorter)?;
     if exit_code != ExitCode::SUCCESS {
       return Ok(exit_code);
