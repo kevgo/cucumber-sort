@@ -1,6 +1,5 @@
 Feature: ignoring files
 
-  @this
   Scenario: unordered step in a scenario
     Given file ".cucumbersortrc" with content:
       """
@@ -14,7 +13,7 @@ Feature: ignoring files
     And file "feature/ordered.feature" with content:
       """
       Feature: example
-      
+
         Scenario: steps out of order
           Then step 1
           And step 2
@@ -22,7 +21,7 @@ Feature: ignoring files
     And file "feature/unordered.feature" with content:
       """
       Feature: example
-      
+
         Scenario: steps out of order
           Then step 2
           And step 1

@@ -1,4 +1,3 @@
-use crate::config::Config;
 use crate::gherkin::{self, Keyword};
 use ansi_term::Color::Cyan;
 use camino::Utf8Path;
@@ -7,13 +6,13 @@ use regex::Regex;
 /// provides a copy of the given document with all Gherkin steps sorted the same way as in the given configuration
 pub fn file(
   file: gherkin::Document,
-  config: &Config,
+  order: &[Regex],
   filename: &Utf8Path,
 ) -> (gherkin::Document, Vec<Issue>) {
   let mut doc_issues = vec![];
   let mut new_blocks = Vec::<gherkin::Block>::new();
   for file_block in file.blocks {
-    let (sorted_block, block_issues) = sort_block(file_block, config, filename);
+    let (sorted_block, block_issues) = sort_block(file_block, order, filename);
     new_blocks.push(sorted_block);
     doc_issues.extend(block_issues);
   }
@@ -23,12 +22,12 @@ pub fn file(
 /// provides the given block with all steps sorted according to the given configuration
 fn sort_block(
   block: gherkin::Block,
-  config: &Config,
+  order: &[Regex],
   filename: &Utf8Path,
 ) -> (gherkin::Block, Vec<Issue>) {
   match block {
     gherkin::Block::Sortable(block_steps) => {
-      let (sorted_steps, issues) = sort_steps(block_steps, &config.steps, filename);
+      let (sorted_steps, issues) = sort_steps(block_steps, &order, filename);
       (gherkin::Block::Sortable(sorted_steps), issues)
     }
     gherkin::Block::Static(lines) => (gherkin::Block::Static(lines), vec![]),
@@ -217,7 +216,6 @@ mod tests {
   }
 
   mod sort_steps {
-    use crate::config::Config;
     use crate::gherkin::Keyword;
     use crate::sort::Issue;
     use crate::{gherkin, sort};
@@ -265,9 +263,7 @@ mod tests {
 
     #[test]
     fn unordered() {
-      let config = Config {
-        steps: vec![regex!("step 1"), regex!("step 2"), regex!("step 3")],
-      };
+      let order = vec![regex!("step 1"), regex!("step 2"), regex!("step 3")];
       let give_block = gherkin::Block::Sortable(vec![
         gherkin::Step {
           title: S("step 3"),
@@ -314,16 +310,14 @@ mod tests {
           indent: S(""),
         },
       ]);
-      let (have_block, issues) = sort::sort_block(give_block, &config, "test.feature".into());
+      let (have_block, issues) = sort::sort_block(give_block, &order, "test.feature".into());
       pretty::assert_eq!(want_block, have_block);
       assert!(issues.is_empty());
     }
 
     #[test]
     fn unknown_step() {
-      let config = Config {
-        steps: vec![regex!("step 1"), regex!("step 2")],
-      };
+      let order = vec![regex!("step 1"), regex!("step 2")];
       let give_block = gherkin::Block::Sortable(vec![
         gherkin::Step {
           title: S("step 2"),
@@ -363,7 +357,7 @@ mod tests {
           indent: S(""),
         },
       ]);
-      let (have_block, issues) = sort::sort_block(give_block, &config, "test.feature".into());
+      let (have_block, issues) = sort::sort_block(give_block, &order, "test.feature".into());
       pretty::assert_eq!(want_block, have_block);
       let want_issues = vec![Issue {
         line: 1,

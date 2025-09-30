@@ -1,6 +1,5 @@
 //! stuff that is used in pretty much every file of this crate
 
-use crate::config;
 use camino::Utf8PathBuf;
 
 /// UserError happen when the user uses this linter the wrong way.
@@ -13,6 +12,7 @@ pub enum UserError {
     message: String,
   },
   ConfigFileRead {
+    file: Utf8PathBuf,
     reason: String,
   },
   FileRead {
@@ -23,13 +23,18 @@ pub enum UserError {
     file: Utf8PathBuf,
     reason: String,
   },
+  IgnoreFileInvalidGlob {
+    file: Utf8PathBuf,
+    line: usize,
+    reason: String,
+  },
 }
 
 impl UserError {
   /// Provides human-readable descriptions for the various errors variants.
   /// The first result is the actual error message,
   /// the second result is an optional description providing additional details.
-  pub fn messages(&self) -> (String, Option<String>) {
+  pub fn messages(self) -> (String, Option<String>) {
     match self {
       UserError::ConfigFileInvalidRegex {
         file,
@@ -37,19 +42,20 @@ impl UserError {
         message,
       } => (
         format!("{}:{}  invalid regular expression", file, line),
-        Some(message.into()),
+        Some(message),
       ),
-      UserError::ConfigFileRead { reason } => (
+      UserError::ConfigFileRead { file, reason } => (
         format!("cannot read configuration file: {reason}"),
-        Some(format!(
-          "The configuration file has name {}.",
-          config::FILE_NAME
-        )),
+        Some(format!("The configuration file has name {}.", file)),
       ),
       UserError::FileRead { file, reason } => (format!("cannot read file {file}: {reason}"), None),
       UserError::FileWrite { file, reason } => {
         (format!("cannot write file {file}: {reason}"), None)
       }
+      UserError::IgnoreFileInvalidGlob { file, line, reason } => (
+        format!("{}:{}  invalid glob expression", file, line),
+        Some(reason),
+      ),
     }
   }
 }
