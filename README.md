@@ -37,15 +37,13 @@ files:
 - File **.cucumber-sort-ignore** lists files that cucumber-sort should ignore.
   You can use glob expressions in it.
 
-### Fixing the step order in .feature files
+### Usage
 
 To format your `.feature` files to have the correct step order, run:
 
 ```
 cucumber-sort format
 ```
-
-### Verifying the order of .feature files
 
 To verify that all your `.feature` files have the correct step order, run:
 
