@@ -156,81 +156,70 @@ impl Display for Keyword {
 #[cfg(test)]
 mod tests {
 
-  mod line {
-    use crate::gherkin::lexer::Line;
+  mod line_new {
+    use crate::gherkin::Keyword;
+    use crate::gherkin::lexer::{Line, LineType};
     use big_s::S;
 
-    mod new {
-      use crate::gherkin::Keyword;
-      use crate::gherkin::lexer::{Line, LineType};
-      use big_s::S;
-
-      #[test]
-      fn empty_line() {
-        let have = Line::new(S(""), 12).unwrap();
-        assert_eq!(have.indent_text(), "");
-        assert_eq!(have.line_type, LineType::Text);
-        assert_eq!(have.title(), "");
-      }
-
-      #[test]
-      fn whitespace_only() {
-        let have = Line::new(S("    "), 12).unwrap();
-        assert_eq!(have.indent_text(), "    ");
-        assert_eq!(have.line_type, LineType::Text);
-        assert_eq!(have.title(), "");
-      }
-
-      #[test]
-      fn no_spaces_and_text() {
-        let have = Line::new(S("Feature: test"), 12).unwrap();
-        assert_eq!(have.indent_text(), "");
-        assert_eq!(have.line_type, LineType::Text);
-        assert_eq!(have.title(), "Feature: test");
-      }
-
-      #[test]
-      fn two_spaces_and_text() {
-        let have = Line::new(S("  text"), 12).unwrap();
-        assert_eq!(have.indent_text(), "  ");
-        assert_eq!(have.line_type, LineType::Text);
-        assert_eq!(have.title(), "text");
-      }
-
-      #[test]
-      fn two_tabs_and_text() {
-        let have = Line::new(S("\t\ttext"), 12).unwrap();
-        assert_eq!(have.indent_text(), "\t\t");
-        assert_eq!(have.line_type, LineType::Text);
-        assert_eq!(have.title(), "text");
-      }
-
-      #[test]
-      fn four_spaces_docstring() {
-        let have = Line::new(S("    \"\"\""), 12).unwrap();
-        assert_eq!(have.indent_text(), "    ");
-        assert_eq!(have.line_type, LineType::DocStringStartStop);
-        assert_eq!(have.title(), "\"\"\"");
-      }
-
-      #[test]
-      fn four_spaces_and_step() {
-        let have = Line::new(S("    Given step 1"), 12).unwrap();
-        assert_eq!(have.indent_text(), "    ");
-        assert_eq!(
-          have.line_type,
-          LineType::StepStart {
-            keyword: Keyword::Given
-          }
-        );
-        assert_eq!(have.title(), "step 1");
-      }
+    #[test]
+    fn empty_line() {
+      let have = Line::new(S(""), 12).unwrap();
+      assert_eq!(have.indent_text(), "");
+      assert_eq!(have.line_type, LineType::Text);
+      assert_eq!(have.title(), "");
     }
 
     #[test]
-    fn title() {
-      let line = Line::new(S("    Given a cucumber"), 4).unwrap();
-      assert_eq!("a cucumber", line.title());
+    fn whitespace_only() {
+      let have = Line::new(S("    "), 12).unwrap();
+      assert_eq!(have.indent_text(), "    ");
+      assert_eq!(have.line_type, LineType::Text);
+      assert_eq!(have.title(), "");
+    }
+
+    #[test]
+    fn no_spaces_and_text() {
+      let have = Line::new(S("Feature: test"), 12).unwrap();
+      assert_eq!(have.indent_text(), "");
+      assert_eq!(have.line_type, LineType::Text);
+      assert_eq!(have.title(), "Feature: test");
+    }
+
+    #[test]
+    fn two_spaces_and_text() {
+      let have = Line::new(S("  text"), 12).unwrap();
+      assert_eq!(have.indent_text(), "  ");
+      assert_eq!(have.line_type, LineType::Text);
+      assert_eq!(have.title(), "text");
+    }
+
+    #[test]
+    fn two_tabs_and_text() {
+      let have = Line::new(S("\t\ttext"), 12).unwrap();
+      assert_eq!(have.indent_text(), "\t\t");
+      assert_eq!(have.line_type, LineType::Text);
+      assert_eq!(have.title(), "text");
+    }
+
+    #[test]
+    fn four_spaces_docstring() {
+      let have = Line::new(S("    \"\"\""), 12).unwrap();
+      assert_eq!(have.indent_text(), "    ");
+      assert_eq!(have.line_type, LineType::DocStringStartStop);
+      assert_eq!(have.title(), "\"\"\"");
+    }
+
+    #[test]
+    fn four_spaces_and_step() {
+      let have = Line::new(S("    Given step 1"), 12).unwrap();
+      assert_eq!(have.indent_text(), "    ");
+      assert_eq!(
+        have.line_type,
+        LineType::StepStart {
+          keyword: Keyword::Given
+        }
+      );
+      assert_eq!(have.title(), "step 1");
     }
   }
 }
