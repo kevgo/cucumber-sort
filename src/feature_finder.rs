@@ -104,14 +104,14 @@ features/weird*.feature
     #[test]
     fn correct() {
       let config = r#"
-        feature/unordered*.feature
-        feature/weird*.feature
+        feature/one*.feature
+        feature/two*.feature
       "#;
       FeatureFinder::parse(config, "somefile".into()).unwrap();
     }
 
     #[test]
-    fn incorrect() {
+    fn invalid_glob() {
       let config = r#"
 feature/valid.feature
 file[name
