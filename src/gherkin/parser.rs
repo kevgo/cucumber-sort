@@ -225,7 +225,7 @@ pub struct Step {
 
   pub keyword: Keyword,
 
-  /// the title of the step (without Given/When/Then)
+  /// step text without Given/When/Then
   pub title: String,
 
   /// the textual lines making up this step
