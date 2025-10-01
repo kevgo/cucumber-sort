@@ -7,7 +7,7 @@ Feature: format already ordered steps
       invalid (
       """
     When I run "cucumber-sort check"
-    Then it prints:
+    Then it prints the error:
       """
       .cucumber-sort-rc:1  invalid regular expression
 

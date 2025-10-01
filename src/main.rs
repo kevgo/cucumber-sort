@@ -17,9 +17,9 @@ fn main() -> ExitCode {
     Ok(exit_code) => exit_code,
     Err(err) => {
       let (message, details) = err.messages();
-      println!("{}", Red.paint(message));
+      eprintln!("{}", Red.paint(message));
       if let Some(details) = details {
-        println!("\n{}", details);
+        eprintln!("\n{}", details);
       }
       ExitCode::FAILURE
     }
