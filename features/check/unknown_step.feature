@@ -1,6 +1,6 @@
 Feature: check unknown steps
 
-  Background: "step 3" is not defined in the config file
+  Background:
     Given file ".cucumber-sort-rc" with content:
       """
       step 1
@@ -22,7 +22,7 @@ Feature: check unknown steps
             bar
             '''
 
-        Scenario: contains another unknown step
+        Scenario: contains a different unknown step
           Given another unknown step
       """
 
