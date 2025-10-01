@@ -129,6 +129,8 @@ async fn it_prints_error(world: &mut MyWorld, step: &Step) {
 async fn prints_nothing(world: &mut MyWorld) {
   let have = &world.stdout.as_ref().expect(NO_COMMAND_RUN);
   pretty::assert_eq!(*have, "");
+  let have = &world.stderr.as_ref().expect(NO_COMMAND_RUN);
+  pretty::assert_eq!(*have, "");
 }
 
 #[then("the exit code is success")]
