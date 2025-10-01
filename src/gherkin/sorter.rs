@@ -72,7 +72,7 @@ impl Sorter {
     for missing in missings {
       match &missing.problem {
         Issue::UndefinedStep(text) => {
-          content.push_str(text);
+          content.push_str(&insert_regex_placeholders(text));
           content.push('\n');
         }
         Issue::UnsortedLine { have: _, want: _ } => {}
@@ -124,7 +124,7 @@ impl Sorter {
         result.push(AppFinding {
           file: FILE_NAME.into(),
           line: entry.line_no,
-          problem: Issue::UnusedRegex(insert_regex_placeholders(entry.regex.as_str())),
+          problem: Issue::UnusedRegex(entry.regex.to_string()),
         });
       }
     }

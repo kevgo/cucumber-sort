@@ -3,6 +3,8 @@ use camino::Utf8PathBuf;
 use std::cmp::Ordering;
 use std::fmt::Display;
 
+use crate::regex::insert_regex_placeholders;
+
 /// AppFindings are issues that the app finds when being used correctly.
 /// Problems from using the app the wrong way are tracked as `UserError`.
 #[derive(Debug, Eq, PartialEq)]
@@ -17,7 +19,13 @@ impl Display for AppFinding {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     match &self.problem {
       Issue::UndefinedStep(text) => {
-        write!(f, "{}:{}  unknown step: {text}", self.file, self.line + 1)
+        write!(
+          f,
+          "{}:{}  unknown step: {}",
+          self.file,
+          self.line + 1,
+          insert_regex_placeholders(text)
+        )
       }
       Issue::UnsortedLine { have, want } => {
         write!(
