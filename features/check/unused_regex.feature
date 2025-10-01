@@ -9,7 +9,7 @@ Feature: list unused steps while checking
     And file "feature/one.feature" with content:
       """
       Feature: example
-      
+
         Scenario: test
           Given file "foo" with content:
             '''
