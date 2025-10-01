@@ -1,8 +1,16 @@
+use std::fs;
+
 use camino::Utf8PathBuf;
 use clap::Parser;
 
+const FILENAME: &str = ".cucumber-sort-opts";
+
 pub fn parse() -> Command {
-  Command::parse()
+  let mut args = std::env::args();
+  if let Some(file_opts) = read_file() {
+    args = args.chain(file_opts);
+  }
+  Command::parse_from(args)
 }
 
 #[derive(Parser)]
@@ -33,4 +41,13 @@ pub enum Command {
   },
   /// Create the configuration files
   Init,
+}
+
+fn read_file() -> Option<impl Iterator<Item = String>> {
+  let Ok(text) = fs::read_to_string(FILENAME) else {
+    return None;
+  };
+  // TODO: parse text into an iterator that can be chained into std::env::Args
+  // and return it from this function.
+  Some(result)
 }
