@@ -1,4 +1,4 @@
-use crate::errors::{AppFinding, Result, UserError};
+use crate::errors::{AppFinding, Problem, Result, UserError};
 use crate::gherkin::{self, Keyword};
 use ansi_term::Color::Cyan;
 use camino::Utf8Path;
@@ -62,11 +62,18 @@ impl Sorter {
     })
   }
 
+  /// records the given missing steps in the config file
   pub fn record_missing(&self, missing: &[AppFinding]) -> Result<()> {
     let mut serialized = String::from(MARKER);
     serialized.push('\n');
     for m in missing {
-      serialized.push_str(m);
+      match &m.problem {
+        Problem::UndefinedStep(text) => {
+          serialized.push_str(&text);
+          serialized.push('\n');
+        }
+        Problem::UnexpectedText { have: _, want: _ } => {}
+      }
       serialized.push('\n');
     }
     // TODO: append serialized to the file whose name is in FILE_NAME.
@@ -136,12 +143,9 @@ impl Sorter {
     let mut issues = vec![];
     for step in deletable_steps.elements() {
       issues.push(AppFinding {
+        file: filename.into(),
         line: step.line_no,
-        problem: format!(
-          "{filename}:{}  unknown step: {}",
-          step.line_no + 1,
-          Cyan.paint(step.title)
-        ),
+        problem: Problem::UndefinedStep(step.title),
       });
     }
     (optimize_keywords(result), issues)
