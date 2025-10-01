@@ -64,7 +64,7 @@ impl Sorter {
   }
 
   /// records the given missing steps in the config file
-  pub fn record_missing(&self, missings: &[Finding]) -> Result<()> {
+  pub fn store_missing(&self, missings: &[Finding]) -> Result<()> {
     if missings.is_empty() {
       return Ok(());
     }

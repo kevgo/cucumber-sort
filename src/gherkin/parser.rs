@@ -170,7 +170,6 @@ impl Lines {
   pub fn find_mismatching(&self, other: &Lines, filepath: &Utf8Path) -> Vec<Finding> {
     let mut result = vec![];
     for (line_no, (self_text, other_text)) in self.0.iter().zip(other.0.iter()).enumerate() {
-      //   println!("line: {} {}", self_text, other_text);
       if self_text != other_text {
         result.push(Finding {
           file: filepath.into(),

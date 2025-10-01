@@ -17,7 +17,7 @@ pub fn format(filepath: Option<Utf8PathBuf>, record: bool) -> Result<ExitCode> {
     println!("{}", finding);
   }
   if record {
-    config.sorter.record_missing(&findings)?;
+    config.sorter.store_missing(&findings)?;
   }
   if findings.is_empty() {
     Ok(ExitCode::SUCCESS)
