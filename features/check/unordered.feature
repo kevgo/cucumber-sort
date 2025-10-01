@@ -6,7 +6,7 @@ Feature: check unordered steps
       step 1
       step 2
       """
-    And file "feature/one.feature" with content:
+    And file "features/one.feature" with content:
       """
       Feature: example
 
@@ -17,7 +17,7 @@ Feature: check unordered steps
     When I run "cucumber-sort check"
     Then it prints:
       """
-      feature/one.feature:4  expected Then step 1 but found Then step 2
-      feature/one.feature:5  expected And step 2 but found And step 1
+      features/one.feature:4  expected Then step 1 but found Then step 2
+      features/one.feature:5  expected And step 2 but found And step 1
       """
     And the exit code is failure

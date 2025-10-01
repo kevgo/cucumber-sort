@@ -120,8 +120,8 @@ features/weird*.feature
     #[test]
     fn correct() {
       let config = r#"
-        feature/one*.feature
-        feature/two*.feature
+        features/one*.feature
+        features/two*.feature
       "#;
       FileFinder::parse(config, "somefile".into()).unwrap();
     }
@@ -129,7 +129,7 @@ features/weird*.feature
     #[test]
     fn invalid_glob() {
       let config = r#"
-feature/valid.feature
+features/valid.feature
 file[name
 "#;
       let Err(UserError::IgnoreFileInvalidGlob { file, line, reason }) =

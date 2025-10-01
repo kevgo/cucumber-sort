@@ -5,7 +5,7 @@ Feature: check unknown steps
       """
       step 1
       """
-    And file "feature/one.feature" with content:
+    And file "features/one.feature" with content:
       """
       Feature: example
 
@@ -30,9 +30,9 @@ Feature: check unknown steps
     When I run "cucumber-sort check"
     Then it prints:
       """
-      feature/one.feature:5  unknown step: file .* with content:
-      feature/one.feature:11  unknown step: file .* with content:
-      feature/one.feature:17  unknown step: another unknown step
+      features/one.feature:5  unknown step: file .* with content:
+      features/one.feature:11  unknown step: file .* with content:
+      features/one.feature:17  unknown step: another unknown step
       """
     And the exit code is failure
 
@@ -40,9 +40,9 @@ Feature: check unknown steps
     When I run "cucumber-sort check --record"
     Then it prints:
       """
-      feature/one.feature:5  unknown step: file .* with content:
-      feature/one.feature:11  unknown step: file .* with content:
-      feature/one.feature:17  unknown step: another unknown step
+      features/one.feature:5  unknown step: file .* with content:
+      features/one.feature:11  unknown step: file .* with content:
+      features/one.feature:17  unknown step: another unknown step
       """
     And the exit code is failure
     And file ".cucumber-sort-rc" now has content:

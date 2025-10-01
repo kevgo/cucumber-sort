@@ -10,7 +10,7 @@ Feature: format unordered steps
       step 5
       file .* now has content:
       """
-    And file "feature/one.feature" with content:
+    And file "features/one.feature" with content:
       """
       Feature: example
         Comment text
@@ -39,7 +39,7 @@ Feature: format unordered steps
     When I run "cucumber-sort format"
     Then it prints nothing
     And the exit code is success
-    And file "feature/one.feature" now has content:
+    And file "features/one.feature" now has content:
       """
       Feature: example
         Comment text
