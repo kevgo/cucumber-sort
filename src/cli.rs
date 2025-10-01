@@ -14,7 +14,7 @@ pub enum Command {
     /// The file to check (optional)
     file: Option<Utf8PathBuf>,
     /// Record undefined steps in the config file
-    #[arg(long)]
+    #[arg(short, long)]
     record: bool,
   },
   /// Format Cucumber files by sorting them
@@ -22,7 +22,7 @@ pub enum Command {
     /// The file to format (optional)
     file: Option<Utf8PathBuf>,
     /// Record undefined steps in the config file
-    #[arg(long)]
+    #[arg(short, long)]
     record: bool,
   },
   /// Create the configuration files
