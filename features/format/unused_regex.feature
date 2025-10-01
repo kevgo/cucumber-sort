@@ -7,7 +7,7 @@ Feature: formatting in the presence of an unused regex
       step 1
       file .* now has content:
       """
-    And file "feature/one.feature" with content:
+    And file "features/one.feature" with content:
       """
       Feature: example
 
@@ -26,7 +26,7 @@ Feature: formatting in the presence of an unused regex
       .cucumber-sort-rc:3  unused regex: file .* now has content:
       """
     And the exit code is failure
-    And file "feature/one.feature" now has content:
+    And file "features/one.feature" now has content:
       """
       Feature: example
 
@@ -46,7 +46,7 @@ Feature: formatting in the presence of an unused regex
       .cucumber-sort-rc:3  unused regex: file .* now has content:
       """
     And the exit code is failure
-    And file "feature/one.feature" now has content:
+    And file "features/one.feature" now has content:
       """
       Feature: example
 
