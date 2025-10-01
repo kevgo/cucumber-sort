@@ -4,9 +4,3 @@ it prints
 the exit code is
 file .* now has content
 file contents haven't changed
-
-
-# UNKNOWN STEPS
-file .* hasn't changed
-file .* hasn't changed
-file .* hasn't changed
