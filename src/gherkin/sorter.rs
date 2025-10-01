@@ -3,7 +3,9 @@ use crate::gherkin::{self, Keyword};
 use camino::Utf8Path;
 use regex::Regex;
 use std::fs;
+use std::fs::OpenOptions;
 use std::io::ErrorKind;
+use std::io::Write;
 
 /// the filename of the configuration file
 const FILE_NAME: &str = ".cucumber-sort-rc";
@@ -75,7 +77,23 @@ impl Sorter {
       }
       serialized.push('\n');
     }
-    // TODO: append serialized to the file whose name is in FILE_NAME.
+
+    let mut file = OpenOptions::new()
+      .create(true)
+      .append(true)
+      .open(FILE_NAME)
+      .map_err(|err| UserError::ConfigFileCreate {
+        file: FILE_NAME.into(),
+        message: err.to_string(),
+      })?;
+
+    file
+      .write_all(serialized.as_bytes())
+      .map_err(|err| UserError::ConfigFileCreate {
+        file: FILE_NAME.into(),
+        message: err.to_string(),
+      })?;
+
     Ok(())
   }
 
