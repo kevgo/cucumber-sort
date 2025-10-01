@@ -1,6 +1,5 @@
 Feature: check a single file
 
-  @this
   Scenario: unordered step in a scenario
     Given file ".cucumber-sort-rc" with content:
       """

@@ -9,7 +9,7 @@ Feature: format a single file
     And file "features/unordered.feature" with content:
       """
       Feature: example
-      
+
         Scenario: result
           When step 2
           Then step 1
@@ -17,7 +17,7 @@ Feature: format a single file
     And file "features/ordered.feature" with content:
       """
       Feature: example
-      
+
         Scenario: result
           When step 1
           Then step 2
