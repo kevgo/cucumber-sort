@@ -39,7 +39,6 @@ Feature: formatting in the presence of an unused regex
       """
     And file ".cucumber-sort-rc" hasn't changed
 
-  @this
   Scenario: with record
     When I run "cucumber-sort format --record"
     Then it prints:

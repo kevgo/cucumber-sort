@@ -63,21 +63,24 @@ impl Sorter {
   }
 
   /// records the given missing steps in the config file
-  pub fn record_missing(&self, missing: &[AppFinding]) -> Result<()> {
-    let mut serialized = String::from(MARKER);
-    serialized.push('\n');
-    for m in missing {
-      match &m.problem {
+  pub fn record_missing(&self, missings: &[AppFinding]) -> Result<()> {
+    if missings.is_empty() {
+      return Ok(());
+    }
+    let mut content = String::new();
+    for missing in missings {
+      match &missing.problem {
         Issue::UndefinedStep(text) => {
-          serialized.push_str(text);
-          serialized.push('\n');
+          content.push_str(text);
+          content.push('\n');
         }
         Issue::UnsortedLine { have: _, want: _ } => {}
         Issue::UnusedRegex(_) => {}
       }
-      serialized.push('\n');
     }
-
+    if !content.is_empty() {
+      content = format!("{MARKER}\n{content}");
+    }
     let mut file = OpenOptions::new()
       .create(true)
       .append(true)
@@ -88,7 +91,7 @@ impl Sorter {
       })?;
 
     file
-      .write_all(serialized.as_bytes())
+      .write_all(content.as_bytes())
       .map_err(|err| UserError::ConfigFileCreate {
         file: FILE_NAME.into(),
         message: err.to_string(),
