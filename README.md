@@ -46,6 +46,9 @@ order you want them to appear in your `.feature` files.
 - Supports regular expressions
 - Regex only need to match the text, no captures required
 
+> [!TIP]
+> This is a helpful tip for the user. It can span multiple lines.
+
 ```tip
 As an example, take a look at our own
 [.cucumber-sort-rc file](.cucumber-sort-rc).
