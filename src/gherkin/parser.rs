@@ -1,6 +1,5 @@
 use crate::errors::{AppFinding, Problem, Result};
 use crate::gherkin::lexer::{self, Keyword, LineType};
-use ansi_term::Color::{Green, Red};
 use camino::Utf8Path;
 use std::fmt::{Display, Write};
 
@@ -176,7 +175,7 @@ impl Lines {
         result.push(AppFinding {
           file: filepath.into(),
           line: line_no,
-          problem: Problem::UnexpectedText {
+          problem: Problem::UnsortedLine {
             have: self_text.into(),
             want: other_text.into(),
           },

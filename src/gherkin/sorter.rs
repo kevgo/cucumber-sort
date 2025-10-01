@@ -1,6 +1,5 @@
 use crate::errors::{AppFinding, Problem, Result, UserError};
 use crate::gherkin::{self, Keyword};
-use ansi_term::Color::Cyan;
 use camino::Utf8Path;
 use regex::Regex;
 use std::fs;
@@ -72,7 +71,7 @@ impl Sorter {
           serialized.push_str(&text);
           serialized.push('\n');
         }
-        Problem::UnexpectedText { have: _, want: _ } => {}
+        Problem::UnsortedLine { have: _, want: _ } => {}
       }
       serialized.push('\n');
     }
@@ -96,16 +95,15 @@ impl Sorter {
     (gherkin::Document { blocks: new_blocks }, doc_issues)
   }
 
-  pub fn unused_regexes(self) -> Vec<String> {
+  pub fn unused_regexes(&self) -> Vec<AppFinding> {
     let mut result = vec![];
-    for entry in self.entries {
+    for entry in &self.entries {
       if !entry.used {
-        result.push(format!(
-          "{}:{}  unused regex: {}",
-          FILE_NAME,
-          entry.line_no,
-          Cyan.paint(entry.regex.as_str())
-        ));
+        result.push(AppFinding {
+          file: FILE_NAME.into(),
+          line: entry.line_no,
+          problem: Problem::UndefinedStep(entry.regex.to_string()),
+        });
       }
     }
     result
@@ -321,10 +319,9 @@ mod tests {
   }
 
   mod sort_steps {
-    use crate::errors::AppFinding;
+    use crate::errors::{AppFinding, Problem};
     use crate::gherkin;
     use crate::gherkin::{Keyword, Sorter};
-    use ansi_term::Color::Cyan;
     use big_s::S;
 
     #[test]
@@ -458,8 +455,9 @@ mod tests {
       let (have_block, issues) = sorter.sort_block(give_block, "test.feature".into());
       pretty::assert_eq!(want_block, have_block);
       let want_issues = vec![AppFinding {
+        file: "test.feature".into(),
         line: 1,
-        problem: format!("test.feature:2  unknown step: {}", Cyan.paint("step 3")),
+        problem: Problem::UndefinedStep(S("step 3")),
       }];
       pretty::assert_eq!(want_issues, issues);
     }

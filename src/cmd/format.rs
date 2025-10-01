@@ -37,7 +37,7 @@ fn file(filepath: Utf8PathBuf, sorter: &mut Sorter) -> Result<ExitCode> {
   for issue in &issues {
     println!("{}", issue.to_string());
   }
-  sorter.record_missing(&issues);
+  sorter.record_missing(&issues)?;
   if !issues.is_empty() {
     return Ok(ExitCode::FAILURE);
   }
