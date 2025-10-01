@@ -4,8 +4,8 @@ use camino::Utf8PathBuf;
 use std::cmp::Ordering;
 use std::fmt::Display;
 
-/// AppFindings are issues that the app finds when being used correctly.
-/// Problems from using the app the wrong way are tracked as `UserError`.
+/// AppFindings are issues with .feature files that the app finds.
+/// Problems where the user calls the app wrong are tracked in `UserError`.
 #[derive(Debug, Eq, PartialEq)]
 pub struct AppFinding {
   pub file: Utf8PathBuf,
