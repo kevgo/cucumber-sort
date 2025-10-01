@@ -13,7 +13,7 @@ Feature: check unordered steps while failing fast
     And file "features/one.feature" with content:
       """
       Feature: example
-      
+
         Scenario: steps out of order
           Then step 2
           And step 1
@@ -21,7 +21,7 @@ Feature: check unordered steps while failing fast
     And file "features/two.feature" with content:
       """
       Feature: example
-      
+
         Scenario: steps out of order
           Then step 2
           And step 1
