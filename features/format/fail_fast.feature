@@ -24,7 +24,7 @@ Feature: check unordered steps while failing fast
     When I run "cucumber-sort format --fail-fast"
     Then it prints:
       """
-      features/two.feature:4  unknown step: step 2
+      features/one.feature:4  unknown step: step 2
       """
     And the exit code is failure
     And file contents haven't changed
