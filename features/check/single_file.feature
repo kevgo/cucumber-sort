@@ -9,7 +9,7 @@ Feature: check a single file
     And file "features/unordered.feature" with content:
       """
       Feature: example
-      
+
         Scenario: steps out of order
           Then step 2
           And step 1
@@ -17,7 +17,7 @@ Feature: check a single file
     And file "features/ordered.feature" with content:
       """
       Feature: example
-      
+
         Scenario: steps in order
           Then step 1
           And step 2
