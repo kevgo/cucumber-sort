@@ -1,7 +1,7 @@
 Feature: check unknown steps
 
   Background:
-    Given file ".cucumber-sort-rc" with content:
+    Given file ".cucumber-sort-order" with content:
       """
       step 1
       """
@@ -45,7 +45,7 @@ Feature: check unknown steps
       features/one.feature:17  unknown step: another unknown step
       """
     And the exit code is failure
-    And file ".cucumber-sort-rc" now has content:
+    And file ".cucumber-sort-order" now has content:
       """
       step 1
 

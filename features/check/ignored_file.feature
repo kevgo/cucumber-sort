@@ -1,7 +1,7 @@
 Feature: ignoring files
 
   Scenario: unordered step in a scenario
-    Given file ".cucumber-sort-rc" with content:
+    Given file ".cucumber-sort-order" with content:
       """
       step 1
       step 2

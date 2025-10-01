@@ -1,7 +1,7 @@
 Feature: ignoring files
 
   Scenario: file with unordered steps is ignored
-    Given file ".cucumber-sort-rc" with content:
+    Given file ".cucumber-sort-order" with content:
       """
       step 1
       step 2
@@ -21,7 +21,7 @@ Feature: ignoring files
     When I run "cucumber-sort format"
     Then it prints:
       """
-      .cucumber-sort-rc:1  unused regex: step 1
-      .cucumber-sort-rc:2  unused regex: step 2
+      .cucumber-sort-order:1  unused regex: step 1
+      .cucumber-sort-order:2  unused regex: step 2
       """
     And the exit code is failure

@@ -1,7 +1,7 @@
 Feature: check ordered steps
 
   Scenario:
-    Given file ".cucumber-sort-rc" with content:
+    Given file ".cucumber-sort-order" with content:
       """
       file .* with content:
       step 2

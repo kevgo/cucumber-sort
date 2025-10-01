@@ -8,7 +8,7 @@ use std::fs::OpenOptions;
 use std::io::{ErrorKind, Write};
 
 /// the filename of the configuration file
-const FILE_NAME: &str = ".cucumber-sort-rc";
+const FILE_NAME: &str = ".cucumber-sort-order";
 
 /// marker in the config file that separates undefined steps from defined ones
 const MARKER: &str = "\n\n# UNKNOWN STEPS";

@@ -1,7 +1,7 @@
 Feature: format unknown steps
 
   Background:
-    Given file ".cucumber-sort-rc" with content:
+    Given file ".cucumber-sort-order" with content:
       """
       step 1
       """
@@ -30,7 +30,7 @@ Feature: format unknown steps
       features/one.feature:5  unknown step: step 3
       """
     And the exit code is failure
-    And file ".cucumber-sort-rc" now has content:
+    And file ".cucumber-sort-order" now has content:
       """
       step 1
 

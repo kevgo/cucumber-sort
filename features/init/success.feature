@@ -6,7 +6,7 @@ Feature: creating the config files
       """
       config files created
       """
-    And file ".cucumber-sort-rc" now has content:
+    And file ".cucumber-sort-order" now has content:
       """
       # More info at https://github.com/kevgo/cucumber-sort
       #
