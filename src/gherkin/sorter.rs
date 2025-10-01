@@ -98,7 +98,6 @@ impl Sorter {
         file: FILE_NAME.into(),
         message: err.to_string(),
       })?;
-
     Ok(())
   }
 
