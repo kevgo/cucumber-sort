@@ -50,6 +50,6 @@ Feature: check unknown steps
       step 1
 
       # UNKNOWN STEPS
-      file .* with content:
       another unknown step
+      file .* with content:
       """

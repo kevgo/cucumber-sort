@@ -78,6 +78,7 @@ impl Sorter {
         Issue::UnusedRegex(_) => {}
       }
     }
+    serialized.sort();
     serialized.dedup();
     if serialized.is_empty() {
       return Ok(());
