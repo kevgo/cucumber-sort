@@ -13,11 +13,17 @@ pub enum Command {
   Check {
     /// The file to check (optional)
     file: Option<Utf8PathBuf>,
+    /// Record undefined steps in the config file
+    #[arg(long)]
+    record: bool,
   },
   /// Format Cucumber files by sorting them
   Format {
     /// The file to format (optional)
     file: Option<Utf8PathBuf>,
+    /// Record undefined steps in the config file
+    #[arg(long)]
+    record: bool,
   },
   /// Create the configuration files
   Init,

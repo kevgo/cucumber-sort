@@ -6,7 +6,7 @@ use std::fs;
 use std::process::ExitCode;
 
 /// updates the given or all files to contain sorted steps
-pub fn format(filepath: Option<Utf8PathBuf>) -> Result<ExitCode> {
+pub fn format(filepath: Option<Utf8PathBuf>, record: bool) -> Result<ExitCode> {
   let mut config = config::load()?;
   match filepath {
     Some(filepath) => file(filepath, &mut config.sorter),

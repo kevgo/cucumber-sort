@@ -5,7 +5,7 @@ use camino::Utf8PathBuf;
 use std::process::ExitCode;
 
 /// verifies whether the given or all files contain sorted steps
-pub fn check(filepath: Option<Utf8PathBuf>) -> Result<ExitCode> {
+pub fn check(filepath: Option<Utf8PathBuf>, record: bool) -> Result<ExitCode> {
   let mut config = config::load()?;
   match filepath {
     Some(filepath) => file(filepath, &mut config.sorter),
