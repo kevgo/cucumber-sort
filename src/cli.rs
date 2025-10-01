@@ -7,10 +7,9 @@ const FILENAME: &str = ".cucumber-sort-opts";
 
 pub fn parse() -> Command {
   let args = std::env::args();
-  if let Some(file_opts) = read_file() {
-    Command::parse_from(args.chain(file_opts))
-  } else {
-    Command::parse_from(args)
+  match read_file() {
+    Some(file_args) => Command::parse_from(args.chain(file_args)),
+    None => Command::parse_from(args),
   }
 }
 
