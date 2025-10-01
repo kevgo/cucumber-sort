@@ -47,8 +47,7 @@ order you want them to appear in your `.feature` files.
 - Regex only need to match the text, no captures required
 
 > [!TIP]
-> As an example, take a look at our own
-> [.cucumber-sort-rc file](.cucumber-sort-rc).
+> See our own [.cucumber-sort-rc file](.cucumber-sort-rc).
 
 #### .cucumber-sort-ignore
 
