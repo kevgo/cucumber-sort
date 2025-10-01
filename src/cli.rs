@@ -1,7 +1,6 @@
-use std::fs;
-
 use camino::Utf8PathBuf;
 use clap::Parser;
+use std::fs;
 
 const FILENAME: &str = ".cucumber-sort-opts";
 
