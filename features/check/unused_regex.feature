@@ -6,7 +6,7 @@ Feature: list unused steps while checking
       file .* with content:
       file .* now has content:
       """
-    And file "feature/one.feature" with content:
+    And file "features/one.feature" with content:
       """
       Feature: example
 

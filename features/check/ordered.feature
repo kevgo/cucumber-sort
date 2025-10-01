@@ -9,7 +9,7 @@ Feature: check ordered steps
       file .* now has content:
       step 5
       """
-    And file "feature/one.feature" with content:
+    And file "features/one.feature" with content:
       """
       Feature: example
 

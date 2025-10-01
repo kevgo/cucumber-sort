@@ -9,7 +9,7 @@ Feature: format already ordered steps
       step 4
       step 5
       """
-    And file "feature/one.feature" with content:
+    And file "features/one.feature" with content:
       """
       Feature: example
         Comment text
