@@ -4,6 +4,7 @@ mod config;
 mod errors;
 mod file_finder;
 mod gherkin;
+mod regex;
 
 use crate::errors::Result;
 use ansi_term::Color::Red;

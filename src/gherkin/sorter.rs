@@ -1,5 +1,6 @@
 use crate::errors::{AppFinding, Issue, Result, UserError};
 use crate::gherkin::{self, Keyword};
+use crate::regex::insert_regex_placeholders;
 use camino::Utf8Path;
 use regex::Regex;
 use std::fs;
@@ -123,7 +124,7 @@ impl Sorter {
         result.push(AppFinding {
           file: FILE_NAME.into(),
           line: entry.line_no,
-          problem: Issue::UnusedRegex(entry.regex.to_string()),
+          problem: Issue::UnusedRegex(insert_regex_placeholders(entry.regex.as_str())),
         });
       }
     }
