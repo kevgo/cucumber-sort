@@ -1,6 +1,6 @@
 Feature: check unknown steps
 
-  Scenario:
+  Background:
     Given file ".cucumber-sort-rc" with content:
       """
       step 1
@@ -9,14 +9,31 @@ Feature: check unknown steps
     And file "feature/one.feature" with content:
       """
       Feature: example
-
+      
         Background:
           Given step 1
           And step 3
       """
+
+  Scenario: run without recording
     When I run "cucumber-sort check"
     Then it prints:
       """
       feature/one.feature:5  unknown step: step 3
       """
     And the exit code is failure
+
+  Scenario: run with recording
+    When I run "cucumber-sort check --record"
+    Then it prints:
+      """
+      feature/one.feature:5  unknown step: step 3
+      """
+    And the exit code is failure
+    And file ".cucumber-sort-rc" now has content:
+      """
+      step 1
+      step 2
+      # eee
+      step 3
+      """

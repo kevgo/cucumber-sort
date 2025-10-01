@@ -1,4 +1,4 @@
-use crate::errors::{AppFinding, Problem, Result};
+use crate::errors::{AppFinding, Issue, Result};
 use crate::gherkin::lexer::{self, Keyword, LineType};
 use camino::Utf8Path;
 use std::fmt::{Display, Write};
@@ -175,7 +175,7 @@ impl Lines {
         result.push(AppFinding {
           file: filepath.into(),
           line: line_no,
-          problem: Problem::UnsortedLine {
+          problem: Issue::UnsortedLine {
             have: self_text.into(),
             want: other_text.into(),
           },

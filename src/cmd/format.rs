@@ -35,7 +35,7 @@ fn file(filepath: Utf8PathBuf, sorter: &mut Sorter) -> Result<ExitCode> {
   let sorted_lines = sorted_file.lines();
   let sorted_text = sorted_lines.to_string();
   for issue in &issues {
-    println!("{}", issue.to_string());
+    println!("{}", issue);
   }
   sorter.record_missing(&issues)?;
   if !issues.is_empty() {

@@ -1,11 +1,10 @@
-use crate::errors::{AppFinding, Problem, Result, UserError};
+use crate::errors::{AppFinding, Issue, Result, UserError};
 use crate::gherkin::{self, Keyword};
 use camino::Utf8Path;
 use regex::Regex;
 use std::fs;
 use std::fs::OpenOptions;
-use std::io::ErrorKind;
-use std::io::Write;
+use std::io::{ErrorKind, Write};
 
 /// the filename of the configuration file
 const FILE_NAME: &str = ".cucumber-sort-rc";
@@ -69,11 +68,12 @@ impl Sorter {
     serialized.push('\n');
     for m in missing {
       match &m.problem {
-        Problem::UndefinedStep(text) => {
-          serialized.push_str(&text);
+        Issue::UndefinedStep(text) => {
+          serialized.push_str(text);
           serialized.push('\n');
         }
-        Problem::UnsortedLine { have: _, want: _ } => {}
+        Issue::UnsortedLine { have: _, want: _ } => {}
+        Issue::UnusedRegex(_) => {}
       }
       serialized.push('\n');
     }
@@ -120,7 +120,7 @@ impl Sorter {
         result.push(AppFinding {
           file: FILE_NAME.into(),
           line: entry.line_no,
-          problem: Problem::UndefinedStep(entry.regex.to_string()),
+          problem: Issue::UnusedRegex(entry.regex.to_string()),
         });
       }
     }
@@ -161,7 +161,7 @@ impl Sorter {
       issues.push(AppFinding {
         file: filename.into(),
         line: step.line_no,
-        problem: Problem::UndefinedStep(step.title),
+        problem: Issue::UndefinedStep(step.title),
       });
     }
     (optimize_keywords(result), issues)
@@ -337,7 +337,7 @@ mod tests {
   }
 
   mod sort_steps {
-    use crate::errors::{AppFinding, Problem};
+    use crate::errors::{AppFinding, Issue};
     use crate::gherkin;
     use crate::gherkin::{Keyword, Sorter};
     use big_s::S;
@@ -475,7 +475,7 @@ mod tests {
       let want_issues = vec![AppFinding {
         file: "test.feature".into(),
         line: 1,
-        problem: Problem::UndefinedStep(S("step 3")),
+        problem: Issue::UndefinedStep(S("step 3")),
       }];
       pretty::assert_eq!(want_issues, issues);
     }

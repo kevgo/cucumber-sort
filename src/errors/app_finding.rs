@@ -5,20 +5,20 @@ use std::fmt::Display;
 
 /// AppFindings are issues that the app finds when being used correctly.
 /// Problems from using the app the wrong way are tracked as `UserError`.
-#[derive(Debug, Eq, PartialEq, PartialOrd)]
+#[derive(Debug, Eq, PartialEq)]
 pub struct AppFinding {
   pub file: Utf8PathBuf,
   pub line: usize,
-  pub problem: Problem,
+  pub problem: Issue,
 }
 
 impl Display for AppFinding {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     match &self.problem {
-      Problem::UndefinedStep(text) => {
-        write!(f, "{}:{}  undefined step: {text}", self.file, self.line)
+      Issue::UndefinedStep(text) => {
+        write!(f, "{}:{}  unknown step: {text}", self.file, self.line)
       }
-      Problem::UnsortedLine { have, want } => {
+      Issue::UnsortedLine { have, want } => {
         write!(
           f,
           "{}:{}  expected {} but found {}",
@@ -27,6 +27,9 @@ impl Display for AppFinding {
           Green.paint(want),
           Red.paint(have)
         )
+      }
+      Issue::UnusedRegex(text) => {
+        write!(f, "{}:{}  unused regex: {text}", self.file, self.line)
       }
     }
   }
@@ -41,18 +44,27 @@ impl Ord for AppFinding {
   }
 }
 
+impl PartialOrd for AppFinding {
+  fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+    Some(self.cmp(other))
+  }
+}
+
 #[derive(Debug, Eq, Ord, PartialEq, PartialOrd)]
-pub enum Problem {
+pub enum Issue {
   /// a .feature file contains a step that doesn't match any regexes in the config file
   UndefinedStep(String),
 
   /// a line in a .feature file does not contain text that the sorted version has
   UnsortedLine { have: String, want: String },
+
+  /// the config file contains a regex that isn't used in any .feature file
+  UnusedRegex(String),
 }
 
 #[cfg(test)]
 mod tests {
-  use crate::errors::{AppFinding, Problem};
+  use crate::errors::{AppFinding, Issue};
   use big_s::S;
 
   #[test]
@@ -61,34 +73,34 @@ mod tests {
       AppFinding {
         file: "two.feature".into(),
         line: 1,
-        problem: Problem::UndefinedStep(S("step")),
+        problem: Issue::UndefinedStep(S("step")),
       },
       AppFinding {
         file: "one.feature".into(),
         line: 2,
-        problem: Problem::UndefinedStep(S("step")),
+        problem: Issue::UndefinedStep(S("step")),
       },
       AppFinding {
         file: "one.feature".into(),
         line: 1,
-        problem: Problem::UndefinedStep(S("step")),
+        problem: Issue::UndefinedStep(S("step")),
       },
     ];
     let want = vec![
       AppFinding {
         file: "one.feature".into(),
         line: 1,
-        problem: Problem::UndefinedStep(S("step")),
+        problem: Issue::UndefinedStep(S("step")),
       },
       AppFinding {
         file: "one.feature".into(),
         line: 2,
-        problem: Problem::UndefinedStep(S("step")),
+        problem: Issue::UndefinedStep(S("step")),
       },
       AppFinding {
         file: "two.feature".into(),
         line: 1,
-        problem: Problem::UndefinedStep(S("step")),
+        problem: Issue::UndefinedStep(S("step")),
       },
     ];
     give.sort();
