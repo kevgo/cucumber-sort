@@ -36,7 +36,6 @@ Feature: check unknown steps
       """
     And the exit code is failure
 
-  @this
   Scenario: run with recording
     When I run "cucumber-sort check --record"
     Then it prints:
