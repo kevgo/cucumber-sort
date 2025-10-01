@@ -64,10 +64,7 @@ async fn file_not_changed(world: &mut MyWorld, filename: String) {
   };
   let have_content = fs::read_to_string(&filepath).await.unwrap();
   let have_trimmed = have_content.trim();
-  if *want_content != have_trimmed {
-    pretty::assert_eq!(*want_content, have_trimmed);
-    panic!("file {filepath} has unexpected content");
-  }
+  pretty::assert_eq!(*want_content, have_trimmed);
 }
 
 #[given(expr = "file {string} with content:")]
