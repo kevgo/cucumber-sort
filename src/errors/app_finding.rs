@@ -8,6 +8,7 @@ use std::fmt::Display;
 #[derive(Debug, Eq, PartialEq)]
 pub struct AppFinding {
   pub file: Utf8PathBuf,
+  /// 0-based line number
   pub line: usize,
   pub problem: Issue,
 }
@@ -16,20 +17,20 @@ impl Display for AppFinding {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     match &self.problem {
       Issue::UndefinedStep(text) => {
-        write!(f, "{}:{}  unknown step: {text}", self.file, self.line)
+        write!(f, "{}:{}  unknown step: {text}", self.file, self.line + 1)
       }
       Issue::UnsortedLine { have, want } => {
         write!(
           f,
           "{}:{}  expected {} but found {}",
           self.file,
-          self.line,
-          Green.paint(want),
-          Red.paint(have)
+          self.line + 1,
+          Green.paint(want.trim()),
+          Red.paint(have.trim())
         )
       }
       Issue::UnusedRegex(text) => {
-        write!(f, "{}:{}  unused regex: {text}", self.file, self.line)
+        write!(f, "{}:{}  unused regex: {text}", self.file, self.line + 1)
       }
     }
   }

@@ -10,7 +10,7 @@ use std::io::{ErrorKind, Write};
 const FILE_NAME: &str = ".cucumber-sort-rc";
 
 /// marker in the config file that separates undefined steps from defined ones
-const MARKER: &str = "# UNDEFINED STEPS";
+const MARKER: &str = "\n\n# UNKNOWN STEPS";
 
 /// template for new config files
 const TEMPLATE: &str = r#"
@@ -35,7 +35,7 @@ pub struct Entry {
   /// whether this regex was used in the current invocation of the tool
   used: bool,
 
-  /// where in the config file this regex is defined
+  /// where in the config file this regex is defined, 0-based
   line_no: usize,
 }
 
@@ -177,7 +177,7 @@ impl Sorter {
         Ok(regex) => entries.push(Entry {
           regex,
           used: false,
-          line_no: i + 1,
+          line_no: i,
         }),
         Err(err) => {
           return Err(UserError::ConfigFileInvalidRegex {
