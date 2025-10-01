@@ -2,31 +2,37 @@
 
 ![build status](https://github.com/kevgo/cucumber-sort/actions/workflows/ci.yml/badge.svg)
 
-This tool organizes steps in [Cucumber](https://cucumber.io) files in an order
-that you define.
+**cucumber-sort** enforces a consistent step order in your
+[Cucumber](https://cucumber.io) `.feature` files.
 
 ### Installation
 
-The easiest way to execute this tool is through
+The easiest way to run `cucumber-sort` is via
 [run-that-app](https://github.com/kevgo/run-that-app):
 
-```
+```zsh
 rta cucumber-sort
 ```
 
-You can also download the
-[latest release](https://github.com/kevgo/cucumber-sort/releases/latest) and
-extract/install manually. Or install from source:
+Other options:
 
-- [install Rust](https://rustup.rs)
-- clone the repo and cd into the cloned directory
-- compile the executable: `cargo install --locked --path .`
+- download the
+  [latest release](https://github.com/kevgo/cucumber-sort/releases/latest) and
+  install manually
+- Build from source:
+  - [Install Rust](https://rustup.rs)
+  - Clone the repo and cd into it
+  - Run:
+
+    ```zsh
+    cargo install --locked --path .
+    ```
 
 ### Configuration file
 
-To create the configuration files for cucumber-sort, run:
+Generate the default config files with:
 
-```
+```zsh
 cucumber-sort init
 ```
 
@@ -34,15 +40,16 @@ This creates two files:
 
 #### .cucumber-sort-rc
 
-Populate this file with the step names (without `Given`/`When`/`Then`) in the
-order you want them to appear in the`.feature` files.
+Defines the step order. Add step names (without `Given`/`When`/`Then`) in the
+order you want them to appear in your `.feature` files.
 
-You can use regular expressions for placeholders. These regular expressions only
-need to match the steps. They don't need to contain captures, since
-cucumber-sort doesn't capture any data out of Cucumber steps.
+- Supports regular expressions
+- Regex only need to match the text, no captures required
 
+```tip
 As an example, take a look at our own
 [.cucumber-sort-rc file](.cucumber-sort-rc).
+```
 
 #### .cucumber-sort-ignore
 
@@ -67,3 +74,6 @@ Initially you'll encounter unknown steps. You need to add them to
 **.cucumber-sort-rc**. To make this easy, run `cucumber-sort check --record`.
 This adds the unknown steps to the file. All you need to do is review that file
 and move the unknown steps to the correct position.
+
+```
+```
