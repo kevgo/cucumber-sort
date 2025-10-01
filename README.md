@@ -56,22 +56,24 @@ Contains glob patterns for files that `cucumber-sort` should ignore.
 
 ### Usage
 
-To format your `.feature` files to have the correct step order, run:
+Format all `.feature` files to the configured step order:
 
-```
+```zsh
 cucumber-sort format
 ```
 
-To verify that all your `.feature` files have the correct step order, run:
+Check whether `.feature` files already follow the configured order:
 
-```
+```zsh
 cucumber-sort check
 ```
 
-Initially you'll encounter unknown steps. You need to add them to
-**.cucumber-sort-rc**. To make this easy, run `cucumber-sort check --record`.
-This adds the unknown steps to the file. All you need to do is review that file
-and move the unknown steps to the correct position.
+On the initial runs of the tool, you likely see unknown steps. Add them to
+`.cucumber-sort-rc`. To make this easier:
 
+```zsh
+cucumber-sort check --record
 ```
-```
+
+This appends unknown steps to the file. Just review the file and move the
+unknown steps into the correct position.
