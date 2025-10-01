@@ -4,17 +4,17 @@ use camino::Utf8PathBuf;
 use std::cmp::Ordering;
 use std::fmt::Display;
 
-/// AppFindings are issues with .feature files that the app finds.
+/// Findings are issues with .feature files that the app finds.
 /// Problems where the user calls the app wrong are tracked in `UserError`.
 #[derive(Debug, Eq, PartialEq)]
-pub struct AppFinding {
+pub struct Finding {
   pub file: Utf8PathBuf,
   /// 0-based line number
   pub line: usize,
   pub problem: Issue,
 }
 
-impl Display for AppFinding {
+impl Display for Finding {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     match &self.problem {
       Issue::UndefinedStep(text) => {
@@ -43,7 +43,7 @@ impl Display for AppFinding {
   }
 }
 
-impl Ord for AppFinding {
+impl Ord for Finding {
   fn cmp(&self, other: &Self) -> Ordering {
     match self.file.cmp(&other.file) {
       Ordering::Equal => self.line.cmp(&other.line),
@@ -52,7 +52,7 @@ impl Ord for AppFinding {
   }
 }
 
-impl PartialOrd for AppFinding {
+impl PartialOrd for Finding {
   fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
     Some(self.cmp(other))
   }
@@ -72,40 +72,40 @@ pub enum Issue {
 
 #[cfg(test)]
 mod tests {
-  use crate::errors::{AppFinding, Issue};
+  use crate::errors::{Finding, Issue};
   use big_s::S;
 
   #[test]
   fn ordering() {
     let mut give = vec![
-      AppFinding {
+      Finding {
         file: "two.feature".into(),
         line: 1,
         problem: Issue::UndefinedStep(S("step")),
       },
-      AppFinding {
+      Finding {
         file: "one.feature".into(),
         line: 2,
         problem: Issue::UndefinedStep(S("step")),
       },
-      AppFinding {
+      Finding {
         file: "one.feature".into(),
         line: 1,
         problem: Issue::UndefinedStep(S("step")),
       },
     ];
     let want = vec![
-      AppFinding {
+      Finding {
         file: "one.feature".into(),
         line: 1,
         problem: Issue::UndefinedStep(S("step")),
       },
-      AppFinding {
+      Finding {
         file: "one.feature".into(),
         line: 2,
         problem: Issue::UndefinedStep(S("step")),
       },
-      AppFinding {
+      Finding {
         file: "two.feature".into(),
         line: 1,
         problem: Issue::UndefinedStep(S("step")),

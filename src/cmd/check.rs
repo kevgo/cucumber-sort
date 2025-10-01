@@ -1,4 +1,4 @@
-use crate::errors::{AppFinding, Result};
+use crate::errors::{Finding, Result};
 use crate::gherkin::Sorter;
 use crate::{config, gherkin};
 use camino::Utf8PathBuf;
@@ -26,7 +26,7 @@ pub fn check(filepath: Option<Utf8PathBuf>, record: bool) -> Result<ExitCode> {
 }
 
 /// checks all files in the current folder
-fn all(config: &mut config::Config) -> Result<Vec<AppFinding>> {
+fn all(config: &mut config::Config) -> Result<Vec<Finding>> {
   let mut result = vec![];
   for filepath in config.finder.search_folder(".")? {
     let findings = file(filepath, &mut config.sorter)?;
@@ -37,7 +37,7 @@ fn all(config: &mut config::Config) -> Result<Vec<AppFinding>> {
 }
 
 /// checks the file with the given path
-fn file(filepath: Utf8PathBuf, sorter: &mut Sorter) -> Result<Vec<AppFinding>> {
+fn file(filepath: Utf8PathBuf, sorter: &mut Sorter) -> Result<Vec<Finding>> {
   let gherkin = gherkin::load(&filepath)?;
   let (sorted_file, mut findings) = sorter.sort_file(gherkin.clone(), &filepath);
   let sorted_lines = sorted_file.lines();

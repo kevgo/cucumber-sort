@@ -1,4 +1,4 @@
-use crate::errors::{AppFinding, Issue, Result, UserError};
+use crate::errors::{Finding, Issue, Result, UserError};
 use crate::gherkin::{self, Keyword};
 use crate::regex::insert_regex_placeholders;
 use camino::Utf8Path;
@@ -64,7 +64,7 @@ impl Sorter {
   }
 
   /// records the given missing steps in the config file
-  pub fn record_missing(&self, missings: &[AppFinding]) -> Result<()> {
+  pub fn record_missing(&self, missings: &[Finding]) -> Result<()> {
     if missings.is_empty() {
       return Ok(());
     }
@@ -106,7 +106,7 @@ impl Sorter {
     &mut self,
     file: gherkin::Document,
     filename: &Utf8Path,
-  ) -> (gherkin::Document, Vec<AppFinding>) {
+  ) -> (gherkin::Document, Vec<Finding>) {
     let mut doc_issues = vec![];
     let mut new_blocks = Vec::<gherkin::Block>::new();
     for file_block in file.blocks {
@@ -117,11 +117,11 @@ impl Sorter {
     (gherkin::Document { blocks: new_blocks }, doc_issues)
   }
 
-  pub fn unused_regexes(&self) -> Vec<AppFinding> {
+  pub fn unused_regexes(&self) -> Vec<Finding> {
     let mut result = vec![];
     for entry in &self.entries {
       if !entry.used {
-        result.push(AppFinding {
+        result.push(Finding {
           file: FILE_NAME.into(),
           line: entry.line_no,
           problem: Issue::UnusedRegex(entry.regex.to_string()),
@@ -135,7 +135,7 @@ impl Sorter {
     &mut self,
     block: gherkin::Block,
     filename: &Utf8Path,
-  ) -> (gherkin::Block, Vec<AppFinding>) {
+  ) -> (gherkin::Block, Vec<Finding>) {
     match block {
       gherkin::Block::Sortable(block_steps) => {
         let (sorted_steps, issues) = self.sort_steps(block_steps, filename);
@@ -149,7 +149,7 @@ impl Sorter {
     &mut self,
     unordered_steps: Vec<gherkin::Step>,
     filename: &Utf8Path,
-  ) -> (Vec<gherkin::Step>, Vec<AppFinding>) {
+  ) -> (Vec<gherkin::Step>, Vec<Finding>) {
     let mut result = Vec::<gherkin::Step>::with_capacity(unordered_steps.len());
     let mut deletable_steps = DeletableSteps::from(deoptimize_keywords(unordered_steps));
     for config_step in &mut self.entries {
@@ -162,7 +162,7 @@ impl Sorter {
     // report the remaining unextracted steps as unknown steps
     let mut issues = vec![];
     for step in deletable_steps.elements() {
-      issues.push(AppFinding {
+      issues.push(Finding {
         file: filename.into(),
         line: step.line_no,
         problem: Issue::UndefinedStep(step.title),
@@ -341,7 +341,7 @@ mod tests {
   }
 
   mod sort_steps {
-    use crate::errors::{AppFinding, Issue};
+    use crate::errors::{Finding, Issue};
     use crate::gherkin;
     use crate::gherkin::{Keyword, Sorter};
     use big_s::S;
@@ -476,7 +476,7 @@ mod tests {
       ]);
       let (have_block, issues) = sorter.sort_block(give_block, "test.feature".into());
       pretty::assert_eq!(want_block, have_block);
-      let want_issues = vec![AppFinding {
+      let want_issues = vec![Finding {
         file: "test.feature".into(),
         line: 1,
         problem: Issue::UndefinedStep(S("step 3")),
