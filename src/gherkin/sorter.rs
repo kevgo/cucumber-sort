@@ -78,11 +78,11 @@ impl Sorter {
         Issue::UnusedRegex(_) => {}
       }
     }
-    serialized.sort();
-    serialized.dedup();
     if serialized.is_empty() {
       return Ok(());
     }
+    serialized.sort();
+    serialized.dedup();
     let content = format!("{MARKER}\n{}", serialized.join("\n"));
     let mut file = OpenOptions::new()
       .create(true)
