@@ -28,8 +28,16 @@ fn main() -> ExitCode {
 
 fn inner() -> Result<ExitCode> {
   match cli::parse() {
-    Check { file, record } => cmd::check(file, record),
-    Format { file, record } => cmd::format(file, record),
+    Check {
+      fail_fast,
+      file,
+      record,
+    } => cmd::check(file, record, fail_fast),
+    Format {
+      fail_fast,
+      file,
+      record,
+    } => cmd::format(file, record, fail_fast),
     Init => cmd::init(),
   }
 }

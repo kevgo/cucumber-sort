@@ -11,6 +11,9 @@ pub fn parse() -> Command {
 pub enum Command {
   /// Check if Cucumber files are properly sorted
   Check {
+    /// Stop at the first file that encounters problems
+    #[arg(short, long)]
+    fail_fast: bool,
     /// The file to check (optional)
     file: Option<Utf8PathBuf>,
     /// Record undefined steps in the config file
@@ -19,6 +22,9 @@ pub enum Command {
   },
   /// Format Cucumber files by sorting them
   Format {
+    /// Stop at the first file that encounters problems
+    #[arg(short, long)]
+    fail_fast: bool,
     /// The file to format (optional)
     file: Option<Utf8PathBuf>,
     /// Record undefined steps in the config file
