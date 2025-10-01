@@ -10,7 +10,7 @@ Feature: format already ordered steps
     Then it prints the error:
       """
       .cucumber-sort-order:1  invalid regular expression
-      
+
       regex parse error:
           invalid (
                   ^
