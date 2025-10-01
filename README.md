@@ -38,7 +38,7 @@ cucumber-sort init
 
 This creates two files:
 
-#### .cucumber-sort-rc
+#### .cucumber-sort-order
 
 Defines the step order. Add step names (without `Given`/`When`/`Then`) in the
 order you want them to appear in your `.feature` files.
@@ -47,8 +47,8 @@ order you want them to appear in your `.feature` files.
 - Regex only need to match the text, no captures required
 
 > [!TIP]
-> Take a look at our own [.cucumber-sort-rc file](.cucumber-sort-rc) for an
-> example config file.
+> Take a look at our own [.cucumber-sort-order file](.cucumber-sort-order) for
+> an example config file.
 
 #### .cucumber-sort-ignore
 
@@ -69,7 +69,7 @@ cucumber-sort check
 ```
 
 On the initial runs of the tool, you likely see unknown steps. Add them to
-`.cucumber-sort-rc`. To make this easier:
+`.cucumber-sort-order`. To make this easier:
 
 ```zsh
 cucumber-sort check --record

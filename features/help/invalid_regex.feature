@@ -1,7 +1,7 @@
 Feature: format already ordered steps
 
   Scenario:
-    Given file ".cucumber-sort-rc" with content:
+    Given file ".cucumber-sort-order" with content:
       """
       step 1
       invalid (
@@ -9,8 +9,8 @@ Feature: format already ordered steps
     When I run "cucumber-sort check"
     Then it prints the error:
       """
-      .cucumber-sort-rc:1  invalid regular expression
-
+      .cucumber-sort-order:1  invalid regular expression
+      
       regex parse error:
           invalid (
                   ^
