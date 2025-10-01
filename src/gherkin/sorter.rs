@@ -68,20 +68,21 @@ impl Sorter {
     if missings.is_empty() {
       return Ok(());
     }
-    let mut content = String::new();
+    let mut serialized = vec![];
     for missing in missings {
       match &missing.problem {
         Issue::UndefinedStep(text) => {
-          content.push_str(&insert_regex_placeholders(text));
-          content.push('\n');
+          serialized.push(insert_regex_placeholders(text));
         }
         Issue::UnsortedLine { have: _, want: _ } => {}
         Issue::UnusedRegex(_) => {}
       }
     }
-    if !content.is_empty() {
-      content = format!("{MARKER}\n{content}");
+    serialized.dedup();
+    if serialized.is_empty() {
+      return Ok(());
     }
+    let content = format!("{MARKER}\n{}", serialized.join("\n"));
     let mut file = OpenOptions::new()
       .create(true)
       .append(true)
