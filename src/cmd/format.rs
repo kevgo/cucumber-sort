@@ -42,9 +42,11 @@ fn file(filepath: Utf8PathBuf, sorter: &mut Sorter) -> Result<Vec<AppFinding>> {
   let gherkin = gherkin::load(&filepath)?;
   let (sorted_file, findings) = sorter.sort_file(gherkin.clone(), &filepath);
   let sorted_text = sorted_file.lines().to_string();
-  fs::write(&filepath, sorted_text).map_err(|err| UserError::FileWrite {
-    file: filepath,
-    reason: err.to_string(),
-  })?;
+  if findings.is_empty() {
+    fs::write(&filepath, sorted_text).map_err(|err| UserError::FileWrite {
+      file: filepath,
+      reason: err.to_string(),
+    })?;
+  }
   Ok(findings)
 }

@@ -10,7 +10,7 @@ Feature: formatting in the presence of an unused regex
     And file "feature/one.feature" with content:
       """
       Feature: example
-      
+
         Scenario: test
           Given step 1
           And file "foo" with content:
@@ -29,7 +29,7 @@ Feature: formatting in the presence of an unused regex
     And file "feature/one.feature" now has content:
       """
       Feature: example
-      
+
         Scenario: test
           Given file "foo" with content:
             '''
@@ -49,7 +49,7 @@ Feature: formatting in the presence of an unused regex
     And file "feature/one.feature" now has content:
       """
       Feature: example
-      
+
         Scenario: test
           Given file "foo" with content:
             '''
