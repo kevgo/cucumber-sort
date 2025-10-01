@@ -43,7 +43,7 @@ impl FileFinder {
       .as_ref()
       .read_dir_utf8()
       .unwrap()
-      .map(|e| e.unwrap())
+      .map(|opt| opt.unwrap())
       .collect();
     let mut paths: Vec<&Utf8Path> = entries.iter().map(|entry| entry.path()).collect();
     paths.sort();
