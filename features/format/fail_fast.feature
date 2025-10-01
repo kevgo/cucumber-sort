@@ -4,7 +4,6 @@ Feature: check unordered steps while failing fast
     Given file ".cucumber-sort-rc" with content:
       """
       step 1
-      step 2
       """
     And file "features/one.feature" with content:
       """
@@ -22,11 +21,10 @@ Feature: check unordered steps while failing fast
           Then step 2
           And step 1
       """
-    When I run "cucumber-sort check --fail-fast"
+    When I run "cucumber-sort format --fail-fast"
     Then it prints:
       """
-      features/two.feature:4  expected Then step 1 but found Then step 2
-      features/two.feature:5  expected And step 2 but found And step 1
+      features/two.feature:4  unknown step: step 2
       """
     And the exit code is failure
     And file contents haven't changed
