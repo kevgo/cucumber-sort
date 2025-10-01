@@ -36,7 +36,7 @@ fn file(filepath: Utf8PathBuf, sorter: &mut Sorter) -> Result<ExitCode> {
   issues.extend(original_lines.find_mismatching(&sorted_lines, &filepath));
   sort_issues(&mut issues);
   for issue in &issues {
-    println!("{}", issue.problem);
+    println!("{}", issue.to_string());
   }
   if issues.is_empty() {
     Ok(ExitCode::SUCCESS)

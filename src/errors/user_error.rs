@@ -1,8 +1,9 @@
 use ansi_term::Color::Cyan;
 use camino::Utf8PathBuf;
 
-/// UserError happen when the user uses this linter the wrong way.
-/// They do not include problems that the linter finds in Gherkin files.
+/// UserError happen when the user uses this app the wrong way.
+/// They do not include problems that the linter finds in Gherkin files,
+/// these are tracked as `AppFinding`.
 #[derive(Eq, Debug, PartialEq)]
 pub enum UserError {
   ConfigFileCreate {
