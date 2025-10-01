@@ -1,5 +1,23 @@
 pub fn insert_regex_placeholders(text: &str) -> String {
-  text.into()
+  let mut result = String::new();
+  let mut chars = text.chars().peekable();
+
+  while let Some(ch) = chars.next() {
+    if ch == '"' {
+      // Skip the opening quote and everything until the closing quote
+      while let Some(inner_ch) = chars.next() {
+        if inner_ch == '"' {
+          break;
+        }
+      }
+      // Replace the entire quoted string with .*
+      result.push_str(".*");
+    } else {
+      result.push(ch);
+    }
+  }
+
+  result
 }
 
 #[cfg(test)]
