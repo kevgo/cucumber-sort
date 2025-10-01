@@ -2,31 +2,37 @@
 
 ![build status](https://github.com/kevgo/cucumber-sort/actions/workflows/ci.yml/badge.svg)
 
-This tool organizes steps in [Cucumber](https://cucumber.io) files in an order
-that you define.
+**cucumber-sort** enforces a consistent step order in your
+[Cucumber](https://cucumber.io) `.feature` files.
 
 ### Installation
 
-The easiest way to execute this tool is through
+The easiest way to run `cucumber-sort` is via
 [run-that-app](https://github.com/kevgo/run-that-app):
 
-```
+```zsh
 rta cucumber-sort
 ```
 
-You can also download the
-[latest release](https://github.com/kevgo/cucumber-sort/releases/latest) and
-extract/install manually. Or install from source:
+Other options:
 
-- [install Rust](https://rustup.rs)
-- clone the repo and cd into the cloned directory
-- compile the executable: `cargo install --locked --path .`
+- download the
+  [latest release](https://github.com/kevgo/cucumber-sort/releases/latest) and
+  install manually
+- Build from source:
+  - [Install Rust](https://rustup.rs)
+  - Clone the repo and cd into it
+  - Run:
+
+    ```zsh
+    cargo install --locked --path .
+    ```
 
 ### Configuration file
 
-To create the configuration files for cucumber-sort, run:
+Generate the default config files with:
 
-```
+```zsh
 cucumber-sort init
 ```
 
@@ -34,31 +40,40 @@ This creates two files:
 
 #### .cucumber-sort-rc
 
-Populate this file with the step names (without `Given`/`When`/`Then`) in the
-order you want them to appear in the`.feature` files.
+Defines the step order. Add step names (without `Given`/`When`/`Then`) in the
+order you want them to appear in your `.feature` files.
 
-You can use regular expressions for placeholders. These regular expressions only
-need to match the steps. They don't need to contain captures, since
-cucumber-sort doesn't capture any data out of Cucumber steps.
+- Supports regular expressions
+- Regex only need to match the text, no captures required
 
-As an example, take a look at our own
-[.cucumber-sort-rc file](.cucumber-sort-rc).
+> [!TIP]
+> Take a look at our own [.cucumber-sort-rc file](.cucumber-sort-rc) for an
+> example config file.
 
 #### .cucumber-sort-ignore
 
-Populate this file with glob expressions that describe files that cucumber-sort
-should ignore.
+Contains glob patterns for files that `cucumber-sort` should ignore.
 
 ### Usage
 
-To format your `.feature` files to have the correct step order, run:
+Format all `.feature` files to the configured step order:
 
-```
+```zsh
 cucumber-sort format
 ```
 
-To verify that all your `.feature` files have the correct step order, run:
+Check whether `.feature` files already follow the configured order:
 
-```
+```zsh
 cucumber-sort check
 ```
+
+On the initial runs of the tool, you likely see unknown steps. Add them to
+`.cucumber-sort-rc`. To make this easier:
+
+```zsh
+cucumber-sort check --record
+```
+
+This appends unknown steps to the file. Just review the file and move the
+unknown steps into the correct position.

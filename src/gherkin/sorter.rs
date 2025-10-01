@@ -1,13 +1,19 @@
-use crate::errors::{Issue, Result, UserError};
+use crate::errors::{Finding, Issue, Result, UserError};
 use crate::gherkin::{self, Keyword};
-use ansi_term::Color::Cyan;
+use crate::regex::insert_regex_placeholders;
 use camino::Utf8Path;
 use regex::Regex;
 use std::fs;
-use std::io::ErrorKind;
+use std::fs::OpenOptions;
+use std::io::{ErrorKind, Write};
 
 /// the filename of the configuration file
 const FILE_NAME: &str = ".cucumber-sort-rc";
+
+/// marker in the config file that separates undefined steps from defined ones
+const MARKER: &str = "\n\n# UNKNOWN STEPS";
+
+/// template for new config files
 const TEMPLATE: &str = r#"
 # More info at https://github.com/kevgo/cucumber-sort
 #
@@ -30,7 +36,7 @@ pub struct Entry {
   /// whether this regex was used in the current invocation of the tool
   used: bool,
 
-  /// where in the config file this regex is defined
+  /// where in the config file this regex is defined, 0-based
   line_no: usize,
 }
 
@@ -57,12 +63,50 @@ impl Sorter {
     })
   }
 
+  /// records the given missing steps in the config file
+  pub fn record_missing(&self, missings: &[Finding]) -> Result<()> {
+    if missings.is_empty() {
+      return Ok(());
+    }
+    let mut serialized = vec![];
+    for missing in missings {
+      match &missing.problem {
+        Issue::UndefinedStep(text) => {
+          serialized.push(insert_regex_placeholders(text));
+        }
+        Issue::UnsortedLine { have: _, want: _ } => {}
+        Issue::UnusedRegex(_) => {}
+      }
+    }
+    if serialized.is_empty() {
+      return Ok(());
+    }
+    serialized.sort();
+    serialized.dedup();
+    let content = format!("{MARKER}\n{}", serialized.join("\n"));
+    let mut file = OpenOptions::new()
+      .create(true)
+      .append(true)
+      .open(FILE_NAME)
+      .map_err(|err| UserError::ConfigFileCreate {
+        file: FILE_NAME.into(),
+        message: err.to_string(),
+      })?;
+    file
+      .write_all(content.as_bytes())
+      .map_err(|err| UserError::ConfigFileCreate {
+        file: FILE_NAME.into(),
+        message: err.to_string(),
+      })?;
+    Ok(())
+  }
+
   /// provides a copy of the given document with all Gherkin steps sorted the same way as in the given configuration
   pub fn sort_file(
     &mut self,
     file: gherkin::Document,
     filename: &Utf8Path,
-  ) -> (gherkin::Document, Vec<Issue>) {
+  ) -> (gherkin::Document, Vec<Finding>) {
     let mut doc_issues = vec![];
     let mut new_blocks = Vec::<gherkin::Block>::new();
     for file_block in file.blocks {
@@ -73,16 +117,15 @@ impl Sorter {
     (gherkin::Document { blocks: new_blocks }, doc_issues)
   }
 
-  pub fn unused_regexes(self) -> Vec<String> {
+  pub fn unused_regexes(&self) -> Vec<Finding> {
     let mut result = vec![];
-    for entry in self.entries {
+    for entry in &self.entries {
       if !entry.used {
-        result.push(format!(
-          "{}:{}  unused regex: {}",
-          FILE_NAME,
-          entry.line_no,
-          Cyan.paint(entry.regex.as_str())
-        ));
+        result.push(Finding {
+          file: FILE_NAME.into(),
+          line: entry.line_no,
+          problem: Issue::UnusedRegex(entry.regex.to_string()),
+        });
       }
     }
     result
@@ -92,7 +135,7 @@ impl Sorter {
     &mut self,
     block: gherkin::Block,
     filename: &Utf8Path,
-  ) -> (gherkin::Block, Vec<Issue>) {
+  ) -> (gherkin::Block, Vec<Finding>) {
     match block {
       gherkin::Block::Sortable(block_steps) => {
         let (sorted_steps, issues) = self.sort_steps(block_steps, filename);
@@ -106,7 +149,7 @@ impl Sorter {
     &mut self,
     unordered_steps: Vec<gherkin::Step>,
     filename: &Utf8Path,
-  ) -> (Vec<gherkin::Step>, Vec<Issue>) {
+  ) -> (Vec<gherkin::Step>, Vec<Finding>) {
     let mut result = Vec::<gherkin::Step>::with_capacity(unordered_steps.len());
     let mut deletable_steps = DeletableSteps::from(deoptimize_keywords(unordered_steps));
     for config_step in &mut self.entries {
@@ -119,13 +162,10 @@ impl Sorter {
     // report the remaining unextracted steps as unknown steps
     let mut issues = vec![];
     for step in deletable_steps.elements() {
-      issues.push(Issue {
+      issues.push(Finding {
+        file: filename.into(),
         line: step.line_no,
-        problem: format!(
-          "{filename}:{}  unknown step: {}",
-          step.line_no + 1,
-          Cyan.paint(step.title)
-        ),
+        problem: Issue::UndefinedStep(step.title),
       });
     }
     (optimize_keywords(result), issues)
@@ -141,7 +181,7 @@ impl Sorter {
         Ok(regex) => entries.push(Entry {
           regex,
           used: false,
-          line_no: i + 1,
+          line_no: i,
         }),
         Err(err) => {
           return Err(UserError::ConfigFileInvalidRegex {
@@ -301,10 +341,9 @@ mod tests {
   }
 
   mod sort_steps {
-    use crate::errors::Issue;
+    use crate::errors::{Finding, Issue};
     use crate::gherkin;
     use crate::gherkin::{Keyword, Sorter};
-    use ansi_term::Color::Cyan;
     use big_s::S;
 
     #[test]
@@ -437,9 +476,10 @@ mod tests {
       ]);
       let (have_block, issues) = sorter.sort_block(give_block, "test.feature".into());
       pretty::assert_eq!(want_block, have_block);
-      let want_issues = vec![Issue {
+      let want_issues = vec![Finding {
+        file: "test.feature".into(),
         line: 1,
-        problem: format!("test.feature:2  unknown step: {}", Cyan.paint("step 3")),
+        problem: Issue::UndefinedStep(S("step 3")),
       }];
       pretty::assert_eq!(want_issues, issues);
     }

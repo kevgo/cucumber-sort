@@ -2,6 +2,7 @@ use camino::Utf8PathBuf;
 use cucumber::gherkin::Step;
 use cucumber::{World, given, then, when};
 use std::env;
+use std::fmt::Debug;
 use std::path::PathBuf;
 use std::process::ExitStatus;
 use tokio::fs;
@@ -49,6 +50,21 @@ async fn files_not_changed(world: &mut MyWorld) {
       panic!("file {filepath} has unexpected content");
     }
   }
+}
+
+#[then(expr = "file {string} hasn't changed")]
+async fn file_not_changed(world: &mut MyWorld, filename: String) {
+  let filepath = world.dir.path().join(&filename);
+  let Some((_, want_content)) = &world
+    .files
+    .iter()
+    .find(|(path, _)| path.as_str() == &filepath)
+  else {
+    panic!("file {filename} isn't stored")
+  };
+  let have_content = fs::read_to_string(&filepath).await.unwrap();
+  let have_trimmed = have_content.trim();
+  pretty::assert_eq!(*want_content, have_trimmed);
 }
 
 #[given(expr = "file {string} with content:")]

@@ -3,4 +3,5 @@ I run .*
 it prints
 the exit code is
 file .* now has content
+file .* hasn't changed
 file contents haven't changed

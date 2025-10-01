@@ -4,6 +4,7 @@ mod config;
 mod errors;
 mod file_finder;
 mod gherkin;
+mod regex;
 
 use crate::errors::Result;
 use ansi_term::Color::Red;
@@ -27,8 +28,8 @@ fn main() -> ExitCode {
 
 fn inner() -> Result<ExitCode> {
   match cli::parse() {
-    Check { file } => cmd::check(file),
-    Format { file } => cmd::format(file),
+    Check { file, record } => cmd::check(file, record),
+    Format { file, record } => cmd::format(file, record),
     Init => cmd::init(),
   }
 }

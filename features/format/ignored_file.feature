@@ -1,6 +1,6 @@
 Feature: ignoring files
 
-  Scenario: unordered step in a scenario
+  Scenario: file with unordered steps is ignored
     Given file ".cucumber-sort-rc" with content:
       """
       step 1
@@ -24,4 +24,4 @@ Feature: ignoring files
       .cucumber-sort-rc:1  unused regex: step 1
       .cucumber-sort-rc:2  unused regex: step 2
       """
-    And the exit code is success
+    And the exit code is failure
