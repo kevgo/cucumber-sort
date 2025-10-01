@@ -1,9 +1,8 @@
+use crate::regex::insert_regex_placeholders;
 use ansi_term::Color::{Green, Red};
 use camino::Utf8PathBuf;
 use std::cmp::Ordering;
 use std::fmt::Display;
-
-use crate::regex::insert_regex_placeholders;
 
 /// AppFindings are issues that the app finds when being used correctly.
 /// Problems from using the app the wrong way are tracked as `UserError`.

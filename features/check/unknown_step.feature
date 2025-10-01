@@ -8,7 +8,7 @@ Feature: check unknown steps
     And file "feature/one.feature" with content:
       """
       Feature: example
-      
+
         Background:
           Given step 1
           And file "foo.feature" with content:
@@ -35,7 +35,7 @@ Feature: check unknown steps
     And file ".cucumber-sort-rc" now has content:
       """
       step 1
-      
+
       # UNKNOWN STEPS
       file .* with content:
       """
