@@ -6,11 +6,12 @@ use clap::Parser;
 const FILENAME: &str = ".cucumber-sort-opts";
 
 pub fn parse() -> Command {
-  let mut args = std::env::args();
+  let args = std::env::args();
   if let Some(file_opts) = read_file() {
-    args = args.chain(file_opts);
+    Command::parse_from(args.chain(file_opts))
+  } else {
+    Command::parse_from(args)
   }
-  Command::parse_from(args)
 }
 
 #[derive(Parser)]
@@ -43,11 +44,14 @@ pub enum Command {
   Init,
 }
 
-fn read_file() -> Option<impl Iterator<Item = String>> {
+fn read_file() -> Option<Vec<String>> {
   let Ok(text) = fs::read_to_string(FILENAME) else {
     return None;
   };
-  // TODO: parse text into an iterator that can be chained into std::env::Args
-  // and return it from this function.
+  let result = text
+    .lines()
+    .flat_map(|line| line.split_whitespace())
+    .map(String::from)
+    .collect();
   Some(result)
 }
