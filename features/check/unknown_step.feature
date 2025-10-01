@@ -52,4 +52,5 @@ Feature: check unknown steps
       
       # UNKNOWN STEPS
       file .* with content:
+      another unknown step
       """
