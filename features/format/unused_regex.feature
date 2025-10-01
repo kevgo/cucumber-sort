@@ -1,5 +1,6 @@
 Feature: list unused steps while formatting
 
+  @this
   Scenario: unused steps
     Given file ".cucumber-sort-rc" with content:
       """
@@ -23,7 +24,7 @@ Feature: list unused steps while formatting
       """
       .cucumber-sort-rc:3  unused regex: file .* now has content:
       """
-    And the exit code is success
+    And the exit code is failure
     And file "feature/one.feature" now has content:
       """
       Feature: example
