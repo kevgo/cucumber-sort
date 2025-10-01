@@ -1,6 +1,6 @@
 Feature: formatting in the presence of an unused regex
 
-  Background:
+  Background: regex "file .* now has content" isn't used
     Given file ".cucumber-sort-rc" with content:
       """
       file .* with content:
