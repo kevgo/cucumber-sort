@@ -47,10 +47,10 @@ fn read_file() -> Option<Vec<String>> {
   let Ok(text) = fs::read_to_string(FILENAME) else {
     return None;
   };
-  let result = text
+  let flags = text
     .lines()
     .flat_map(|line| line.split_whitespace())
     .map(String::from)
     .collect();
-  Some(result)
+  Some(flags)
 }
