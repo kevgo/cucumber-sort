@@ -52,8 +52,7 @@ order you want them to appear in your `.feature` files.
 
 #### .cucumber-sort-ignore
 
-Populate this file with glob expressions that describe files that cucumber-sort
-should ignore.
+Contains glob patterns for files that `cucumber-sort` should ignore.
 
 ### Usage
 
