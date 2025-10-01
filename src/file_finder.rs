@@ -1,5 +1,5 @@
 use crate::errors::{Result, UserError};
-use camino::{Utf8Path, Utf8PathBuf};
+use camino::{Utf8DirEntry, Utf8Path, Utf8PathBuf};
 use std::fs;
 use std::io::ErrorKind;
 
@@ -39,9 +39,16 @@ impl FileFinder {
 
   pub fn search_folder(&self, dir: impl AsRef<Utf8Path>) -> Result<Vec<Utf8PathBuf>> {
     let mut result = vec![];
-    for entry in dir.as_ref().read_dir_utf8().unwrap() {
-      let entry = entry.unwrap();
-      let entry_path = entry.path().strip_prefix(".").unwrap_or(entry.path());
+    let entries: Vec<Utf8DirEntry> = dir
+      .as_ref()
+      .read_dir_utf8()
+      .unwrap()
+      .map(|opt| opt.unwrap())
+      .collect();
+    let mut paths: Vec<&Utf8Path> = entries.iter().map(|entry| entry.path()).collect();
+    paths.sort();
+    for path in paths {
+      let entry_path = path.strip_prefix(".").unwrap_or(path);
       if entry_path.is_dir() {
         result.extend(self.search_folder(entry_path)?);
         continue;

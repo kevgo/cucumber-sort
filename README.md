@@ -77,3 +77,10 @@ cucumber-sort check --record
 
 This appends unknown steps to the file. Just review the file and move the
 unknown steps into the correct position.
+
+If this finds too many unknown steps, you can stop at the first file with
+failures:
+
+```zsh
+cucumber-stort check --fail-fast
+```
