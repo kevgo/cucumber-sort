@@ -4,13 +4,11 @@ pub fn insert_regex_placeholders(text: &str) -> String {
 
   while let Some(ch) = chars.next() {
     if ch == '"' {
-      // Skip the opening quote and everything until the closing quote
-      while let Some(inner_ch) = chars.next() {
-        if inner_ch == '"' {
-          break;
-        }
-      }
-      // Replace the entire quoted string with .*
+      // here we found an opening quote --> skip all chars until the closing quote
+      // and store .* instead
+      while let Some(inner_ch) = chars.next()
+        && inner_ch != '"'
+      {}
       result.push_str(".*");
     } else {
       result.push(ch);
