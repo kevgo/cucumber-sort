@@ -62,3 +62,8 @@ To verify that all your `.feature` files have the correct step order, run:
 ```
 cucumber-sort check
 ```
+
+Initially you'll encounter unknown steps. You need to add them to
+**.cucumber-sort-rc**. To make this easy, run `cucumber-sort check --record`.
+This adds the unknown steps to the file. All you need to do is review that file
+and move the unknown steps to the correct position.
