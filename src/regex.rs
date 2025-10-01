@@ -1,7 +1,6 @@
 pub fn insert_regex_placeholders(text: &str) -> String {
   let mut result = String::new();
   let mut chars = text.chars().peekable();
-
   while let Some(ch) = chars.next() {
     if ch == '"' {
       // here we found an opening quote --> skip all chars until the closing quote
@@ -14,7 +13,6 @@ pub fn insert_regex_placeholders(text: &str) -> String {
       result.push(ch);
     }
   }
-
   result
 }
 
