@@ -92,7 +92,6 @@ impl Sorter {
         file: FILE_NAME.into(),
         message: err.to_string(),
       })?;
-
     file
       .write_all(content.as_bytes())
       .map_err(|err| UserError::ConfigFileCreate {
