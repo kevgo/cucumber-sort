@@ -1,6 +1,5 @@
 Feature: ignoring files
 
-  @this
   Scenario: file with unordered steps is ignored
     Given file ".cucumber-sort-rc" with content:
       """
