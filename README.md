@@ -33,7 +33,7 @@ Other options:
 Generate the default config files with:
 
 <pre type="call">
-cucumber-sort init2
+cucumber-sort init
 </pre>
 
 This creates three files:
@@ -62,22 +62,22 @@ Contains cucumber-sort CLI arguments that you always want to enable.
 
 Format all `.feature` files to the configured step order:
 
-```zsh
+<pre type="call">
 cucumber-sort format
-```
+</pre>
 
 Check whether `.feature` files already follow the configured order:
 
-```zsh
+<pre type="call">
 cucumber-sort check
-```
+</pre>
 
 On the initial runs of the tool, you likely see unknown steps. Add them to
 `.cucumber-sort-order`. To make this easier:
 
-```zsh
+<pre type="call">
 cucumber-sort check --record
-```
+</pre>
 
 This appends unknown steps to the file. Just review the file and move the
 unknown steps into the correct position.
