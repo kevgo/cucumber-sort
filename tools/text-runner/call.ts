@@ -1,9 +1,9 @@
 import * as textRunner from "text-runner"
+import util from "node:util";
 import { execFile } from 'node:child_process';
 
-export function call(action: textRunner.actions.Args, done) {
+export async function call(action: textRunner.actions.Args) {
   action.name("verify subcommand")
-  done()
   const args = action.region.text().split(" ")
   switch (args.length) {
     case 0:
@@ -27,7 +27,8 @@ export function call(action: textRunner.actions.Args, done) {
 }
 
 async function validate_subcommand(executable: string, subcommand: string) {
-  const result = await execFile("../target/debug/cucumber-sort", [subcommand, "-h"])
+  const execP = util.promisify(execFile)
+  await execP("../../target/debug/cucumber-sort", [subcommand, "-h"])
 }
 
 async function validate_subcommand_flag(args: string[]) {}
