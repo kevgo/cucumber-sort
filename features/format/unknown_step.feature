@@ -8,7 +8,7 @@ Feature: format unknown steps
     And file "features/one.feature" with content:
       """
       Feature: example
-      
+
         Background:
           Given step 1
           And step 3
@@ -33,7 +33,7 @@ Feature: format unknown steps
     And file ".cucumber-sort-order" now has content:
       """
       step 1
-      
+
       # UNKNOWN STEPS
       ^step 3$
       """
