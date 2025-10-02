@@ -6,9 +6,11 @@ export function call(action: textRunner.actions.Args, done: textRunner.exports.D
   const args = action.region.text().split(" ")
   switch (args.length) {
     case 0:
-      throw new Error("empty block")
+      done(new Error("empty block"))
+      break
     case 1:
-      throw new Error("no subcommand")
+      done(new Error("no subcommand"))
+      break
     case 2:
       action.name(`verify "${args[1]}"`)
       validate_subcommand(args[0], args[1], done)
@@ -18,7 +20,7 @@ export function call(action: textRunner.actions.Args, done: textRunner.exports.D
       validate_subcommand_flag(args[0], args[1], args[2], done)
       break
     default:
-      throw new Error("too many args: "+args.length)
+      done( new Error("too many args: "+args.length))
    }
 }
 
