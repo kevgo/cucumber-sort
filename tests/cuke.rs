@@ -111,6 +111,7 @@ async fn run_binary(world: &mut MyWorld, command: String) {
 
 #[then("it prints:")]
 async fn it_prints(world: &mut MyWorld, step: &Step) {
+  pretty::assert_eq!("", world.stderr.as_ref().expect(NO_COMMAND_RUN));
   let want = step.docstring.as_ref().unwrap();
   let have = world.stdout.as_ref().expect(NO_COMMAND_RUN);
   let stripped = strip_ansi_escapes::strip_str(have);
