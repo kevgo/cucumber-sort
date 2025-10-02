@@ -64,6 +64,7 @@ setup-ci:
 	rustup toolchain add nightly
 	rustup component add rustfmt --toolchain nightly
 	cargo install cargo-machete --locked
+	(cd tools && npm ci)
 
 tools/rta@${RUN_THAT_APP_VERSION}:
 	rm -f tools/rta* tools/rta
