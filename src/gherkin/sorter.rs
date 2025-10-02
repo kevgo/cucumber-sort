@@ -177,6 +177,9 @@ impl Sorter {
       if line.is_empty() || line.starts_with('#') {
         continue;
       }
+      if line == MARKER {
+        break;
+      }
       match Regex::new(line) {
         Ok(regex) => entries.push(Entry {
           regex,
