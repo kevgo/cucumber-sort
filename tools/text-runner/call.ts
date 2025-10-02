@@ -41,7 +41,7 @@ async function validate_subcommand_flag(executable: string, subcommand: string, 
     } else {
       console.log(stdout)
       console.log(stderr)
-      done(new Error(`${subcommand} ${flag} seems not a valid combination of subcommand for ${executable}`))
+      done(new Error(`${subcommand} ${flag} seems seems to not be valid`))
     }
   })
 }
