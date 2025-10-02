@@ -8,6 +8,7 @@ Feature: enable options through the opts file
       """
     And file ".cucumber-sort-opts" with content:
       """
+      # the opts file
       --fail-fast --record
       """
     And file "features/one.feature" with content:
