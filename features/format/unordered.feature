@@ -1,5 +1,6 @@
 Feature: format unordered steps
 
+  @this
   Scenario: unordered step in a scenario
     Given file ".cucumber-sort-order" with content:
       """
@@ -8,7 +9,8 @@ Feature: format unordered steps
       step 3
       step 4
       step 5
-      file .* now has content:
+      step 6
+      the commits are:
       """
     And file "features/one.feature" with content:
       """
@@ -30,11 +32,12 @@ Feature: format unordered steps
         # another comment
 
         Scenario: undo
-          When step 5
-          Then file "foo" now has content:
-            '''
-            baz
-            '''
+          When step 6
+          Then the commits are:
+            | NAME     | LOCATION      |
+            | commit 1 | local         |
+            | commit 2 | local, origin |
+          And step 5
       """
     When I run "cucumber-sort format"
     Then it prints nothing
@@ -60,8 +63,9 @@ Feature: format unordered steps
 
         Scenario: undo
           When step 5
-          Then file "foo" now has content:
-            '''
-            baz
-            '''
+          Then the commits are:
+            | NAME     | LOCATION      |
+            | commit 1 | local         |
+            | commit 2 | local, origin |
+          And step 6
       """
