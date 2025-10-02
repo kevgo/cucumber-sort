@@ -18,6 +18,9 @@ jobs:
       - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2.8.0
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
       - run: make setup-ci
       - run: make test
       - run: make fix
