@@ -33,7 +33,7 @@ Other options:
 Generate the default config files with:
 
 <pre type="call">
-cucumber-sort init
+cucumber-sort init2
 </pre>
 
 This creates three files:
