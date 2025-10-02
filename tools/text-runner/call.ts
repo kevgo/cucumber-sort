@@ -1,8 +1,7 @@
 import * as textRunner from "text-runner"
-import util from "node:util";
 import { execFile } from 'node:child_process';
 
-export async function call(action: textRunner.actions.Args) {
+export function call(action: textRunner.actions.Args, done: textRunner.exports.DoneFunction) {
   action.name("verify subcommand")
   const args = action.region.text().split(" ")
   switch (args.length) {
@@ -11,12 +10,8 @@ export async function call(action: textRunner.actions.Args) {
     case 1:
       throw new Error("no args given")
     case 2:
-      validate_binary(args[0])
-      if (args[1].startsWith("-")) {
-        throw new Error("top-level flag")
-      }
       action.name(`verify subcommand "${args[1]}"`)
-      validate_subcommand(args[0], args[1])
+      validate_subcommand(args[0], args[1], done)
       break
     case 3:
       validate_subcommand_flag(args)
@@ -26,15 +21,16 @@ export async function call(action: textRunner.actions.Args) {
    }
 }
 
-async function validate_subcommand(executable: string, subcommand: string) {
-  const execP = util.promisify(execFile)
-  await execP("../../target/debug/cucumber-sort", [subcommand, "-h"])
+async function validate_subcommand(executable: string, subcommand: string, done: textRunner.exports.DoneFunction) {
+   execFile("../../target/debug/cucumber-sort", [subcommand, "--help"], (err: Error | null, stdout: string, stderr: string) => {
+    if (err == null) {
+      done()
+    } else {
+      console.log(stdout)
+      console.log(stderr)
+      done(new Error(`${subcommand} seems not a valid subcommand for ${executable}`))
+    }
+  })
 }
 
 async function validate_subcommand_flag(args: string[]) {}
-
-function validate_binary(binary: string) {
-  if (binary !== "cucumber-sort") {
-    throw new Error("can only test cucumber-sort");
-  }
-}
