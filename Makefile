@@ -13,7 +13,7 @@ cukethis: build  # runs only end-to-end tests with a @this tag
 	cargo test --test cuke --quiet --locked -- -t @this
 
 doc: tools/node_modules
-	tools/rta --optional node tools/node_modules/.bin/text-runner
+	(cd tools && ./rta --optional node node_modules/.bin/text-runner ..)
 
 fix: tools/rta@${RUN_THAT_APP_VERSION}  # auto-corrects issues
 	tools/rta dprint fmt
