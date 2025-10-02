@@ -48,6 +48,14 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Document> {
         new_open_block = Some(Block::Static(vec![line.text]));
         new_open_step = None;
       }
+      (LineType::Text, Some(Block::Sortable(steps)), Some(mut open_step))
+        if line.text.is_empty() && open_step.has_open_docstring() =>
+      {
+        // an empty line inside a docstring
+        open_step.additional_lines.push(line.text);
+        new_open_block = Some(Block::Sortable(steps));
+        new_open_step = Some(open_step);
+      }
       (LineType::Text, Some(Block::Sortable(mut steps)), Some(step)) => {
         // the first static line after a sortable block
         steps.push(step);
@@ -193,6 +201,25 @@ pub struct Step {
   pub additional_lines: Vec<String>,
 }
 
+impl Step {
+  fn has_open_docstring(&self) -> bool {
+    let mut result = false;
+    for additional_line in &self.additional_lines {
+      if is_docstring(additional_line, self.indent.len() + 2) {
+        result = !result;
+      }
+    }
+    result
+  }
+}
+
+fn is_docstring(text: &str, indent: usize) -> bool {
+  if text.len() < indent {
+    return false;
+  }
+  &text[indent..] == "\"\"\""
+}
+
 #[cfg(test)]
 impl Default for Step {
   fn default() -> Self {
@@ -202,6 +229,35 @@ impl Default for Step {
       additional_lines: Default::default(),
       indent: Default::default(),
       line_no: Default::default(),
+    }
+  }
+}
+
+#[cfg(test)]
+mod tests {
+
+  #[test]
+  fn is_docstring() {
+    assert!(super::is_docstring("    \"\"\"", 4));
+    assert!(super::is_docstring("      \"\"\"", 6));
+    assert!(!super::is_docstring("      \"\"\"", 4));
+    assert!(!super::is_docstring("", 4));
+  }
+
+  mod has_open_docstring {
+    use crate::gherkin::{Keyword, Step};
+    use big_s::S;
+
+    #[test]
+    fn one_docstring_delimiter() {
+      let step = Step {
+        line_no: 0,
+        indent: S("    "),
+        keyword: Keyword::And,
+        title: S("foo"),
+        additional_lines: vec![S("      \"\"\"")],
+      };
+      assert!(step.has_open_docstring());
     }
   }
 }
