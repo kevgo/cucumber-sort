@@ -54,7 +54,6 @@ Feature: check unknown steps
       ^file .* with content:$
       """
 
-  @this
   Scenario: run with recording and existing marker
     Given file ".cucumber-sort-order" with content:
       """
