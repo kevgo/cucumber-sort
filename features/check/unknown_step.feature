@@ -30,8 +30,8 @@ Feature: check unknown steps
     When I run "cucumber-sort check"
     Then it prints:
       """
-      features/one.feature:5  unknown step: file .* with content:
-      features/one.feature:11  unknown step: file .* with content:
+      features/one.feature:5  unknown step: file "foo.feature" with content:
+      features/one.feature:11  unknown step: file "foo.feature" with content:
       features/one.feature:17  unknown step: another unknown step
       """
     And the exit code is failure
@@ -40,8 +40,8 @@ Feature: check unknown steps
     When I run "cucumber-sort check --record"
     Then it prints:
       """
-      features/one.feature:5  unknown step: file .* with content:
-      features/one.feature:11  unknown step: file .* with content:
+      features/one.feature:5  unknown step: file "foo.feature" with content:
+      features/one.feature:11  unknown step: file "foo.feature" with content:
       features/one.feature:17  unknown step: another unknown step
       """
     And the exit code is failure
@@ -50,6 +50,6 @@ Feature: check unknown steps
       step 1
 
       # UNKNOWN STEPS
-      another unknown step
-      file .* with content:
+      ^another unknown step$
+      ^file .* with content:$
       """

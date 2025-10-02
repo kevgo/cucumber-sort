@@ -1,6 +1,6 @@
 use crate::errors::{Finding, Issue, Result, UserError};
 use crate::gherkin::{self, Keyword};
-use crate::regex::insert_regex_placeholders;
+use crate::regex::make_regex;
 use camino::Utf8Path;
 use regex::Regex;
 use std::fs;
@@ -72,7 +72,7 @@ impl Sorter {
     for missing in missings {
       match &missing.problem {
         Issue::UndefinedStep(text) => {
-          serialized.push(insert_regex_placeholders(text));
+          serialized.push(make_regex(text));
         }
         Issue::UnsortedLine { have: _, want: _ } => {}
         Issue::UnusedRegex(_) => {}

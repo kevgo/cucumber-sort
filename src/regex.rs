@@ -1,5 +1,5 @@
-pub fn insert_regex_placeholders(text: &str) -> String {
-  let mut result = String::new();
+pub fn make_regex(text: &str) -> String {
+  let mut result = String::from('^');
   let mut chars = text.chars().peekable();
   while let Some(ch) = chars.next() {
     if ch == '"' {
@@ -13,6 +13,7 @@ pub fn insert_regex_placeholders(text: &str) -> String {
       result.push(ch);
     }
   }
+  result.push('$');
   result
 }
 
@@ -20,23 +21,23 @@ pub fn insert_regex_placeholders(text: &str) -> String {
 mod tests {
 
   #[test]
-  fn insert_regex_placeholders() {
+  fn make_regex() {
     let tests = vec![
       // no captures
-      ("a foo walks into a bar", "a foo walks into a bar"),
+      ("a foo walks into a bar", "^a foo walks into a bar$"),
       // one capture
       (
         "file \"foo.feature\" contains a bar",
-        "file .* contains a bar",
+        "^file .* contains a bar$",
       ),
       // multiple captures
       (
         "file \"foo.feature\" contains \"bar\"",
-        "file .* contains .*",
+        "^file .* contains .*$",
       ),
     ];
     for (give, want) in tests {
-      let have = super::insert_regex_placeholders(give);
+      let have = super::make_regex(give);
       pretty::assert_eq!(want, have);
     }
   }

@@ -1,4 +1,3 @@
-use crate::regex::insert_regex_placeholders;
 use ansi_term::Color::{Green, Red};
 use camino::Utf8PathBuf;
 use std::cmp::Ordering;
@@ -18,13 +17,7 @@ impl Display for Finding {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     match &self.problem {
       Issue::UndefinedStep(text) => {
-        write!(
-          f,
-          "{}:{}  unknown step: {}",
-          self.file,
-          self.line + 1,
-          insert_regex_placeholders(text)
-        )
+        write!(f, "{}:{}  unknown step: {}", self.file, self.line + 1, text)
       }
       Issue::UnsortedLine { have, want } => {
         write!(

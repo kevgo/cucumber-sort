@@ -35,6 +35,6 @@ Feature: format unknown steps
       step 1
 
       # UNKNOWN STEPS
-      step 3
+      ^step 3$
       """
     And file "features/one.feature" hasn't changed
