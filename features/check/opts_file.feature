@@ -1,6 +1,5 @@
 Feature: enable options through the opts file
 
-  @this
   Scenario: unordered step in a scenario
     Given file ".cucumber-sort-order" with content:
       """
@@ -15,7 +14,7 @@ Feature: enable options through the opts file
     And file "features/one.feature" with content:
       """
       Feature: example
-      
+
         Scenario: steps out of order
           Then step 2
           And step 1
@@ -23,7 +22,7 @@ Feature: enable options through the opts file
     And file "features/two.feature" with content:
       """
       Feature: example
-      
+
         Scenario: steps out of order
           Then step 2
           And step 1

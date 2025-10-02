@@ -65,6 +65,7 @@ fn read_file() -> Option<Vec<String>> {
   };
   let flags = text
     .lines()
+    .filter(|line| !line.starts_with('#'))
     .flat_map(|line| line.split_whitespace())
     .map(String::from)
     .collect();
