@@ -32,9 +32,9 @@ Other options:
 
 Generate the default config files with:
 
-```zsh
+<pre type="call">
 cucumber-sort init
-```
+</pre>
 
 This creates three files:
 
