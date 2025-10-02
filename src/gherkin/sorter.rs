@@ -386,48 +386,48 @@ mod tests {
       let mut sorter = Sorter::parse("step 1\nstep 2\nstep 3").unwrap();
       let give_block = gherkin::Block::Sortable(vec![
         gherkin::Step {
-          title: S("step 3"),
-          keyword: Keyword::Given,
-          additional_lines: vec![],
           line_no: 0,
           indent: S(""),
+          keyword: Keyword::Given,
+          title: S("step 3"),
+          additional_lines: vec![],
         },
         gherkin::Step {
+          line_no: 1,
+          indent: S(""),
           title: S("step 2"),
           keyword: Keyword::And,
           additional_lines: vec![],
-          line_no: 1,
-          indent: S(""),
         },
         gherkin::Step {
-          title: S("step 1"),
-          keyword: Keyword::And,
-          additional_lines: vec![],
           line_no: 2,
           indent: S(""),
+          keyword: Keyword::And,
+          title: S("step 1"),
+          additional_lines: vec![],
         },
       ]);
       let want_block = gherkin::Block::Sortable(vec![
         gherkin::Step {
-          title: S("step 1"),
-          keyword: Keyword::Given,
-          additional_lines: vec![],
           line_no: 2,
           indent: S(""),
+          keyword: Keyword::Given,
+          title: S("step 1"),
+          additional_lines: vec![],
         },
         gherkin::Step {
-          title: S("step 2"),
-          keyword: Keyword::And,
-          additional_lines: vec![],
           line_no: 1,
           indent: S(""),
+          keyword: Keyword::And,
+          title: S("step 2"),
+          additional_lines: vec![],
         },
         gherkin::Step {
-          title: S("step 3"),
-          keyword: Keyword::And,
-          additional_lines: vec![],
           line_no: 0,
           indent: S(""),
+          keyword: Keyword::And,
+          title: S("step 3"),
+          additional_lines: vec![],
         },
       ]);
       let (have_block, issues) = sorter.sort_block(give_block, "test.feature".into());
@@ -440,41 +440,41 @@ mod tests {
       let mut sorter = Sorter::parse("step 1\nstep 2").unwrap();
       let give_block = gherkin::Block::Sortable(vec![
         gherkin::Step {
-          title: S("step 2"),
-          keyword: Keyword::Given,
-          additional_lines: vec![],
           line_no: 0,
           indent: S(""),
+          keyword: Keyword::Given,
+          title: S("step 2"),
+          additional_lines: vec![],
         },
         gherkin::Step {
-          title: S("step 3"),
-          keyword: Keyword::Given,
-          additional_lines: vec![],
           line_no: 1,
           indent: S(""),
+          keyword: Keyword::Given,
+          title: S("step 3"),
+          additional_lines: vec![],
         },
         gherkin::Step {
-          title: S("step 1"),
-          keyword: Keyword::Given,
-          additional_lines: vec![],
           line_no: 2,
           indent: S(""),
+          keyword: Keyword::Given,
+          title: S("step 1"),
+          additional_lines: vec![],
         },
       ]);
       let want_block = gherkin::Block::Sortable(vec![
         gherkin::Step {
-          title: S("step 1"),
-          keyword: Keyword::Given,
-          additional_lines: vec![],
           line_no: 2,
           indent: S(""),
+          keyword: Keyword::Given,
+          title: S("step 1"),
+          additional_lines: vec![],
         },
         gherkin::Step {
-          title: S("step 2"),
-          keyword: Keyword::And,
-          additional_lines: vec![],
           line_no: 0,
           indent: S(""),
+          keyword: Keyword::And,
+          title: S("step 2"),
+          additional_lines: vec![],
         },
       ]);
       let (have_block, issues) = sorter.sort_block(give_block, "test.feature".into());
