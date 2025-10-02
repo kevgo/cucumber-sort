@@ -40,7 +40,7 @@ ps: fix test   # pitstop, run during development
 setup: setup-ci  # install development dependencies on this computer
 	cargo install cargo-edit cargo-upgrades --locked
 
-test: build unit lint cuke   # runs all tests
+test: build unit lint cuke doc   # runs all tests
 
 unit:  # runs the unit tests
 	@cargo test --locked
