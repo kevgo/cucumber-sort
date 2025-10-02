@@ -13,7 +13,7 @@ cukethis: build  # runs only end-to-end tests with a @this tag
 	cargo test --test cuke --quiet --locked -- -t @this
 
 doc: tools/node_modules
-	(cd tools && ./rta --optional node node_modules/.bin/text-runner ..)
+	(cd tools && ./rta --optional node node_modules/.bin/text-runner .. --format=dot)
 
 fix: tools/rta@${RUN_THAT_APP_VERSION}  # auto-corrects issues
 	tools/rta dprint fmt
@@ -59,7 +59,7 @@ build:
 help:  # prints all available targets
 	grep -h -E '^[a-zA-Z_-]+:.*?# .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?# "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
-setup-ci:
+setup-ci: tools/node_modules
 	rustup component add clippy
 	rustup toolchain add nightly
 	rustup component add rustfmt --toolchain nightly
@@ -72,7 +72,6 @@ tools/rta@${RUN_THAT_APP_VERSION}:
 	ln -s rta@${RUN_THAT_APP_VERSION} tools/rta
 
 tools/node_modules: tools/package-lock.json tools/rta@${RUN_THAT_APP_VERSION}
-	echo "Installing Node based tools"
 	cd tools && ./rta npm ci
 	touch tools/node_modules  # update timestamp of the node_modules folder so that Make doesn't re-install it on every command
 
