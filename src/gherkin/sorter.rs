@@ -30,6 +30,7 @@ pub struct Sorter {
   pub entries: Vec<Entry>,
 }
 
+#[derive(Debug)]
 pub struct Entry {
   regex: Regex,
 
@@ -38,6 +39,14 @@ pub struct Entry {
 
   /// where in the config file this regex is defined, 0-based
   line_no: usize,
+}
+
+impl PartialEq for Entry {
+  fn eq(&self, other: &Self) -> bool {
+    self.regex.as_str() == other.regex.as_str()
+      && self.used == other.used
+      && self.line_no == other.line_no
+  }
 }
 
 impl Sorter {
@@ -95,7 +104,9 @@ impl Sorter {
       }
       new_content.push(line.to_string());
     }
-    new_content.push(S(""));
+    if !new_content.last().unwrap_or(&S("")).is_empty() {
+      new_content.push(S(""));
+    }
     new_content.push(MARKER.to_string());
     new_content.extend(serialized);
     fs::write(FILE_NAME, new_content.join("\n")).map_err(|err| UserError::ConfigFileCreate {
@@ -177,11 +188,11 @@ impl Sorter {
   fn parse(text: &str) -> Result<Sorter> {
     let mut entries = vec![];
     for (i, line) in text.lines().enumerate() {
-      if line.is_empty() || line.starts_with('#') {
-        continue;
-      }
       if line == MARKER {
         break;
+      }
+      if line.is_empty() || line.starts_with('#') {
+        continue;
       }
       match Regex::new(line) {
         Ok(regex) => entries.push(Entry {
@@ -344,6 +355,23 @@ mod tests {
     pretty::assert_eq!(want_deoptimized, have_deoptimized);
     let have_optimized = super::optimize_keywords(have_deoptimized);
     pretty::assert_eq!(have_optimized, steps);
+  }
+
+  mod parse {
+    use crate::gherkin::Sorter;
+
+    #[test]
+    fn with_unknown_step() {
+      let give = "step 1\n\n# UNKNOWN STEPS\nstep 2\nstep 3";
+      let have = Sorter::parse(give).unwrap();
+      let have_entries: Vec<&str> = have
+        .entries
+        .iter()
+        .map(|entry| entry.regex.as_str())
+        .collect();
+      let want_entries = vec!["step 1"];
+      pretty::assert_eq!(want_entries, have_entries);
+    }
   }
 
   mod sort_steps {
