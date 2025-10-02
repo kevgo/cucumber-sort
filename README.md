@@ -36,7 +36,7 @@ Generate the default config files with:
 cucumber-sort init
 ```
 
-This creates two files:
+This creates three files:
 
 #### .cucumber-sort-order
 
@@ -53,6 +53,10 @@ order you want them to appear in your `.feature` files.
 #### .cucumber-sort-ignore
 
 Contains glob patterns for files that `cucumber-sort` should ignore.
+
+#### .cucumber-sort-opts
+
+Contains cucumber-sort CLI arguments that you always want to enable.
 
 ### Usage
 

@@ -1,6 +1,6 @@
-use crate::FileFinder;
 use crate::errors::Result;
 use crate::gherkin::Sorter;
+use crate::{FileFinder, cli};
 
 pub struct Config {
   pub finder: FileFinder,
@@ -16,5 +16,6 @@ pub fn load() -> Result<Config> {
 
 pub fn create() -> Result<()> {
   FileFinder::create()?;
-  Sorter::create()
+  Sorter::create()?;
+  cli::create()
 }
