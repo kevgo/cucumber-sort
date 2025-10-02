@@ -114,7 +114,6 @@ impl Sorter {
     let mut doc_issues = vec![];
     let mut new_blocks = Vec::<gherkin::Block>::new();
     for file_block in file.blocks {
-      println!("BLOCK: {:?}", file_block);
       let (sorted_block, block_issues) = self.sort_block(file_block, filename);
       new_blocks.push(sorted_block);
       doc_issues.extend(block_issues);
