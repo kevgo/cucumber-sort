@@ -91,18 +91,14 @@ Feature: test
           number: 4,
           text: S("    And step 2"),
           indent: 4,
-          line_type: LineType::StepStart {
-            keyword: Keyword::And,
-          },
+          line_type: LineType::StepStart { keyword: Keyword::And },
           title_start: 8,
         },
         Line {
           number: 5,
           text: S("    When step 3"),
           indent: 4,
-          line_type: LineType::StepStart {
-            keyword: Keyword::When,
-          },
+          line_type: LineType::StepStart { keyword: Keyword::When },
           title_start: 9,
         },
         Line {
@@ -123,18 +119,14 @@ Feature: test
           number: 8,
           text: S("    Then step 4"),
           indent: 4,
-          line_type: LineType::StepStart {
-            keyword: Keyword::Then,
-          },
+          line_type: LineType::StepStart { keyword: Keyword::Then },
           title_start: 9,
         },
         Line {
           number: 9,
           text: S("    And step 5"),
           indent: 4,
-          line_type: LineType::StepStart {
-            keyword: Keyword::And,
-          },
+          line_type: LineType::StepStart { keyword: Keyword::And },
           title_start: 8,
         },
         Line {
@@ -155,18 +147,14 @@ Feature: test
           number: 12,
           text: S("    When step 6"),
           indent: 4,
-          line_type: LineType::StepStart {
-            keyword: Keyword::When,
-          },
+          line_type: LineType::StepStart { keyword: Keyword::When },
           title_start: 9,
         },
         Line {
           number: 13,
           text: S("    Then step 7"),
           indent: 4,
-          line_type: LineType::StepStart {
-            keyword: Keyword::Then,
-          },
+          line_type: LineType::StepStart { keyword: Keyword::Then },
           title_start: 9,
         },
       ];
@@ -333,9 +321,7 @@ Feature: test
           number: 7,
           text: S("    And step 3"),
           indent: 4,
-          line_type: LineType::StepStart {
-            keyword: Keyword::And,
-          },
+          line_type: LineType::StepStart { keyword: Keyword::And },
           title_start: 8,
         },
       ];
@@ -468,9 +454,7 @@ Feature: test
           number: 8,
           text: S("    And step 2"),
           indent: 4,
-          line_type: LineType::StepStart {
-            keyword: Keyword::And,
-          },
+          line_type: LineType::StepStart { keyword: Keyword::And },
           title_start: 8,
         },
       ];
@@ -480,11 +464,7 @@ Feature: test
       let have_feature = parser::file(have_lines).unwrap();
       let want_feature = parser::Document {
         blocks: vec![
-          Block::Static(vec![
-            S("Feature: test"),
-            S(""),
-            S("  Scenario: with docstring"),
-          ]),
+          Block::Static(vec![S("Feature: test"), S(""), S("  Scenario: with docstring")]),
           Block::Sortable(vec![
             Step {
               title: S("step 1:"),
@@ -600,9 +580,7 @@ Feature: test
           number: 7,
           text: S("    And step 2"),
           indent: 4,
-          line_type: LineType::StepStart {
-            keyword: Keyword::And,
-          },
+          line_type: LineType::StepStart { keyword: Keyword::And },
           title_start: 8,
         },
       ];
@@ -705,9 +683,7 @@ Feature: test
           number: 4,
           text: S("    Then <BETA>"),
           indent: 4,
-          line_type: LineType::StepStart {
-            keyword: Keyword::Then,
-          },
+          line_type: LineType::StepStart { keyword: Keyword::Then },
           title_start: 9,
         },
         Line {
@@ -872,9 +848,7 @@ Feature: test
           number: 8,
           text: S("    When step 2"),
           indent: 4,
-          line_type: LineType::StepStart {
-            keyword: Keyword::When,
-          },
+          line_type: LineType::StepStart { keyword: Keyword::When },
           title_start: 9,
         },
       ];
@@ -884,11 +858,7 @@ Feature: test
       let have_feature = parser::file(have_lines).unwrap();
       let want_feature = parser::Document {
         blocks: vec![
-          Block::Static(vec![
-            S("Feature: test"),
-            S(""),
-            S("  Scenario: gherkin in docstring"),
-          ]),
+          Block::Static(vec![S("Feature: test"), S(""), S("  Scenario: gherkin in docstring")]),
           Block::Sortable(vec![
             Step {
               title: S("file \"foo\":"),

@@ -63,9 +63,7 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Document> {
         new_open_block = Some(Block::Static(vec![line.text]));
         new_open_step = None;
       }
-      (LineType::Text, Some(Block::Sortable(steps)), Some(mut step))
-        if docstring_indent.is_some() =>
-      {
+      (LineType::Text, Some(Block::Sortable(steps)), Some(mut step)) if docstring_indent.is_some() => {
         // we are inside a docstring, this text line does not start a text block, it is part of the docstring content
         step.additional_lines.push(line.text);
         new_open_block = Some(Block::Sortable(steps));

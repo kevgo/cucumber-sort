@@ -43,17 +43,10 @@ impl UserError {
   /// The second result is an optional description providing additional details.
   pub fn messages(self) -> (String, Option<String>) {
     match self {
-      UserError::ConfigFileCreate { file, message } => {
-        (format!("cannot create config file {file}: {message}"), None)
+      UserError::ConfigFileCreate { file, message } => (format!("cannot create config file {file}: {message}"), None),
+      UserError::ConfigFileInvalidRegex { file, line, message } => {
+        (format!("{}:{}  invalid regular expression", file, line), Some(message))
       }
-      UserError::ConfigFileInvalidRegex {
-        file,
-        line,
-        message,
-      } => (
-        format!("{}:{}  invalid regular expression", file, line),
-        Some(message),
-      ),
       UserError::ConfigFileNotFound { file } => (
         format!("config file ({}) not found", file),
         Some(format!(
@@ -66,13 +59,10 @@ impl UserError {
         Some(format!("The configuration file has name {}.", file)),
       ),
       UserError::FileRead { file, reason } => (format!("cannot read file {file}: {reason}"), None),
-      UserError::FileWrite { file, reason } => {
-        (format!("cannot write file {file}: {reason}"), None)
+      UserError::FileWrite { file, reason } => (format!("cannot write file {file}: {reason}"), None),
+      UserError::IgnoreFileInvalidGlob { file, line, reason } => {
+        (format!("{}:{}  invalid glob expression", file, line), Some(reason))
       }
-      UserError::IgnoreFileInvalidGlob { file, line, reason } => (
-        format!("{}:{}  invalid glob expression", file, line),
-        Some(reason),
-      ),
     }
   }
 }

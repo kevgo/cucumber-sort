@@ -55,11 +55,7 @@ async fn files_not_changed(world: &mut MyWorld) {
 #[then(expr = "file {string} hasn't changed")]
 async fn file_not_changed(world: &mut MyWorld, filename: String) {
   let filepath = world.dir.path().join(&filename);
-  let Some((_, want_content)) = &world
-    .files
-    .iter()
-    .find(|(path, _)| path.as_str() == &filepath)
-  else {
+  let Some((_, want_content)) = &world.files.iter().find(|(path, _)| path.as_str() == &filepath) else {
     panic!("file {filename} isn't stored")
   };
   let have_content = fs::read_to_string(&filepath).await.unwrap();
@@ -137,10 +133,7 @@ async fn prints_nothing(world: &mut MyWorld) {
 async fn succeeds(world: &mut MyWorld) {
   let have = &world.exit_status.as_ref().expect(NO_COMMAND_RUN);
   if !have.success() {
-    panic!(
-      "expected success but received exit code {}",
-      have.code().unwrap()
-    );
+    panic!("expected success but received exit code {}", have.code().unwrap());
   }
 }
 

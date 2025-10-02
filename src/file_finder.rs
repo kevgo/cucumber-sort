@@ -39,12 +39,7 @@ impl FileFinder {
 
   pub fn search_folder(&self, dir: impl AsRef<Utf8Path>) -> Result<Vec<Utf8PathBuf>> {
     let mut result = vec![];
-    let entries: Vec<Utf8DirEntry> = dir
-      .as_ref()
-      .read_dir_utf8()
-      .unwrap()
-      .map(|opt| opt.unwrap())
-      .collect();
+    let entries: Vec<Utf8DirEntry> = dir.as_ref().read_dir_utf8().unwrap().map(|opt| opt.unwrap()).collect();
     let mut paths: Vec<&Utf8Path> = entries.iter().map(|entry| entry.path()).collect();
     paths.sort();
     for path in paths {
@@ -139,8 +134,7 @@ features/weird*.feature
 features/valid.feature
 file[name
 "#;
-      let Err(UserError::IgnoreFileInvalidGlob { file, line, reason }) =
-        FileFinder::parse(config, "somefile".into())
+      let Err(UserError::IgnoreFileInvalidGlob { file, line, reason }) = FileFinder::parse(config, "somefile".into())
       else {
         panic!()
       };

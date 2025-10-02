@@ -45,9 +45,7 @@ impl Sorter {
     match fs::read_to_string(FILE_NAME) {
       Ok(text) => Sorter::parse(&text),
       Err(err) => match err.kind() {
-        ErrorKind::NotFound => Err(UserError::ConfigFileNotFound {
-          file: FILE_NAME.into(),
-        }),
+        ErrorKind::NotFound => Err(UserError::ConfigFileNotFound { file: FILE_NAME.into() }),
         _ => Err(UserError::ConfigFileRead {
           file: FILE_NAME.into(),
           reason: err.to_string(),
@@ -102,11 +100,7 @@ impl Sorter {
   }
 
   /// provides a copy of the given document with all Gherkin steps sorted the same way as in the given configuration
-  pub fn sort_file(
-    &mut self,
-    file: gherkin::Document,
-    filename: &Utf8Path,
-  ) -> (gherkin::Document, Vec<Finding>) {
+  pub fn sort_file(&mut self, file: gherkin::Document, filename: &Utf8Path) -> (gherkin::Document, Vec<Finding>) {
     let mut doc_issues = vec![];
     let mut new_blocks = Vec::<gherkin::Block>::new();
     for file_block in file.blocks {
@@ -131,11 +125,7 @@ impl Sorter {
     result
   }
 
-  fn sort_block(
-    &mut self,
-    block: gherkin::Block,
-    filename: &Utf8Path,
-  ) -> (gherkin::Block, Vec<Finding>) {
+  fn sort_block(&mut self, block: gherkin::Block, filename: &Utf8Path) -> (gherkin::Block, Vec<Finding>) {
     match block {
       gherkin::Block::Sortable(block_steps) => {
         let (sorted_steps, issues) = self.sort_steps(block_steps, filename);
