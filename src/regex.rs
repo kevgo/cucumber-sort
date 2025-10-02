@@ -1,4 +1,4 @@
-pub fn insert_regex_placeholders(text: &str) -> String {
+pub fn make_regex(text: &str) -> String {
   let mut result = String::from('^');
   let mut chars = text.chars().peekable();
   while let Some(ch) = chars.next() {
@@ -21,7 +21,7 @@ pub fn insert_regex_placeholders(text: &str) -> String {
 mod tests {
 
   #[test]
-  fn insert_regex_placeholders() {
+  fn make_regex() {
     let tests = vec![
       // no captures
       ("a foo walks into a bar", "^a foo walks into a bar$"),
@@ -37,7 +37,7 @@ mod tests {
       ),
     ];
     for (give, want) in tests {
-      let have = super::insert_regex_placeholders(give);
+      let have = super::make_regex(give);
       pretty::assert_eq!(want, have);
     }
   }
