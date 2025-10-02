@@ -30,7 +30,6 @@ pub struct Sorter {
   pub entries: Vec<Entry>,
 }
 
-#[derive(Debug)]
 pub struct Entry {
   regex: Regex,
 
