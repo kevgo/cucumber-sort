@@ -85,6 +85,6 @@ unknown steps into the correct position.
 If this finds too many unknown steps, you can stop at the first file with
 failures:
 
-```zsh
+<pre type="call">
 cucumber-stort check --fail-fast
-```
+</pre>
