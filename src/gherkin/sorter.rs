@@ -1,6 +1,7 @@
 use crate::errors::{Finding, Issue, Result, UserError};
 use crate::gherkin::{self, Keyword};
 use crate::regex::make_regex;
+use big_s::S;
 use camino::Utf8Path;
 use regex::Regex;
 use std::fs;
@@ -10,7 +11,7 @@ use std::io::ErrorKind;
 const FILE_NAME: &str = ".cucumber-sort-order";
 
 /// marker in the config file that separates undefined steps from defined ones
-const MARKER: &str = "\n\n# UNKNOWN STEPS";
+const MARKER: &str = "# UNKNOWN STEPS";
 
 /// template for new config files
 const TEMPLATE: &str = r#"
@@ -94,6 +95,7 @@ impl Sorter {
       }
       new_content.push(line.to_string());
     }
+    new_content.push(S(""));
     new_content.push(MARKER.to_string());
     new_content.extend(serialized);
     fs::write(FILE_NAME, new_content.join("\n")).map_err(|err| UserError::ConfigFileCreate {
