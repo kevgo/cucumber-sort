@@ -3,7 +3,7 @@ RUN_THAT_APP_VERSION = 0.18.0
 
 clear:  # removes all temporary artifacts
 	rm -f tools/rta*
-	rm -rf tools/node_modules
+	rm -rf node_modules
 	rm -rf target
 
 cuke: build  # runs the end-to-end tests
@@ -12,8 +12,8 @@ cuke: build  # runs the end-to-end tests
 cukethis: build  # runs only end-to-end tests with a @this tag
 	cargo test --test cuke --quiet --locked -- -t @this
 
-doc: tools/node_modules
-	(cd tools && ./rta --optional node node_modules/.bin/text-runner .. --format=dot)
+doc: build node_modules
+	tools/rta --optional node node_modules/.bin/text-runner . --format=dot
 
 fix: tools/rta@${RUN_THAT_APP_VERSION}  # auto-corrects issues
 	tools/rta dprint fmt
@@ -25,14 +25,14 @@ fix: tools/rta@${RUN_THAT_APP_VERSION}  # auto-corrects issues
 install:  # installs the binary on the local machine
 	cargo install --locked --path .
 
-lint: tools/node_modules tools/rta@${RUN_THAT_APP_VERSION}  # checks formatting
+lint: node_modules tools/rta@${RUN_THAT_APP_VERSION}  # checks formatting
 	tools/rta dprint check
 	cargo clippy --all-targets --all-features -- --deny=warnings
 	cargo +nightly fmt -- --check
 	git diff --check
 	tools/rta actionlint
 	cargo machete
-	tools/rta --optional node tools/node_modules/.bin/gherkin-lint
+	tools/rta --optional node node_modules/.bin/gherkin-lint
 
 ps: fix test   # pitstop, run during development
 	cargo run --quiet -- check
@@ -49,7 +49,7 @@ update: tools/rta@${RUN_THAT_APP_VERSION}  # updates the dependencies
 	cargo install cargo-edit
 	cargo upgrade
 	tools/rta --update
-	(cd tools && npm update)
+	npm update
 
 # --- HELPER TARGETS --------------------------------------------------------------------------------------------------------------------------------
 
@@ -59,7 +59,7 @@ build:
 help:  # prints all available targets
 	grep -h -E '^[a-zA-Z_-]+:.*?# .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?# "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
-setup-ci: tools/node_modules
+setup-ci: node_modules
 	rustup component add clippy
 	rustup toolchain add nightly
 	rustup component add rustfmt --toolchain nightly
@@ -71,9 +71,9 @@ tools/rta@${RUN_THAT_APP_VERSION}:
 	mv tools/rta tools/rta@${RUN_THAT_APP_VERSION}
 	ln -s rta@${RUN_THAT_APP_VERSION} tools/rta
 
-tools/node_modules: tools/package-lock.json tools/rta@${RUN_THAT_APP_VERSION}
-	cd tools && ./rta npm ci
-	touch tools/node_modules  # update timestamp of the node_modules folder so that Make doesn't re-install it on every command
+node_modules: package-lock.json tools/rta@${RUN_THAT_APP_VERSION}
+	tools/rta npm ci
+	touch node_modules  # update timestamp of the node_modules folder so that Make doesn't re-install it on every command
 
 .SILENT:
 .DEFAULT_GOAL := help
