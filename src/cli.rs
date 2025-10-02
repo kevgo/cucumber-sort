@@ -51,7 +51,7 @@ pub enum Command {
 }
 
 pub fn create() -> Result<()> {
-  fs::write(FILENAME, TEMPLATE).map_err(|err| UserError::ConfigFileCreate {
+  fs::write(FILENAME, &TEMPLATE[1..]).map_err(|err| UserError::ConfigFileCreate {
     file: FILENAME.into(),
     message: err.to_string(),
   })
