@@ -13,10 +13,10 @@ const TEMPLATE: &str = r#"
 "#;
 
 pub fn parse() -> Command {
-  let args = std::env::args();
+  let cli_args = std::env::args();
   match read_file() {
-    Some(file_args) => Command::parse_from(args.chain(file_args)),
-    None => Command::parse_from(args),
+    Some(file_args) => Command::parse_from(cli_args.chain(file_args)),
+    None => Command::parse_from(cli_args),
   }
 }
 
@@ -50,6 +50,7 @@ pub enum Command {
   Init,
 }
 
+/// creates a default opts config file
 pub fn create() -> Result<()> {
   fs::write(FILENAME, &TEMPLATE[1..]).map_err(|err| UserError::ConfigFileCreate {
     file: FILENAME.into(),
@@ -57,6 +58,7 @@ pub fn create() -> Result<()> {
   })
 }
 
+/// provides the content of the opts config file
 fn read_file() -> Option<Vec<String>> {
   let Ok(text) = fs::read_to_string(FILENAME) else {
     return None;
