@@ -214,10 +214,10 @@ impl Step {
 }
 
 fn is_docstring(text: &str, indent: usize) -> bool {
-  if text.len() < indent {
-    return false;
+  match text.get(indent..) {
+    Some(trimmed) => trimmed == "\"\"\"",
+    None => false,
   }
-  &text[indent..] == "\"\"\""
 }
 
 #[cfg(test)]
