@@ -24,8 +24,10 @@ export function call(action: textRunner.actions.Args, done: textRunner.exports.D
    }
 }
 
+const cucumberSortPath ="../../target/debug/cucumber-sort"
+
 function validate_subcommand(executable: string, subcommand: string, done: textRunner.exports.DoneFunction) {
-   execFile("../../target/debug/cucumber-sort", [subcommand, "--help"], (err: Error | null, stdout: string, stderr: string) => {
+   execFile(cucumberSortPath, [subcommand, "--help"], (err: Error | null, stdout: string, stderr: string) => {
     if (err == null) {
       done()
     } else {
@@ -37,7 +39,7 @@ function validate_subcommand(executable: string, subcommand: string, done: textR
 }
 
 function validate_subcommand_flag(executable: string, subcommand: string, flag: string, done: textRunner.exports.DoneFunction) {
-   execFile("../../target/debug/cucumber-sort", [subcommand, flag, "--help"], (err: Error | null, stdout: string, stderr: string) => {
+   execFile(cucumberSortPath, [subcommand, flag, "--help"], (err: Error | null, stdout: string, stderr: string) => {
     if (err == null) {
       done()
     } else {
