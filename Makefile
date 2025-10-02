@@ -12,6 +12,9 @@ cuke: build  # runs the end-to-end tests
 cukethis: build  # runs only end-to-end tests with a @this tag
 	cargo test --test cuke --quiet --locked -- -t @this
 
+doc: tools/node_modules
+	(cd tools && ./rta --optional node node_modules/.bin/text-runner ..)
+
 fix: tools/rta@${RUN_THAT_APP_VERSION}  # auto-corrects issues
 	tools/rta dprint fmt
 	cargo +nightly fmt
@@ -29,7 +32,7 @@ lint: tools/node_modules tools/rta@${RUN_THAT_APP_VERSION}  # checks formatting
 	git diff --check
 	tools/rta actionlint
 	cargo machete
-	tools/rta node tools/node_modules/.bin/gherkin-lint
+	tools/rta --optional node tools/node_modules/.bin/gherkin-lint
 
 ps: fix test   # pitstop, run during development
 	cargo run --quiet -- check
@@ -37,7 +40,7 @@ ps: fix test   # pitstop, run during development
 setup: setup-ci  # install development dependencies on this computer
 	cargo install cargo-edit cargo-upgrades --locked
 
-test: build unit lint cuke   # runs all tests
+test: build unit lint cuke doc   # runs all tests
 
 unit:  # runs the unit tests
 	@cargo test --locked
