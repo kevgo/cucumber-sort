@@ -26,6 +26,7 @@ Feature: enable options through the opts file
           Then step 2
           And step 1
       """
+    When I run "cucumber-sort check"
     Then it prints:
       """
       features/one.feature:4  expected Then step 1 but found Then step 2
