@@ -1,4 +1,4 @@
-Feature: check unordered steps while failing fast
+Feature: enable options through the opts file
 
   Scenario: unordered step in a scenario
     Given file ".cucumber-sort-order" with content:
@@ -26,7 +26,6 @@ Feature: check unordered steps while failing fast
           Then step 2
           And step 1
       """
-    When I run "cucumber-sort check"
     Then it prints:
       """
       features/one.feature:4  expected Then step 1 but found Then step 2
