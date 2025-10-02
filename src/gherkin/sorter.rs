@@ -1,17 +1,17 @@
 use crate::errors::{Finding, Issue, Result, UserError};
 use crate::gherkin::{self, Keyword};
 use crate::regex::make_regex;
+use big_s::S;
 use camino::Utf8Path;
 use regex::Regex;
 use std::fs;
-use std::fs::OpenOptions;
-use std::io::{ErrorKind, Write};
+use std::io::ErrorKind;
 
 /// the filename of the configuration file
 const FILE_NAME: &str = ".cucumber-sort-order";
 
 /// marker in the config file that separates undefined steps from defined ones
-const MARKER: &str = "\n\n# UNKNOWN STEPS";
+const MARKER: &str = "# UNKNOWN STEPS";
 
 /// template for new config files
 const TEMPLATE: &str = r#"
@@ -83,22 +83,26 @@ impl Sorter {
     }
     serialized.sort();
     serialized.dedup();
-    let content = format!("{MARKER}\n{}", serialized.join("\n"));
-    let mut file = OpenOptions::new()
-      .create(true)
-      .append(true)
-      .open(FILE_NAME)
-      .map_err(|err| UserError::ConfigFileCreate {
-        file: FILE_NAME.into(),
-        message: err.to_string(),
-      })?;
-    file
-      .write_all(content.as_bytes())
-      .map_err(|err| UserError::ConfigFileCreate {
-        file: FILE_NAME.into(),
-        message: err.to_string(),
-      })?;
-    Ok(())
+    let old_content = fs::read_to_string(FILE_NAME).map_err(|err| UserError::ConfigFileRead {
+      file: FILE_NAME.into(),
+      reason: err.to_string(),
+    })?;
+    let mut new_content = vec![];
+    for line in old_content.lines() {
+      if line == MARKER {
+        break;
+      }
+      new_content.push(line.to_string());
+    }
+    if !new_content.last().is_none_or(|s| s.is_empty()) {
+      new_content.push(S(""));
+    }
+    new_content.push(MARKER.to_string());
+    new_content.extend(serialized);
+    fs::write(FILE_NAME, new_content.join("\n")).map_err(|err| UserError::ConfigFileCreate {
+      file: MARKER.into(),
+      message: err.to_string(),
+    })
   }
 
   /// provides a copy of the given document with all Gherkin steps sorted the same way as in the given configuration
@@ -174,11 +178,11 @@ impl Sorter {
   fn parse(text: &str) -> Result<Sorter> {
     let mut entries = vec![];
     for (i, line) in text.lines().enumerate() {
-      if line.is_empty() || line.starts_with('#') {
-        continue;
-      }
       if line == MARKER {
         break;
+      }
+      if line.is_empty() || line.starts_with('#') {
+        continue;
       }
       match Regex::new(line) {
         Ok(regex) => entries.push(Entry {
@@ -341,6 +345,23 @@ mod tests {
     pretty::assert_eq!(want_deoptimized, have_deoptimized);
     let have_optimized = super::optimize_keywords(have_deoptimized);
     pretty::assert_eq!(have_optimized, steps);
+  }
+
+  mod parse {
+    use crate::gherkin::Sorter;
+
+    #[test]
+    fn with_unknown_step() {
+      let give = "step 1\n\n# UNKNOWN STEPS\nstep 2\nstep 3";
+      let have = Sorter::parse(give).unwrap();
+      let have_entries: Vec<&str> = have
+        .entries
+        .iter()
+        .map(|entry| entry.regex.as_str())
+        .collect();
+      let want_entries = vec!["step 1"];
+      pretty::assert_eq!(want_entries, have_entries);
+    }
   }
 
   mod sort_steps {

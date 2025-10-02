@@ -53,3 +53,29 @@ Feature: check unknown steps
       ^another unknown step$
       ^file .* with content:$
       """
+
+  Scenario: run with recording and existing marker
+    Given file ".cucumber-sort-order" with content:
+      """
+      step 1
+
+      # UNKNOWN STEPS
+      ^another unknown step$
+      ^file .* with content:$
+      """
+    When I run "cucumber-sort check --record"
+    Then it prints:
+      """
+      features/one.feature:5  unknown step: file "foo.feature" with content:
+      features/one.feature:11  unknown step: file "foo.feature" with content:
+      features/one.feature:17  unknown step: another unknown step
+      """
+    And the exit code is failure
+    And file ".cucumber-sort-order" now has content:
+      """
+      step 1
+
+      # UNKNOWN STEPS
+      ^another unknown step$
+      ^file .* with content:$
+      """

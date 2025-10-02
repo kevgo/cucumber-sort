@@ -38,3 +38,25 @@ Feature: format unknown steps
       ^step 3$
       """
     And file "features/one.feature" hasn't changed
+
+  Scenario: run with recording and existing marker
+    Given file ".cucumber-sort-order" with content:
+      """
+      step 1
+
+      # UNKNOWN STEPS
+      ^step 3$
+      """
+    When I run "cucumber-sort format --record"
+    Then it prints:
+      """
+      features/one.feature:5  unknown step: step 3
+      """
+    And the exit code is failure
+    And file ".cucumber-sort-order" now has content:
+      """
+      step 1
+
+      # UNKNOWN STEPS
+      ^step 3$
+      """
