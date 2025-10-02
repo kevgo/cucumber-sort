@@ -8,7 +8,7 @@ export function call(action: textRunner.actions.Args, done: textRunner.exports.D
     case 0:
       throw new Error("empty block")
     case 1:
-      throw new Error("no args given")
+      throw new Error("no subcommand")
     case 2:
       action.name(`verify "${args[1]}"`)
       validate_subcommand(args[0], args[1], done)
