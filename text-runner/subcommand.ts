@@ -1,7 +1,7 @@
 import * as textRunner from "text-runner"
 import { execFile } from 'node:child_process';
 
-export function call(action: textRunner.actions.Args, done: textRunner.exports.DoneFunction) {
+export function subcommand(action: textRunner.actions.Args, done: textRunner.exports.DoneFunction) {
   action.name("verify subcommand")
   const args = action.region.text().split(" ")
   switch (args.length) {
