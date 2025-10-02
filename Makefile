@@ -59,12 +59,11 @@ build:
 help:  # prints all available targets
 	grep -h -E '^[a-zA-Z_-]+:.*?# .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?# "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
-setup-ci:
+setup-ci: tools/node_modules
 	rustup component add clippy
 	rustup toolchain add nightly
 	rustup component add rustfmt --toolchain nightly
 	cargo install cargo-machete --locked
-	(cd tools && npm ci)
 
 tools/rta@${RUN_THAT_APP_VERSION}:
 	rm -f tools/rta* tools/rta
@@ -73,7 +72,6 @@ tools/rta@${RUN_THAT_APP_VERSION}:
 	ln -s rta@${RUN_THAT_APP_VERSION} tools/rta
 
 tools/node_modules: tools/package-lock.json tools/rta@${RUN_THAT_APP_VERSION}
-	echo "Installing Node based tools"
 	cd tools && ./rta npm ci
 	touch tools/node_modules  # update timestamp of the node_modules folder so that Make doesn't re-install it on every command
 
