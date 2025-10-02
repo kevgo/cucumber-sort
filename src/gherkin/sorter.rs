@@ -4,8 +4,7 @@ use crate::regex::make_regex;
 use camino::Utf8Path;
 use regex::Regex;
 use std::fs;
-use std::fs::OpenOptions;
-use std::io::{ErrorKind, Write};
+use std::io::ErrorKind;
 
 /// the filename of the configuration file
 const FILE_NAME: &str = ".cucumber-sort-order";
@@ -83,22 +82,24 @@ impl Sorter {
     }
     serialized.sort();
     serialized.dedup();
-    let content = format!("{MARKER}\n{}", serialized.join("\n"));
-    let mut file = OpenOptions::new()
-      .create(true)
-      .append(true)
-      .open(FILE_NAME)
-      .map_err(|err| UserError::ConfigFileCreate {
-        file: FILE_NAME.into(),
-        message: err.to_string(),
-      })?;
-    file
-      .write_all(content.as_bytes())
-      .map_err(|err| UserError::ConfigFileCreate {
-        file: FILE_NAME.into(),
-        message: err.to_string(),
-      })?;
-    Ok(())
+
+    let old_content = fs::read_to_string(FILE_NAME).map_err(|err| UserError::ConfigFileRead {
+      file: FILE_NAME.into(),
+      reason: err.to_string(),
+    })?;
+    let mut new_content = vec![];
+    for line in old_content.lines() {
+      if line == MARKER {
+        break;
+      }
+      new_content.push(line.to_string());
+    }
+    new_content.push(MARKER.to_string());
+    new_content.extend(serialized);
+    fs::write(FILE_NAME, new_content.join("\n")).map_err(|err| UserError::ConfigFileCreate {
+      file: MARKER.into(),
+      message: err.to_string(),
+    })
   }
 
   /// provides a copy of the given document with all Gherkin steps sorted the same way as in the given configuration
