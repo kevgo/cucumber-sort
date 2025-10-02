@@ -83,7 +83,6 @@ impl Sorter {
     }
     serialized.sort();
     serialized.dedup();
-
     let old_content = fs::read_to_string(FILE_NAME).map_err(|err| UserError::ConfigFileRead {
       file: FILE_NAME.into(),
       reason: err.to_string(),
