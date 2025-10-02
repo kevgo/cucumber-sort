@@ -25,3 +25,11 @@ Feature: creating the config files
 
       # features/foo.feature
       """
+    And file ".cucumber-sort-opts" now has content:
+      """
+      # More info at https://github.com/kevgo/cucumber-sort
+      #
+      # This file contains cucumber-sort CLI arguments that you always want to enable.
+
+      # --fail-fast --record
+      """

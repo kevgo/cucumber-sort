@@ -1,8 +1,16 @@
+use crate::errors::{Result, UserError};
 use camino::Utf8PathBuf;
 use clap::Parser;
 use std::fs;
 
 const FILENAME: &str = ".cucumber-sort-opts";
+const TEMPLATE: &str = r#"
+# More info at https://github.com/kevgo/cucumber-sort
+#
+# This file contains cucumber-sort CLI arguments that you always want to enable.
+
+# --fail-fast --record
+"#;
 
 pub fn parse() -> Command {
   let args = std::env::args();
@@ -40,6 +48,13 @@ pub enum Command {
   },
   /// Create the configuration files
   Init,
+}
+
+pub fn create() -> Result<()> {
+  fs::write(FILENAME, TEMPLATE).map_err(|err| UserError::ConfigFileCreate {
+    file: FILENAME.into(),
+    message: err.to_string(),
+  })
 }
 
 fn read_file() -> Option<Vec<String>> {
