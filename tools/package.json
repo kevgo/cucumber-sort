@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "gherkin-lint": "4.2.4"
+    "gherkin-lint": "4.2.4",
+    "text-runner": "7.1.2"
   }
 }

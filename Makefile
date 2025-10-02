@@ -12,6 +12,9 @@ cuke: build  # runs the end-to-end tests
 cukethis: build  # runs only end-to-end tests with a @this tag
 	cargo test --test cuke --quiet --locked -- -t @this
 
+doc: tools/node_modules
+	tools/node_modules/.bin/text-runner
+
 fix: tools/rta@${RUN_THAT_APP_VERSION}  # auto-corrects issues
 	tools/rta dprint fmt
 	cargo +nightly fmt
