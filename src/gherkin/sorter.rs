@@ -40,14 +40,6 @@ pub struct Entry {
   line_no: usize,
 }
 
-impl PartialEq for Entry {
-  fn eq(&self, other: &Self) -> bool {
-    self.regex.as_str() == other.regex.as_str()
-      && self.used == other.used
-      && self.line_no == other.line_no
-  }
-}
-
 impl Sorter {
   pub fn load() -> Result<Sorter> {
     match fs::read_to_string(FILE_NAME) {
