@@ -94,7 +94,7 @@ impl Sorter {
       }
       new_content.push(line.to_string());
     }
-    if !new_content.last().unwrap_or(&S("")).is_empty() {
+    if !new_content.last().is_none_or(|s| s.is_empty()) {
       new_content.push(S(""));
     }
     new_content.push(MARKER.to_string());
