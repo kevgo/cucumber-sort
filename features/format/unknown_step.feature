@@ -45,8 +45,7 @@ Feature: format unknown steps
       step 1
 
       # UNKNOWN STEPS
-      ^another unknown step$
-      ^file .* with content:$
+      ^step 3$
       """
     When I run "cucumber-sort format --record"
     Then it prints:
