@@ -7,7 +7,6 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Document> {
   let mut blocks: Vec<Block> = vec![];
   let mut open_block: Option<Block> = None; // the block that is currently being populated
   let mut open_step: Option<Step> = None; // the step that is currently being populated
-  let mut docstring_indent = None; // if we are inside a docstring, contains the indentation of that docstring
   for line in lines {
     let new_open_block: Option<Block>; // the new value of open_block at the end of this loop
     let new_open_step: Option<Step>; // the new value of open_step at the end of this loop
@@ -24,13 +23,13 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Document> {
           additional_lines: vec![],
         });
       }
-      (LineType::StepStart { keyword: _ }, Some(Block::Sortable(steps)), Some(mut step))
-        if docstring_indent.is_some() =>
+      (_, Some(Block::Sortable(steps)), Some(mut open_step))
+        if line.indent > open_step.indent.len() =>
       {
-        // part of a docstring that looks like a step
-        step.additional_lines.push(line.text);
+        // part of the body of the currently open step
+        open_step.additional_lines.push(line.text);
         new_open_block = Some(Block::Sortable(steps));
-        new_open_step = Some(step);
+        new_open_step = Some(open_step);
       }
       (LineType::StepStart { keyword }, Some(Block::Sortable(mut steps)), Some(step)) => {
         // a step in the middle of populating a sortable block
@@ -44,32 +43,18 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Document> {
           additional_lines: vec![],
         });
       }
-      (LineType::DocStringStartStop, Some(Block::Sortable(steps)), Some(mut step)) => {
-        if let Some(wrapper_indent) = &docstring_indent {
-          if *wrapper_indent == step.indent.len() {
-            // we found the closing docstring delimiter
-            docstring_indent = None;
-          }
-        } else {
-          // we found a starting docstring delimiter
-          docstring_indent = Some(step.indent.len());
-        }
-        step.additional_lines.push(line.text);
-        new_open_block = Some(Block::Sortable(steps));
-        new_open_step = Some(step);
-      }
       (LineType::Text, None, None) => {
         // the first line of the document
         new_open_block = Some(Block::Static(vec![line.text]));
         new_open_step = None;
       }
-      (LineType::Text, Some(Block::Sortable(steps)), Some(mut step))
-        if docstring_indent.is_some() =>
+      (LineType::Text, Some(Block::Sortable(steps)), Some(mut open_step))
+        if line.text.is_empty() && open_step.has_open_docstring() =>
       {
-        // we are inside a docstring, this text line does not start a text block, it is part of the docstring content
-        step.additional_lines.push(line.text);
+        // an empty line inside a docstring
+        open_step.additional_lines.push(line.text);
         new_open_block = Some(Block::Sortable(steps));
-        new_open_step = Some(step);
+        new_open_step = Some(open_step);
       }
       (LineType::Text, Some(Block::Sortable(mut steps)), Some(step)) => {
         // the first static line after a sortable block
@@ -95,18 +80,6 @@ pub fn file(lines: Vec<lexer::Line>) -> Result<Document> {
       }
       (LineType::StepStart { keyword: _ }, Some(Block::Static(_lines)), Some(_step)) => {
         panic!("should not have an open step while there is an open text block");
-      }
-      (LineType::DocStringStartStop, None, None) => {
-        panic!("should not have a comment start without an open step or block")
-      }
-      (LineType::DocStringStartStop, None, Some(_step)) => {
-        panic!("should not have a comment start without an open block")
-      }
-      (LineType::DocStringStartStop, Some(_block), None) => {
-        panic!("should not have a docstring start without an open step")
-      }
-      (LineType::DocStringStartStop, Some(Block::Static(_lines)), Some(_step)) => {
-        panic!("should not have an opening comment and open step in the middle of a text block")
       }
       (LineType::Text, None, Some(_step)) => {
         panic!("should not have an open step without an open block")
@@ -228,6 +201,25 @@ pub struct Step {
   pub additional_lines: Vec<String>,
 }
 
+impl Step {
+  fn has_open_docstring(&self) -> bool {
+    let mut result = false;
+    for additional_line in &self.additional_lines {
+      if is_docstring(additional_line, self.indent.len() + 2) {
+        result = !result;
+      }
+    }
+    result
+  }
+}
+
+fn is_docstring(text: &str, indent: usize) -> bool {
+  match text.get(indent..) {
+    Some(trimmed) => trimmed == "\"\"\"",
+    None => false,
+  }
+}
+
 #[cfg(test)]
 impl Default for Step {
   fn default() -> Self {
@@ -237,6 +229,35 @@ impl Default for Step {
       additional_lines: Default::default(),
       indent: Default::default(),
       line_no: Default::default(),
+    }
+  }
+}
+
+#[cfg(test)]
+mod tests {
+
+  #[test]
+  fn is_docstring() {
+    assert!(super::is_docstring("    \"\"\"", 4));
+    assert!(super::is_docstring("      \"\"\"", 6));
+    assert!(!super::is_docstring("      \"\"\"", 4));
+    assert!(!super::is_docstring("", 4));
+  }
+
+  mod has_open_docstring {
+    use crate::gherkin::{Keyword, Step};
+    use big_s::S;
+
+    #[test]
+    fn one_docstring_delimiter() {
+      let step = Step {
+        line_no: 0,
+        indent: S("    "),
+        keyword: Keyword::And,
+        title: S("foo"),
+        additional_lines: vec![S("      \"\"\"")],
+      };
+      assert!(step.has_open_docstring());
     }
   }
 }

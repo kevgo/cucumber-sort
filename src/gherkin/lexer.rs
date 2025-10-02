@@ -47,7 +47,7 @@ impl Line {
       return text_line(number, text, indent);
     }
     if trimmed_text == "\"\"\"" {
-      return docstring_line(number, text, indent);
+      return text_line(number, text, indent);
     }
 
     // step 2: find the end of the first word
@@ -101,20 +101,8 @@ fn text_line(number: usize, text: String, indent: usize) -> Result<Line> {
   })
 }
 
-fn docstring_line(number: usize, text: String, indent: usize) -> Result<Line> {
-  Ok(Line {
-    number,
-    text,
-    indent,
-    title_start: indent,
-    line_type: LineType::DocStringStartStop,
-  })
-}
-
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum LineType {
-  /// the start or stop of a Gherkin docstring
-  DocStringStartStop,
   /// the start of a Gherkin step, i.e. "Given", "When", "Then", etc
   StepStart { keyword: Keyword },
   /// static text that shouldn't be sorted
@@ -205,7 +193,7 @@ mod tests {
     fn four_spaces_docstring() {
       let have = Line::new(S("    \"\"\""), 12).unwrap();
       assert_eq!(have.indent_text(), "    ");
-      assert_eq!(have.line_type, LineType::DocStringStartStop);
+      assert_eq!(have.line_type, LineType::Text);
       assert_eq!(have.title(), "\"\"\"");
     }
 

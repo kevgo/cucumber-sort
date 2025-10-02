@@ -171,7 +171,7 @@ Feature: test
         },
       ];
       pretty::assert_eq!(want_lines, have_lines);
-
+      //
       // step 2: parse the Lines into blocks
       let have_feature = parser::file(have_lines).unwrap();
       let want_feature = parser::Document {
@@ -237,7 +237,7 @@ Feature: test
         ],
       };
       pretty::assert_eq!(want_feature, have_feature);
-
+      //
       // step 3: serialize the block back into lines
       let have_lines = have_feature.lines();
       let want_lines = Lines::from(vec![
@@ -257,7 +257,7 @@ Feature: test
         S("    Then step 7"),
       ]);
       pretty::assert_eq!(have_lines, want_lines);
-
+      //
       // step 4: serialize back into the original string
       let have_text = have_lines.to_string();
       pretty::assert_eq!(source[1..], have_text);
@@ -340,7 +340,7 @@ Feature: test
         },
       ];
       pretty::assert_eq!(want_lines, have_lines);
-
+      //
       // step 2: parse the Lines into blocks
       let have_feature = parser::file(have_lines).unwrap();
       let want_feature = parser::Document {
@@ -370,7 +370,7 @@ Feature: test
         ],
       };
       pretty::assert_eq!(want_feature, have_feature);
-
+      //
       // step 3: serialize the block back into lines
       let have_lines = have_feature.lines();
       let want_lines = Lines::from(vec![
@@ -384,7 +384,7 @@ Feature: test
         S("    And step 3"),
       ]);
       pretty::assert_eq!(want_lines, have_lines);
-
+      //
       // step 4: serialize back into the original string
       let have_text = have_lines.to_string();
       pretty::assert_eq!(source[1..], have_text);
@@ -440,7 +440,7 @@ Feature: test
           number: 4,
           text: S(r#"      """"#),
           indent: 6,
-          line_type: LineType::DocStringStartStop,
+          line_type: LineType::Text,
           title_start: 6,
         },
         Line {
@@ -461,7 +461,7 @@ Feature: test
           number: 7,
           text: S(r#"      """"#),
           indent: 6,
-          line_type: LineType::DocStringStartStop,
+          line_type: LineType::Text,
           title_start: 6,
         },
         Line {
@@ -475,7 +475,7 @@ Feature: test
         },
       ];
       pretty::assert_eq!(want_lines, have_lines);
-
+      //
       // step 2: parse the Lines into blocks
       let have_feature = parser::file(have_lines).unwrap();
       let want_feature = parser::Document {
@@ -509,7 +509,7 @@ Feature: test
         ],
       };
       pretty::assert_eq!(want_feature, have_feature);
-
+      //
       // step 3: serialize the block back into lines
       let have_lines = have_feature.lines();
       let want_lines = Lines::from(vec![
@@ -524,7 +524,7 @@ Feature: test
         S("    And step 2"),
       ]);
       pretty::assert_eq!(want_lines, have_lines);
-
+      //
       // step 4: serialize back into the original string
       let have_text = have_lines.to_string();
       pretty::assert_eq!(source[1..], have_text);
@@ -537,11 +537,12 @@ Feature: test
 Feature: test
 
   Scenario: with table
-    Given step 1:
+    Given step 1
+    And step 2:
       | HEAD A | HEAD B |
       | row 1A | row 1B |
       | row 2A | row 2B |
-    And step 2
+    And step 3
 "#;
       let have_lines = lexer::file(BufReader::new(&source.as_bytes()[1..])).unwrap();
       let want_lines = vec![
@@ -568,7 +569,7 @@ Feature: test
         },
         Line {
           number: 3,
-          text: S("    Given step 1:"),
+          text: S("    Given step 1"),
           indent: 4,
           line_type: LineType::StepStart {
             keyword: Keyword::Given,
@@ -577,28 +578,37 @@ Feature: test
         },
         Line {
           number: 4,
+          text: S("    And step 2:"),
+          indent: 4,
+          line_type: LineType::StepStart {
+            keyword: Keyword::And,
+          },
+          title_start: 8,
+        },
+        Line {
+          number: 5,
           text: S("      | HEAD A | HEAD B |"),
           indent: 6,
           line_type: LineType::Text,
           title_start: 6,
         },
         Line {
-          number: 5,
+          number: 6,
           text: S("      | row 1A | row 1B |"),
           indent: 6,
           line_type: LineType::Text,
           title_start: 6,
         },
         Line {
-          number: 6,
+          number: 7,
           text: S("      | row 2A | row 2B |"),
           indent: 6,
           line_type: LineType::Text,
           title_start: 6,
         },
         Line {
-          number: 7,
-          text: S("    And step 2"),
+          number: 8,
+          text: S("    And step 3"),
           indent: 4,
           line_type: LineType::StepStart {
             keyword: Keyword::And,
@@ -613,25 +623,33 @@ Feature: test
       let want_feature = parser::Document {
         blocks: vec![
           Block::Static(vec![S("Feature: test"), S(""), S("  Scenario: with table")]),
-          Block::Sortable(vec![Step {
-            title: S("step 1:"),
-            keyword: Keyword::Given,
-            additional_lines: vec![],
-            indent: S("    "),
-            line_no: 3,
-          }]),
-          Block::Static(vec![
-            S("      | HEAD A | HEAD B |"),
-            S("      | row 1A | row 1B |"),
-            S("      | row 2A | row 2B |"),
+          Block::Sortable(vec![
+            Step {
+              title: S("step 1"),
+              keyword: Keyword::Given,
+              additional_lines: vec![],
+              indent: S("    "),
+              line_no: 3,
+            },
+            Step {
+              line_no: 4,
+              title: S("step 2:"),
+              indent: S("    "),
+              keyword: Keyword::And,
+              additional_lines: vec![
+                S("      | HEAD A | HEAD B |"),
+                S("      | row 1A | row 1B |"),
+                S("      | row 2A | row 2B |"),
+              ],
+            },
+            Step {
+              line_no: 8,
+              indent: S("    "),
+              keyword: Keyword::And,
+              title: S("step 3"),
+              additional_lines: vec![],
+            },
           ]),
-          Block::Sortable(vec![Step {
-            title: S("step 2"),
-            keyword: Keyword::And,
-            additional_lines: vec![],
-            indent: S("    "),
-            line_no: 7,
-          }]),
         ],
       };
       pretty::assert_eq!(want_feature, have_feature);
@@ -642,11 +660,12 @@ Feature: test
         S("Feature: test"),
         S(""),
         S("  Scenario: with table"),
-        S("    Given step 1:"),
+        S("    Given step 1"),
+        S("    And step 2:"),
         S("      | HEAD A | HEAD B |"),
         S("      | row 1A | row 1B |"),
         S("      | row 2A | row 2B |"),
-        S("    And step 2"),
+        S("    And step 3"),
       ]);
       pretty::assert_eq!(want_lines, have_lines);
 
@@ -842,7 +861,7 @@ Feature: test
           number: 4,
           text: S(r#"      """"#),
           indent: 6,
-          line_type: LineType::DocStringStartStop,
+          line_type: LineType::Text,
           title_start: 6,
         },
         Line {
@@ -865,7 +884,7 @@ Feature: test
           number: 7,
           text: S("      \"\"\""),
           indent: 6,
-          line_type: LineType::DocStringStartStop,
+          line_type: LineType::Text,
           title_start: 6,
         },
         Line {
