@@ -24,7 +24,7 @@ export function call(action: textRunner.actions.Args, done: textRunner.exports.D
    }
 }
 
-const cucumberSortPath ="../../target/debug/cucumber-sort"
+const cucumberSortPath ="../target/debug/cucumber-sort"
 
 function validate_subcommand(executable: string, subcommand: string, done: textRunner.exports.DoneFunction) {
    execFile(cucumberSortPath, [subcommand, "--help"], (err: Error | null, stdout: string, stderr: string) => {
