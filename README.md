@@ -57,8 +57,9 @@ Gherkin steps should occur in your `.feature` files and has this content:
 
 </a>
 
-Now we sort the steps in this file the way we want them to occur in recipes, for
-example like this:
+Everything in this file below `# UNKNOWN STEPS` are steps that _cucumber-sort_
+can see but doesn't know the order of yet. Let's sort the steps in this file the
+way we want them to occur in recipes, for example like this:
 
 <a type="workspace/new-file" filename=".cucumber-sort-order">
 
