@@ -51,7 +51,7 @@ Feature: check unknown steps
 
       # UNKNOWN STEPS
       ^another unknown step$
-      ^file .* with content:$
+      ^file ".*" with content:$
       """
 
   Scenario: run with recording and existing marker
@@ -77,5 +77,5 @@ Feature: check unknown steps
 
       # UNKNOWN STEPS
       ^another unknown step$
-      ^file .* with content:$
+      ^file ".*" with content:$
       """

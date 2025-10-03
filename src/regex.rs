@@ -8,7 +8,7 @@ pub fn make_regex(text: &str) -> String {
       while let Some(inner_ch) = chars.next()
         && inner_ch != '"'
       {}
-      result.push_str(".*");
+      result.push_str("\".*\"");
     } else {
       result.push(ch);
     }
@@ -28,12 +28,12 @@ mod tests {
       // one capture
       (
         "file \"foo.feature\" contains a bar",
-        "^file .* contains a bar$",
+        "^file \".*\" contains a bar$",
       ),
       // multiple captures
       (
         "file \"foo.feature\" contains \"bar\"",
-        "^file .* contains .*$",
+        "^file \".*\" contains \".*\"$",
       ),
     ];
     for (give, want) in tests {
