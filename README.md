@@ -52,7 +52,10 @@ This creates file **.cucumber-sort-order** with this content:
 
 </a>
 
-Now we sort the steps in this file the way we want them to occur in recipes:
+Now we sort the steps in this file the way we want them to occur in recipes, for
+example like this:
+
+<a type="workspace/new-file" filename=".cucumber-sort-order">
 
 ```sh
 # TOOLS
@@ -72,23 +75,32 @@ I add cinnamon
 I bake it
 ```
 
+</a>
+
 Let's apply this new order:
 
-```
+<pre type="shell/command">
 cucumber-sort format
-```
+</pre>
 
-Now the steps in all our recipes follow this order. Here is our apple pie recipe
-from above, ordered by cucumber-sort:
+<a type="workspace/existing-file-with-content">
+
+Now the steps in all our recipes follow this order. Here is file
+**apple_pie.feature** from above, ordered by cucumber-sort:
 
 ```cucumber
-Given a bowl
-When I add flour
-And I add butter
-And I add apples
-And I add cinnamon
-And I bake it
+Feature: apple pie
+
+  Scenario: apple-cinnamon pie
+    Given a bowl
+    When I add flour
+    And I add butter
+    And I add apples
+    And I add cinnamon
+    And I bake it
 ```
+
+</a>
 
 Our recipe database works the same before and after, but now it's organized more
 consistently.
