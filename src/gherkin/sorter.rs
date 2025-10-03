@@ -81,10 +81,7 @@ impl Sorter {
     }
     serialized.sort();
     serialized.dedup();
-    let old_content = fs::read_to_string(FILE_NAME).map_err(|err| UserError::ConfigFileRead {
-      file: FILE_NAME.into(),
-      reason: err.to_string(),
-    })?;
+    let old_content = fs::read_to_string(FILE_NAME).unwrap_or(S(""));
     let mut new_content = vec![];
     for line in old_content.lines() {
       if line == MARKER {
