@@ -77,8 +77,8 @@ async fn create_file(world: &mut MyWorld, step: &Step, filename: String) {
   {
     fs::create_dir_all(parent).await.unwrap();
   }
-  fs::write(&filepath, content).await.unwrap();
-  world.files.push((filepath, raw_content.to_string()));
+  fs::write(&filepath, &content).await.unwrap();
+  world.files.push((filepath, content));
 }
 
 #[then(expr = "file {string} now has content:")]
