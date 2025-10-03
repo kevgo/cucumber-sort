@@ -51,13 +51,13 @@ a bowl
 I add flour
 I add butter
 
-# ADD FRUITS
+# FRUITS
 I add apples
 
-# ADD SPICES
+# SPICES
 I add cinnamon
 
-# COOK IT
+# COOKINg
 I bake it
 ```
 
