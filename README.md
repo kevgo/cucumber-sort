@@ -29,7 +29,7 @@ suite for us:
 cucumber-sort check --record
 ```
 
-This creates file **.cucumber-sort-order** with this content:
+This creates file `.cucumber-sort-order` with this content:
 
 ```sh
 # UNKNOWN STEPS
