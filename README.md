@@ -67,8 +67,8 @@ Let's apply this new order:
 cucumber-sort format
 ```
 
-Now the steps in all our recipes follow this order. Here is our reordered
-recipe:
+Now the steps in all our recipes follow this order. Here is our apple pie recipe
+from above, ordered by cucumber-sort:
 
 ```cucumber
 Given a bowl
