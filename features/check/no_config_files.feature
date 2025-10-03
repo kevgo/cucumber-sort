@@ -4,7 +4,7 @@ Feature: run without config file
     Given file "features/one.feature" with content:
       """
       Feature: example
-      
+
         Scenario: test
           Given file "foo" with content:
             '''
