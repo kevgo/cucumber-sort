@@ -4,8 +4,8 @@
 
 **cucumber-sort** enforces a consistent step order in your
 [Cucumber](https://cucumber.io) `.feature` files. As an example, let's say you
-have a database of executable cooking recipes, written in Cucumber. Here is a
-(simplified) recipe for apple pie from it:
+have a database of executable cooking recipes, written in Cucumber. Here is file
+**apple_pie.feature** from it:
 
 ```cucumber
 Given a bowl
