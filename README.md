@@ -17,9 +17,8 @@ And I bake it
 ```
 
 The recipe is technically correct, the "test" passes. But it would be easier to
-reason about and compare it to the other recipes in our recipet suite if we
-always specified the base dough first, and then add the additional ingredients
-like fruits and spices.
+reason about and compare it to other recipes if we always specified the base
+dough first, and then add the additional ingredients like fruits and spices.
 
 This is what cucumber-sort helps you with. It enforces a specific order of steps
 in your Cucumber files.
