@@ -18,8 +18,8 @@ And I bake it
 
 The recipe is technically correct. The "test" passes, it produces apple pie.
 However, this recipe would be easier to reason about and compare with other
-recipes if we always specified the base dough ingredients first, and then list
-condiments like fruits and spices.
+recipes if we always specified the basic ingredients first and after that list
+the condiments.
 
 This is what cucumber-sort helps you with. It enforces a specific order of steps
 in your Cucumber files. Let's run it to collect all used steps for us:
