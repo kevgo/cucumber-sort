@@ -34,7 +34,7 @@ condiments at the end.
 This is what _cucumber-sort_ helps you with. It enforces a specific order of
 steps in your Cucumber files.
 
-Let's have it collect all the steps used in our test suite for us:
+Let's have it collect all the Gherkin steps from our test suite:
 
 <pre type="shell/command" allow-error>
 cucumber-sort check --record
