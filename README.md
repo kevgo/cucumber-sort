@@ -32,8 +32,9 @@ recipes if they always started with the basic ingredients and list the
 condiments at the end.
 
 This is what _cucumber-sort_ helps you with. It enforces a specific order of
-steps in your Cucumber files. Let's have it collect all the steps used in our
-test suite for us:
+steps in your Cucumber files.
+
+On first use, let's have it collect all the steps used in our test suite for us:
 
 <pre type="shell/command" allow-error>
 cucumber-sort check --record
