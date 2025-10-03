@@ -7,9 +7,8 @@ your [Cucumber](https://cucumber.io) test suite.
 
 ## Usage example
 
-As an example, let's say you have a database of executable cooking recipes for
-your robotic kitchen, implemented in Cucumber. Here is a recipe for apple pie
-from it:
+Let's say you have a database of executable cooking recipes for your robotic
+kitchen, implemented in Cucumber. Here is a recipe for apple pie from it:
 
 <a type="workspace/new-file" filename="apple_pie.feature">
 
