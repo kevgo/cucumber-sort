@@ -3,10 +3,9 @@
 ![build status](https://github.com/kevgo/cucumber-sort/actions/workflows/ci.yml/badge.svg)
 
 **cucumber-sort** enforces a consistent step order in your
-[Cucumber](https://cucumber.io) `.feature` files.
-
-As an example, let's say you have a database of executable cooking recipes,
-written in Cucumber. Here is a (simplified) recipe for apple pie from it:
+[Cucumber](https://cucumber.io) `.feature` files. As an example, let's say you
+have a database of executable cooking recipes, written in Cucumber. Here is a
+(simplified) recipe for apple pie from it:
 
 ```cucumber
 Given a bowl
