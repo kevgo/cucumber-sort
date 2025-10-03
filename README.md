@@ -90,7 +90,7 @@ And I bake it
 Our recipe database works the same before and after, but now it's organized more
 consistently.
 
-### Installation
+## Installation
 
 The easiest way to run `cucumber-sort` is via
 [run-that-app](https://github.com/kevgo/run-that-app):
@@ -113,7 +113,7 @@ Other options:
     cargo install --locked --path .
     ```
 
-### Configuration file
+## Configuration file
 
 Generate the default config files with:
 
@@ -123,7 +123,7 @@ cucumber-sort init
 
 This creates three files:
 
-#### .cucumber-sort-order
+### .cucumber-sort-order
 
 Defines the step order. Add step names (without `Given`/`When`/`Then`) in the
 order you want them to appear in your `.feature` files.
@@ -135,15 +135,15 @@ order you want them to appear in your `.feature` files.
 > Take a look at our own [.cucumber-sort-order file](.cucumber-sort-order) for
 > an example config file.
 
-#### .cucumber-sort-ignore
+### .cucumber-sort-ignore
 
 Contains glob patterns for files that `cucumber-sort` should ignore.
 
-#### .cucumber-sort-opts
+### .cucumber-sort-opts
 
 Contains cucumber-sort CLI arguments that you always want to enable.
 
-### Usage
+## Usage
 
 Format all `.feature` files to the configured step order:
 
