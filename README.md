@@ -9,7 +9,7 @@ your [Cucumber](https://cucumber.io) test suite.
 
 Let's say you have a database of executable cooking recipes for your robotic
 kitchen, implemented in Cucumber. Here is a recipe from it, for making apple
-pie:
+pie. We have simplified it to keep it concise.
 
 <a type="workspace/new-file" filename="apple_pie.feature">
 
