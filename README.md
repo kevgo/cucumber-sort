@@ -18,7 +18,7 @@ Feature: apple pie
     And I add apples
     And I add butter
     And I add flour
-    And I bake it
+    Then I bake it
 ```
 
 </a>
@@ -97,7 +97,7 @@ Feature: apple pie
     And I add butter
     And I add apples
     And I add cinnamon
-    And I bake it
+    Then I bake it
 ```
 
 </a>
