@@ -1,4 +1,3 @@
-use ansi_term::Color::Cyan;
 use camino::Utf8PathBuf;
 
 /// UserError happen when the user uses this app the wrong way.
@@ -14,9 +13,6 @@ pub enum UserError {
     file: Utf8PathBuf,
     line: usize,
     message: String,
-  },
-  ConfigFileNotFound {
-    file: Utf8PathBuf,
   },
   ConfigFileRead {
     file: Utf8PathBuf,
@@ -53,13 +49,6 @@ impl UserError {
       } => (
         format!("{}:{}  invalid regular expression", file, line),
         Some(message),
-      ),
-      UserError::ConfigFileNotFound { file } => (
-        format!("config file ({}) not found", file),
-        Some(format!(
-          "Please run {} to create the config files.",
-          Cyan.paint("cucumber-sort init")
-        )),
       ),
       UserError::ConfigFileRead { file, reason } => (
         format!("cannot read configuration file: {reason}"),

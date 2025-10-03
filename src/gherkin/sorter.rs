@@ -45,9 +45,7 @@ impl Sorter {
     match fs::read_to_string(FILE_NAME) {
       Ok(text) => Sorter::parse(&text),
       Err(err) => match err.kind() {
-        ErrorKind::NotFound => Err(UserError::ConfigFileNotFound {
-          file: FILE_NAME.into(),
-        }),
+        ErrorKind::NotFound => Ok(Sorter { entries: vec![] }),
         _ => Err(UserError::ConfigFileRead {
           file: FILE_NAME.into(),
           reason: err.to_string(),
