@@ -16,15 +16,13 @@ And I add flour
 And I bake it
 ```
 
-The recipe is technically correct. The "test" passes, we get apple pie. But this
-recipe would be easier to reason about and compare with other recipes if we
-always specified the base dough ingredients first, and then add additional
-ingredients like fruits and spices.
+The recipe is technically correct. The "test" passes, it results in apple pie.
+However, this recipe would be easier to reason about and compare with other
+recipes if we always specified the base dough ingredients first, and then list
+condiments like fruits and spices.
 
 This is what cucumber-sort helps you with. It enforces a specific order of steps
-in your Cucumber files.
-
-Let's run it to collect all used steps for us:
+in your Cucumber files. Let's run it to collect all used steps for us:
 
 ```
 cucumber-sort check --record
