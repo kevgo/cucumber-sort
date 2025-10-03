@@ -42,7 +42,8 @@ cucumber-sort check --record
 
 <a type="workspace/existing-file-with-content">
 
-This creates file **.cucumber-sort-order** with this content:
+This creates file **.cucumber-sort-order**. This file defines the order in which
+Gherkin steps should occur in your `.feature` files. It has this content:
 
 ```sh
 # UNKNOWN STEPS
