@@ -28,9 +28,9 @@ However, this recipe would be easier to reason about and compare with other
 recipes if they always started with the basic ingredients and list the
 condiments at the end.
 
-This is what cucumber-sort helps you with. It enforces a specific order of steps
-in your Cucumber files. Let's have it collect all the steps used in our test
-suite for us:
+This is what _cucumber-sort_ helps you with. It enforces a specific order of
+steps in your Cucumber files. Let's have it collect all the steps used in our
+test suite for us:
 
 <pre type="shell/command" allow-error>
 cucumber-sort check --record
