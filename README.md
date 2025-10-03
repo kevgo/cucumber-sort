@@ -5,7 +5,9 @@
 **cucumber-sort** enforces a consistent step order in the `.feature` files of
 your [Cucumber](https://cucumber.io) test suite. As an example, let's say you
 have a database of executable cooking recipes for your robotic kitchen,
-implemented in Cucumber. Here is file **apple_pie.feature** from it:
+implemented in Cucumber. Here is a recipe for apple pie from it:
+
+<a type="workspace/new-file" filename="apple_pie.feature">
 
 ```cucumber
 Given a bowl
@@ -16,18 +18,22 @@ And I add flour
 And I bake it
 ```
 
+</a>
+
 The recipe is technically correct. The "test" passes, it produces apple pie.
 However, this recipe would be easier to reason about and compare with other
-recipes if we always specified the basic ingredients first and then list the
-condiments.
+recipes if they always started with the basic ingredients and afterwards list
+the condiments.
 
 This is what cucumber-sort helps you with. It enforces a specific order of steps
 in your Cucumber files. Let's have it collect all the steps used in our test
 suite for us:
 
-```
+<pre type="shell/command">
 cucumber-sort check --record
-```
+</pre>
+
+<a type="workspace/existing-file-with-content">
 
 This creates file `.cucumber-sort-order` with this content:
 
@@ -40,6 +46,8 @@ I add butter
 I add flour
 I bake it
 ```
+
+</a>
 
 Now we sort the steps in this file the way we want them to occur in recipes:
 
