@@ -43,7 +43,7 @@ cucumber-sort check --record
 <a type="workspace/existing-file-with-content">
 
 This creates file **.cucumber-sort-order**. It defines the order in which
-Gherkin steps should occur in your `.feature` files and has this content:
+Gherkin steps should occur in your feature files and has this content:
 
 ```sh
 # UNKNOWN STEPS
@@ -51,7 +51,6 @@ Gherkin steps should occur in your `.feature` files and has this content:
 ^I add butter$
 ^I add cinnamon$
 ^I add flour$
-^I bake it$
 ^a bowl$
 ```
 
@@ -59,10 +58,11 @@ Gherkin steps should occur in your `.feature` files and has this content:
 
 Everything in this file below `# UNKNOWN STEPS` are Gherkin steps that
 _cucumber-sort_ can see but doesn't know how to order. Let's arrange the steps
-in this file the way we want them to occur in our recipes, for example like
-this:
+in this file the way we want them to occur in our recipes.
 
-<a type="workspace/new-file" filename=".cucumber-sort-order">
+<a type="workspace/new-file">
+
+We change file **.cucumber-sort-order** to look like this:
 
 ```sh
 # TOOLS
@@ -101,7 +101,6 @@ Feature: apple pie
     And I add butter
     And I add apples
     And I add cinnamon
-    Then I bake it
 ```
 
 </a>
