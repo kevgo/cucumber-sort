@@ -2,7 +2,7 @@
 
 ![build status](https://github.com/kevgo/cucumber-sort/actions/workflows/ci.yml/badge.svg)
 
-**cucumber-sort** enforces a consistent step order in the `.feature` file of
+**cucumber-sort** enforces a consistent step order in the `.feature` files of
 your [Cucumber](https://cucumber.io) test suite. As an example, let's say you
 have a database of executable cooking recipes, written in Cucumber. Here is file
 **apple_pie.feature** from it:
