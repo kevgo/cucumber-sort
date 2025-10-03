@@ -41,7 +41,7 @@ I add flour
 I bake it
 ```
 
-All we need to is sort the steps in this file the way we want the steps to be:
+Now we sort the steps in this file the way we want them to occur in recipes:
 
 ```sh
 # TOOLS
