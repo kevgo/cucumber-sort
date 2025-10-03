@@ -23,7 +23,6 @@ Feature: run without config file
     And the exit code is failure
     And file contents haven't changed
 
-  @this
   Scenario: format and record
     When I run "cucumber-sort format --record"
     Then it prints:
