@@ -10,12 +10,15 @@ implemented in Cucumber. Here is a recipe for apple pie from it:
 <a type="workspace/new-file" filename="apple_pie.feature">
 
 ```cucumber
-Given a bowl
-When I add cinnamon
-And I add apples
-And I add butter
-And I add flour
-And I bake it
+Feature: apple pie
+
+  Scenario: apple-cinnamon pie
+    Given a bowl
+    When I add cinnamon
+    And I add apples
+    And I add butter
+    And I add flour
+    And I bake it
 ```
 
 </a>
@@ -29,22 +32,22 @@ This is what cucumber-sort helps you with. It enforces a specific order of steps
 in your Cucumber files. Let's have it collect all the steps used in our test
 suite for us:
 
-<pre type="shell/command">
+<pre type="shell/command" allow-error>
 cucumber-sort check --record
 </pre>
 
 <a type="workspace/existing-file-with-content">
 
-This creates file `.cucumber-sort-order` with this content:
+This creates file **.cucumber-sort-order** with this content:
 
 ```sh
 # UNKNOWN STEPS
-a bowl
-I add cinnamon
-I add apples
-I add butter
-I add flour
-I bake it
+^I add apples$
+^I add butter$
+^I add cinnamon$
+^I add flour$
+^I bake it$
+^a bowl$
 ```
 
 </a>

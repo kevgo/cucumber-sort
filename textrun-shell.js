@@ -5,7 +5,7 @@ const __dirname = url.fileURLToPath(new URL(".", import.meta.url))
 const cucumber_sort_path = path.join(__dirname, "target", "debug", "cucumber-sort")
 
 export default {
-  binaries: {
+  globals: {
     "cucumber-sort": cucumber_sort_path
   }
 }
