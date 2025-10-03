@@ -79,8 +79,8 @@ And I add cinnamon
 And I bake it
 ```
 
-The Cucumber suite works the same before and after, but now it's better
-organized.
+Our recipe database works the same before and after, but now it's organized more
+consistently.
 
 ### Installation
 
