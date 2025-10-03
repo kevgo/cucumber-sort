@@ -16,13 +16,12 @@ pie. We have simplified it to keep it concise.
 ```cucumber
 Feature: apple pie
 
-  Scenario: apple-cinnamon pie
+  Scenario: make the dough
     Given a bowl
     When I add cinnamon
     And I add apples
     And I add butter
     And I add flour
-    Then I bake it
 ```
 
 </a>
@@ -95,7 +94,7 @@ Now the steps in all our recipes follow this order. Here is file
 ```cucumber
 Feature: apple pie
 
-  Scenario: apple-cinnamon pie
+  Scenario: make the dough
     Given a bowl
     When I add flour
     And I add butter
