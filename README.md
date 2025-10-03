@@ -22,8 +22,8 @@ recipes if we always specified the basic ingredients first and then list the
 condiments.
 
 This is what cucumber-sort helps you with. It enforces a specific order of steps
-in your Cucumber files. Let's start by have it collect all the steps used in our
-test suite for us:
+in your Cucumber files. Let's have it collect all the steps used in our test
+suite for us:
 
 ```
 cucumber-sort check --record
