@@ -77,9 +77,6 @@ I add apples
 
 # SPICES
 I add cinnamon
-
-# COOKINg
-I bake it
 ```
 
 </a>
