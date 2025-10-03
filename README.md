@@ -16,7 +16,7 @@ And I add flour
 And I bake it
 ```
 
-The recipe is technically correct. The "test" passes, it results in apple pie.
+The recipe is technically correct. The "test" passes, it produces apple pie.
 However, this recipe would be easier to reason about and compare with other
 recipes if we always specified the base dough ingredients first, and then list
 condiments like fruits and spices.
