@@ -30,3 +30,9 @@ Feature: run without config file
       features/one.feature:8  unknown step: step 2
       """
     And the exit code is failure
+    And file ".cucumber-sort-order" now has content:
+      """
+      # UNKNOWN STEPS
+      ^file ".*" with content:$
+      ^step 2$
+      """
