@@ -26,16 +26,16 @@ Feature: apple pie
 
 </a>
 
-The recipe is technically correct. The "test" passes, it produces apple pie.
-However, this recipe would be easier to reason about and compare with other
-recipes if they always started with the basic ingredients and list the optional
-ingredients at the end.
+This scenario works: it produces an apple pie. But it's not well organized.
+Recipes would be easier to read and compare if they always listed the basic
+ingredients first and then the optional ones.
 
-This is what _cucumber-sort_ helps you with. It enforces a specific order of
-steps in your Cucumber files.
+That's exactly what _cucumber-sort_ helps with. It enforces a predictable,
+project-wide order of steps in your Cucumber files.
 
-To start using it, let's collect all the Gherkin steps from our test suite into
-a file, so that we can order them:
+### Step 1: record all steps
+
+First, collect all Gherkin steps from your test suite into a file you can sort:
 
 <pre type="shell/command" allow-error>
 cucumber-sort check --record
@@ -43,16 +43,16 @@ cucumber-sort check --record
 
 <a type="workspace/existing-file-with-content">
 
-This creates file **.cucumber-sort-order**. It defines the order in which
-Gherkin steps should occur in the feature files, and currently has this content:
+This creates file named **.cucumber-sort-order**, which defines the expected
+step order. Currently, it looks like this:
 
 ```sh
 # UNKNOWN STEPS
-^I add apples$
-^I add butter$
-^I add cinnamon$
-^I add flour$
-^a bowl$
+^a mixing bowl$
+^apples$
+^butter$
+^cinnamon$
+^flour$
 ```
 
 </a>
@@ -66,17 +66,17 @@ occur in our recipes. <a type="workspace/new-file">We change file
 
 ```sh
 # TOOLS
-a bowl
+a mixing bowl
 
 # BASE DOUGH
-I add flour
-I add butter
+flour
+butter
 
 # FRUITS
-I add apples
+apples
 
 # SPICES
-I add cinnamon
+cinnamon
 ```
 
 </a>
@@ -96,11 +96,11 @@ Now the steps in all our recipes follow this order. Here is how file
 Feature: apple pie
 
   Scenario: make the dough
-    Given a bowl
-    When I add flour
-    And I add butter
-    And I add apples
-    And I add cinnamon
+    Given a mixing bowl
+    And flour
+    And butter
+    And apples
+    And cinnamon
 ```
 
 </a>
