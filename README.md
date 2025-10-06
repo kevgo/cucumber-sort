@@ -56,10 +56,12 @@ Gherkin steps should occur in your feature files and has this content:
 
 </a>
 
-Everything below `# UNKNOWN STEPS` are Gherkin steps that _cucumber-sort_ can
-see but doesn't know how to order. Let's arrange the steps in this file the way
-we want them to occur in our recipes. <a type="workspace/new-file">We change
-file **.cucumber-sort-order** to look like this:
+Everything below
+<code type="workspace/existing-file-with-content" filename=".cucumber-sort-order" partial-match>#
+UNKNOWN STEPS</code> are Gherkin steps that _cucumber-sort_ can see but doesn't
+know how to order. Let's arrange the steps in this file the way we want them to
+occur in our recipes. <a type="workspace/new-file">We change file
+**.cucumber-sort-order** to look like this:
 
 ```sh
 # TOOLS
