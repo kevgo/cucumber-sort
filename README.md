@@ -2,14 +2,14 @@
 
 ![build status](https://github.com/kevgo/cucumber-sort/actions/workflows/ci.yml/badge.svg)
 
-**cucumber-sort** enforces a consistent step order in the `.feature` files of
-your [Cucumber](https://cucumber.io) test suite.
+**cucumber-sort** enforces a consistent order of steps across the `.feature`
+files in your [Cucumber](https://cucumber.io) test suite.
 
-## Usage example
+## Example
 
-Let's say you have a database of executable cooking recipes for your robotic
-kitchen, implemented in Cucumber. Here is a (simplified) recipe from it, for
-making apple pie.
+Imagine you write an end-to-end test for your robotic kitchen, of course in
+Cucumber. One of the tests entails the kitchen baking an apple pie from scratch.
+Here is the (simplified) feature for that.
 
 <a type="workspace/new-file" filename="apple_pie.feature">
 
@@ -17,11 +17,11 @@ making apple pie.
 Feature: apple pie
 
   Scenario: make the dough
-    Given a bowl
-    When I add cinnamon
-    And I add apples
-    And I add butter
-    And I add flour
+    Given a mixing bowl
+    And cinnamon
+    And apples
+    And butter
+    And flour
 ```
 
 </a>
