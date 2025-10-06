@@ -34,7 +34,8 @@ ingredients at the end.
 This is what _cucumber-sort_ helps you with. It enforces a specific order of
 steps in your Cucumber files.
 
-Let's have it collect all the Gherkin steps from our test suite:
+To start using it, let's collect all the Gherkin steps from our test suite so
+that we can order them:
 
 <pre type="shell/command" allow-error>
 cucumber-sort check --record
