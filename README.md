@@ -108,8 +108,9 @@ Feature: apple pie
 Our recipe database works the same before and after, but now it's organized more
 consistently.
 
-To see _cucumber-sort_ in production use, take a look at the
-[Git Town codebase](https://github.com/git-town/git-town).
+> [!TIP]
+> To see a real-world example of how _cucumber-sort_ is used in production,
+> check out the [Git Town codebase](https://github.com/git-town/git-town).
 
 ## Installation
 
