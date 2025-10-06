@@ -33,7 +33,7 @@ ingredients first and then the optional ones.
 That's exactly what _cucumber-sort_ helps with. It enforces a predictable,
 project-wide order of steps in your Cucumber files.
 
-### Step 1: record all steps
+### Step 1: collect all sortable steps
 
 First, collect all Gherkin steps from your test suite into a file you can sort:
 
@@ -60,9 +60,14 @@ step order. Currently, it looks like this:
 Everything below
 <code type="workspace/existing-file-with-content" filename=".cucumber-sort-order" partial-match>#
 UNKNOWN STEPS</code> are Gherkin steps that _cucumber-sort_ can see but doesn't
-know how to order. Let's arrange the steps in this file the way we want them to
-occur in our recipes. <a type="workspace/new-file">We change file
-**.cucumber-sort-order** to look like this:
+yet know how to order.
+
+### Step 2: arrange the steps in the desired order
+
+<a type="workspace/new-file">
+
+Edit **.cucumber-sort-order** to arrange the steps in the order you want them to
+appear in the recipes. For example:
 
 ```sh
 # TOOLS
@@ -81,7 +86,9 @@ cinnamon
 
 </a>
 
-Let's apply this new order:
+### Step 3: apply the new order
+
+Format your feature files according to this new order:
 
 <pre type="shell/command">
 cucumber-sort format
@@ -89,8 +96,8 @@ cucumber-sort format
 
 <a type="workspace/existing-file-with-content">
 
-Now the steps in all our recipes follow this order. Here is how file
-**apple_pie.feature** from above looks like now, ordered by cucumber-sort:
+Now all recipes are consistently ordered. Here is how **apple_pie.feature**
+looks after sorting:
 
 ```cucumber
 Feature: apple pie
@@ -105,12 +112,12 @@ Feature: apple pie
 
 </a>
 
-Our recipe database works the same before and after, but now it's organized more
-consistently.
+The behavior is unchanged, but now your `.feature` files are consistent,
+readable, and easier to maintain.
 
 > [!TIP]
-> To see a real-world example of how _cucumber-sort_ is used in production,
-> check out the [Git Town codebase](https://github.com/git-town/git-town).
+> To see a real-world example of using _cucumber-sort_ in production, check out
+> the [Git Town codebase](https://github.com/git-town/git-town).
 
 ## Installation
 
@@ -137,60 +144,58 @@ Other options:
 
 ## Configuration file
 
-Generate the default config files with:
+Generate the default configuration with:
 
 <pre type="subcommand">
 cucumber-sort init
 </pre>
 
-This creates three files:
+This command creates three files:
 
 ### .cucumber-sort-order
 
-Defines the step order. Add step names (without `Given`/`When`/`Then`) in the
-order you want them to appear in your `.feature` files.
+Defines the expected step order. Add step names (without `Given`/`When`/`Then`)
+in the sequence you want them to appear in your `.feature` files.
 
 - Supports regular expressions
 - Regex only need to match the text, no captures required
 
 > [!TIP]
-> Take a look at our own [.cucumber-sort-order file](.cucumber-sort-order) for
-> an example config file.
+> See our own [.cucumber-sort-order file](.cucumber-sort-order) file for a
+> working example.
 
 ### .cucumber-sort-ignore
 
-Contains glob patterns for files that `cucumber-sort` should ignore.
+Lists files that `cucumber-sort` should ignore via glob patterns.
 
 ### .cucumber-sort-opts
 
-Contains cucumber-sort CLI arguments that you always want to enable.
+Stores CLI options you want to enable by default.
 
-## Usage
+## Commands
 
-Format all `.feature` files to the configured step order:
+Format all `.feature` files according to your configured step order:
 
 <pre type="subcommand">
 cucumber-sort format
 </pre>
 
-Check whether `.feature` files already follow the configured order:
+Check whether your `.feature` files match the configured order:
 
 <pre type="subcommand">
 cucumber-sort check
 </pre>
 
-On the initial runs of the tool, you likely see unknown steps. Add them to
-`.cucumber-sort-order`. To make this easier:
+If you would like to add unknown steps to `.cucumber-sort-order`, run:
 
 <pre type="subcommand">
 cucumber-sort check --record
 </pre>
 
-This appends unknown steps to the file. Just review the file and move the
-unknown steps into the correct position.
+This appends unknown steps to the order file. Review the file and move them to
+the right position.
 
-If this finds too many unknown steps, you can stop at the first file with
-failures:
+If there are too many unknown steps, stop at the first file with issues:
 
 <pre type="subcommand">
 cucumber-stort check --fail-fast
