@@ -2,10 +2,116 @@
 
 ![build status](https://github.com/kevgo/cucumber-sort/actions/workflows/ci.yml/badge.svg)
 
-**cucumber-sort** enforces a consistent step order in your
-[Cucumber](https://cucumber.io) `.feature` files.
+**cucumber-sort** enforces a consistent step order in the `.feature` files of
+your [Cucumber](https://cucumber.io) test suite.
 
-### Installation
+## Usage example
+
+Let's say you have a database of executable cooking recipes for your robotic
+kitchen, implemented in Cucumber. Here is a (simplified) recipe from it, for
+making apple pie.
+
+<a type="workspace/new-file" filename="apple_pie.feature">
+
+```cucumber
+Feature: apple pie
+
+  Scenario: make the dough
+    Given a bowl
+    When I add cinnamon
+    And I add apples
+    And I add butter
+    And I add flour
+```
+
+</a>
+
+The recipe is technically correct. The "test" passes, it produces apple pie.
+However, this recipe would be easier to reason about and compare with other
+recipes if they always started with the basic ingredients and list the optional
+ingredients at the end.
+
+This is what _cucumber-sort_ helps you with. It enforces a specific order of
+steps in your Cucumber files.
+
+To start using it, let's collect all the Gherkin steps from our test suite into
+a file, so that we can order them:
+
+<pre type="shell/command" allow-error>
+cucumber-sort check --record
+</pre>
+
+<a type="workspace/existing-file-with-content">
+
+This creates file **.cucumber-sort-order**. It defines the order in which
+Gherkin steps should occur in the feature files, and currently has this content:
+
+```sh
+# UNKNOWN STEPS
+^I add apples$
+^I add butter$
+^I add cinnamon$
+^I add flour$
+^a bowl$
+```
+
+</a>
+
+Everything below
+<code type="workspace/existing-file-with-content" filename=".cucumber-sort-order" partial-match>#
+UNKNOWN STEPS</code> are Gherkin steps that _cucumber-sort_ can see but doesn't
+know how to order. Let's arrange the steps in this file the way we want them to
+occur in our recipes. <a type="workspace/new-file">We change file
+**.cucumber-sort-order** to look like this:
+
+```sh
+# TOOLS
+a bowl
+
+# BASE DOUGH
+I add flour
+I add butter
+
+# FRUITS
+I add apples
+
+# SPICES
+I add cinnamon
+```
+
+</a>
+
+Let's apply this new order:
+
+<pre type="shell/command">
+cucumber-sort format
+</pre>
+
+<a type="workspace/existing-file-with-content">
+
+Now the steps in all our recipes follow this order. Here is how file
+**apple_pie.feature** from above looks like now, ordered by cucumber-sort:
+
+```cucumber
+Feature: apple pie
+
+  Scenario: make the dough
+    Given a bowl
+    When I add flour
+    And I add butter
+    And I add apples
+    And I add cinnamon
+```
+
+</a>
+
+Our recipe database works the same before and after, but now it's organized more
+consistently.
+
+To see _cucumber-sort_ in production use, take a look at the
+[Git Town codebase](https://github.com/git-town/git-town).
+
+## Installation
 
 The easiest way to run `cucumber-sort` is via
 [run-that-app](https://github.com/kevgo/run-that-app):
@@ -28,7 +134,7 @@ Other options:
     cargo install --locked --path .
     ```
 
-### Configuration file
+## Configuration file
 
 Generate the default config files with:
 
@@ -38,7 +144,7 @@ cucumber-sort init
 
 This creates three files:
 
-#### .cucumber-sort-order
+### .cucumber-sort-order
 
 Defines the step order. Add step names (without `Given`/`When`/`Then`) in the
 order you want them to appear in your `.feature` files.
@@ -50,15 +156,15 @@ order you want them to appear in your `.feature` files.
 > Take a look at our own [.cucumber-sort-order file](.cucumber-sort-order) for
 > an example config file.
 
-#### .cucumber-sort-ignore
+### .cucumber-sort-ignore
 
 Contains glob patterns for files that `cucumber-sort` should ignore.
 
-#### .cucumber-sort-opts
+### .cucumber-sort-opts
 
 Contains cucumber-sort CLI arguments that you always want to enable.
 
-### Usage
+## Usage
 
 Format all `.feature` files to the configured step order:
 

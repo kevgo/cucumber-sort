@@ -1,0 +1,13 @@
+// This file configures https://github.com/kevgo/text-runner/tree/main/textrun-shell
+
+import * as path from "path"
+import * as url from "url"
+
+const __dirname = url.fileURLToPath(new URL(".", import.meta.url))
+const cucumber_sort_path = path.join(__dirname, "target", "debug", "cucumber-sort")
+
+export default {
+  globals: {
+    "cucumber-sort": cucumber_sort_path
+  }
+}
