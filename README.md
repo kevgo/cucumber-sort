@@ -89,8 +89,8 @@ cucumber-sort format
 
 <a type="workspace/existing-file-with-content">
 
-Now the steps in all our recipes follow this order. Here is file
-**apple_pie.feature** from above, ordered by cucumber-sort:
+Now the steps in all our recipes follow this order. Here is how file
+**apple_pie.feature** from above looks like now, ordered by cucumber-sort:
 
 ```cucumber
 Feature: apple pie
