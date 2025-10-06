@@ -1,3 +1,5 @@
+// This file configures https://github.com/kevgo/text-runner/tree/main/textrun-shell
+
 import * as path from "path"
 import * as url from "url"
 
