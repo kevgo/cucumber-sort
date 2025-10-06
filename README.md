@@ -28,8 +28,8 @@ Feature: apple pie
 
 The recipe is technically correct. The "test" passes, it produces apple pie.
 However, this recipe would be easier to reason about and compare with other
-recipes if they always started with the basic ingredients and list the
-condiments at the end.
+recipes if they always started with the basic ingredients and list the optional
+ingredients at the end.
 
 This is what _cucumber-sort_ helps you with. It enforces a specific order of
 steps in your Cucumber files.
