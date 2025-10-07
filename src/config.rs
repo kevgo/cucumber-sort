@@ -119,21 +119,6 @@ fn strip_comments(text: &str) -> String {
             result.push(' ');
           }
         }
-        Some(&'*') => {
-          // Multi-line comment: replace with spaces, preserve newlines
-          result.push(' ');
-          chars.next(); // consume '*'
-          result.push(' ');
-          let mut prev_was_star = false;
-          for next_ch in chars.by_ref() {
-            if prev_was_star && next_ch == '/' {
-              result.push(' ');
-              break;
-            }
-            prev_was_star = next_ch == '*';
-            result.push(if next_ch == '\n' { '\n' } else { ' ' });
-          }
-        }
         _ => result.push(ch),
       }
     } else if ch == '"' {
@@ -156,4 +141,98 @@ fn strip_comments(text: &str) -> String {
   }
 
   result
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  mod strip_comments {
+    #[test]
+    fn test_no_comments() {
+      let input = r#"{"key": "value"}"#;
+      assert_eq!(super::strip_comments(input), input);
+    }
+
+    #[test]
+    fn test_single_line_comment_at_end() {
+      let input = r#"{"key": "value"} // this is a comment"#;
+      let expected = r#"{"key": "value"}                     "#;
+      assert_eq!(super::strip_comments(input), expected);
+    }
+
+    #[test]
+    fn test_in_frontine_comment_own_line() {
+      let input = "// comment\n{\"key\": \"value\"}";
+      let expected = "          \n{\"key\": \"value\"}";
+      assert_eq!(super::strip_comments(input), expected);
+    }
+
+    #[test]
+    fn test_multiple_comments() {
+      let input = r#"{
+  // first comment
+  "key": "value", // inline comment
+  // another comment
+  "key2": "value2"
+}"#;
+      let expected = "{\n                  \n  \"key\": \"value\",                  \n                    \n  \"key2\": \"value2\"\n}";
+      assert_eq!(super::strip_comments(input), expected);
+    }
+
+    #[test]
+    fn test_preserves_slashes_in_strings() {
+      let input = r#"{"url": "https://example.com", "comment": "// not a comment"}"#;
+      assert_eq!(super::strip_comments(input), input);
+    }
+
+    #[test]
+    fn test_escaped_quotes_in_strings() {
+      let input = r#"{"text": "She said \"hello\" // still in string"}"#;
+      assert_eq!(super::strip_comments(input), input);
+    }
+
+    #[test]
+    fn test_comment_at_eof_no_newline() {
+      let input = r#"{"key": "value"} // comment"#;
+      let expected = r#"{"key": "value"}           "#;
+      assert_eq!(super::strip_comments(input), expected);
+    }
+
+    #[test]
+    fn test_empty_string() {
+      assert_eq!(super::strip_comments(""), "");
+    }
+
+    #[test]
+    fn test_only_comment() {
+      let input = "// just a comment";
+      let expected = "                 ";
+      assert_eq!(super::strip_comments(input), expected);
+    }
+
+    #[test]
+    fn test_single_slash() {
+      let input = r#"{"path": "/home/user"}"#;
+      assert_eq!(super::strip_comments(input), input);
+    }
+
+    #[test]
+    fn test_backslash_before_quote() {
+      let input = r#"{"pattern": "\\\"}"#;
+      assert_eq!(super::strip_comments(input), input);
+    }
+
+    #[test]
+    fn test_complex_json() {
+      let input = r#"{
+  // Configuration file
+  "include": ["*.feature"], // glob patterns
+  "exclude": [], // none
+  "record": false // don't record
+}"#;
+      let expected = "{\n                       \n  \"include\": [\"*.feature\"],                 \n  \"exclude\": [],        \n  \"record\": false                \n}";
+      assert_eq!(super::strip_comments(input), expected);
+    }
+  }
 }
