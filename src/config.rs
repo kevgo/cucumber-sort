@@ -61,10 +61,13 @@ pub fn load() -> Result<Config> {
 
 pub fn load_json_config() -> Result<JsonConfig> {
   match fs::read_to_string(CONFIG_FILE_NAME) {
-    Ok(text) => serde_json::from_str(&text).map_err(|err| UserError::ConfigFileRead {
-      file: CONFIG_FILE_NAME.into(),
-      reason: format!("Invalid JSON: {}", err),
-    }),
+    Ok(text) => {
+      let sanitized = strip_comments(&text);
+      serde_json::from_str(&sanitized).map_err(|err| UserError::ConfigFileRead {
+        file: CONFIG_FILE_NAME.into(),
+        reason: format!("Invalid JSON: {}", err),
+      })
+    }
     Err(err) => match err.kind() {
       ErrorKind::NotFound => Ok(JsonConfig::default()),
       _ => Err(UserError::ConfigFileRead {
@@ -91,4 +94,66 @@ pub fn create() -> Result<()> {
     file: CONFIG_FILE_NAME.into(),
     message: err.to_string(),
   })
+}
+
+/// Strips single-line (//) and multi-line (/* */) comments from JSON text,
+/// replacing them with spaces to preserve line numbers for error reporting.
+fn strip_comments(text: &str) -> String {
+  let mut result = String::with_capacity(text.len());
+  let mut chars = text.chars().peekable();
+
+  while let Some(ch) = chars.next() {
+    if ch == '/' {
+      match chars.peek() {
+        Some(&'/') => {
+          // Single-line comment: replace with spaces until newline
+          result.push(' ');
+          chars.next(); // consume second '/'
+          result.push(' ');
+          while let Some(&next_ch) = chars.peek() {
+            if next_ch == '\n' {
+              result.push(chars.next().unwrap());
+              break;
+            }
+            chars.next();
+            result.push(' ');
+          }
+        }
+        Some(&'*') => {
+          // Multi-line comment: replace with spaces, preserve newlines
+          result.push(' ');
+          chars.next(); // consume '*'
+          result.push(' ');
+          let mut prev_was_star = false;
+          while let Some(next_ch) = chars.next() {
+            if prev_was_star && next_ch == '/' {
+              result.push(' ');
+              break;
+            }
+            prev_was_star = next_ch == '*';
+            result.push(if next_ch == '\n' { '\n' } else { ' ' });
+          }
+        }
+        _ => result.push(ch),
+      }
+    } else if ch == '"' {
+      // Inside a string: copy everything as-is until closing quote
+      result.push(ch);
+      let mut escaped = false;
+      while let Some(next_ch) = chars.next() {
+        result.push(next_ch);
+        if escaped {
+          escaped = false;
+        } else if next_ch == '\\' {
+          escaped = true;
+        } else if next_ch == '"' {
+          break;
+        }
+      }
+    } else {
+      result.push(ch);
+    }
+  }
+
+  result
 }
