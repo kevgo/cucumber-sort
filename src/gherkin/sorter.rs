@@ -27,22 +27,20 @@ impl Sorter {
     let mut entries = vec![];
     for (i, step_pattern) in config.steps.iter().enumerate() {
       match step_pattern {
-        StepPattern::Single(pattern) => {
-          match Regex::new(pattern) {
-            Ok(regex) => entries.push(Entry {
-              regex,
-              used: false,
-              line_no: i,
-            }),
-            Err(err) => {
-              return Err(UserError::ConfigFileInvalidRegex {
-                file: crate::config::CONFIG_FILE_NAME.into(),
-                line: i,
-                message: format!("Invalid regex '{}': {}", pattern, err),
-              });
-            }
+        StepPattern::Single(pattern) => match Regex::new(pattern) {
+          Ok(regex) => entries.push(Entry {
+            regex,
+            used: false,
+            line_no: i,
+          }),
+          Err(err) => {
+            return Err(UserError::ConfigFileInvalidRegex {
+              file: crate::config::CONFIG_FILE_NAME.into(),
+              line: i,
+              message: format!("Invalid regex '{}': {}", pattern, err),
+            });
           }
-        }
+        },
         StepPattern::Group(patterns) => {
           for pattern in patterns {
             match Regex::new(pattern) {

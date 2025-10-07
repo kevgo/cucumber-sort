@@ -1,6 +1,6 @@
+use crate::FileFinder;
 use crate::errors::{Result, UserError};
 use crate::gherkin::Sorter;
-use crate::FileFinder;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::io::ErrorKind;
@@ -61,12 +61,10 @@ pub fn load() -> Result<Config> {
 
 pub fn load_json_config() -> Result<JsonConfig> {
   match fs::read_to_string(CONFIG_FILE_NAME) {
-    Ok(text) => {
-      serde_json::from_str(&text).map_err(|err| UserError::ConfigFileRead {
-        file: CONFIG_FILE_NAME.into(),
-        reason: format!("Invalid JSON: {}", err),
-      })
-    }
+    Ok(text) => serde_json::from_str(&text).map_err(|err| UserError::ConfigFileRead {
+      file: CONFIG_FILE_NAME.into(),
+      reason: format!("Invalid JSON: {}", err),
+    }),
     Err(err) => match err.kind() {
       ErrorKind::NotFound => Ok(JsonConfig::default()),
       _ => Err(UserError::ConfigFileRead {
