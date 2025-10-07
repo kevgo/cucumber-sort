@@ -1,22 +1,22 @@
 Feature: ignoring globs
 
   Scenario: comment out a regex
-    Given file ".cucumber-sort.json" with content:
+    Given file "cucumber-sort.json" with content:
       """
       {
         "exclude": [
-          // ""
+          // "features/unordered.feature"
         ],
         "steps": [
           "step 1",
           "step 2"
-        ],
+        ]
       }
       """
     And file "features/unordered.feature" with content:
       """
       Feature: example
-      
+
         Scenario: steps out of order
           When step 2
           And step 1
