@@ -7,6 +7,9 @@ use std::process::ExitCode;
 /// verifies whether the given or all files contain sorted steps
 pub fn check(filepath: Option<Utf8PathBuf>, record: bool, fail_fast: bool) -> Result<ExitCode> {
   let mut config = config::load()?;
+  // CLI flags override config file options
+  let record = if record { true } else { config.record };
+  let fail_fast = if fail_fast { true } else { config.fail_fast };
   let mut findings = match filepath {
     Some(filepath) => file(filepath, &mut config.sorter),
     None => all(&mut config, fail_fast),

@@ -1,40 +1,49 @@
+use crate::config::JsonConfig;
 use crate::errors::{Result, UserError};
 use camino::{Utf8DirEntry, Utf8Path, Utf8PathBuf};
-use std::fs;
-use std::io::ErrorKind;
 
-/// the filename of the ignore file
-const IGNORE_FILE_NAME: &str = ".cucumber-sort-ignore";
-
-const TEMPLATE: &str = r#"
-# More info at https://github.com/kevgo/cucumber-sort
-#
-# This file lists files that cucumber-sort should ignore,
-# using glob expressions.
-
-# features/foo.feature
-"#;
-
-/// Ignorer encapsulates the minutiae around ignoring file paths.
-/// You give it an ignore config file, and it tells you whether
-/// particular file paths are ignored according to it or not.
+/// FileFinder encapsulates the logic for finding feature files.
+/// It respects include and exclude patterns from the configuration.
 pub struct FileFinder {
-  globs: Vec<glob::Pattern>,
+  include_globs: Vec<glob::Pattern>,
+  exclude_globs: Vec<glob::Pattern>,
 }
 
 impl FileFinder {
-  /// loads a new instance from the default ignore file
-  pub fn load() -> Result<FileFinder> {
-    match fs::read_to_string(IGNORE_FILE_NAME) {
-      Ok(text) => FileFinder::parse(&text, IGNORE_FILE_NAME.into()),
-      Err(err) => match err.kind() {
-        ErrorKind::NotFound => Ok(FileFinder { globs: vec![] }),
-        _ => Err(UserError::ConfigFileRead {
-          file: IGNORE_FILE_NAME.into(),
-          reason: err.to_string(),
-        }),
-      },
+  /// Creates a new FileFinder from the JSON configuration
+  pub fn from_json_config(config: &JsonConfig) -> Result<FileFinder> {
+    let mut include_globs = vec![];
+    for pattern in &config.include {
+      match glob::Pattern::new(pattern) {
+        Ok(glob) => include_globs.push(glob),
+        Err(err) => {
+          return Err(UserError::IgnoreFileInvalidGlob {
+            file: crate::config::CONFIG_FILE_NAME.into(),
+            line: 0,
+            reason: format!("Invalid include glob pattern '{}': {}", pattern, err),
+          });
+        }
+      }
     }
+
+    let mut exclude_globs = vec![];
+    for pattern in &config.exclude {
+      match glob::Pattern::new(pattern) {
+        Ok(glob) => exclude_globs.push(glob),
+        Err(err) => {
+          return Err(UserError::IgnoreFileInvalidGlob {
+            file: crate::config::CONFIG_FILE_NAME.into(),
+            line: 0,
+            reason: format!("Invalid exclude glob pattern '{}': {}", pattern, err),
+          });
+        }
+      }
+    }
+
+    Ok(FileFinder {
+      include_globs,
+      exclude_globs,
+    })
   }
 
   pub fn search_folder(&self, dir: impl AsRef<Utf8Path>) -> Result<Vec<Utf8PathBuf>> {
@@ -56,7 +65,10 @@ impl FileFinder {
       if entry_path.extension() != Some("feature") {
         continue;
       }
-      if self.is_ignored(entry_path) {
+      if self.should_exclude(entry_path) {
+        continue;
+      }
+      if !self.should_include(entry_path) {
         continue;
       }
       result.push(entry_path.to_path_buf());
@@ -64,16 +76,9 @@ impl FileFinder {
     Ok(result)
   }
 
-  pub fn create() -> Result<()> {
-    fs::write(IGNORE_FILE_NAME, &TEMPLATE[1..]).map_err(|err| UserError::ConfigFileCreate {
-      file: IGNORE_FILE_NAME.into(),
-      message: err.to_string(),
-    })
-  }
-
-  /// indicates whether the given file path is ignored
-  fn is_ignored(&self, file: &Utf8Path) -> bool {
-    for glob in &self.globs {
+  /// indicates whether the given file path should be excluded
+  fn should_exclude(&self, file: &Utf8Path) -> bool {
+    for glob in &self.exclude_globs {
       if glob.matches(file.as_str()) {
         return true;
       }
@@ -81,75 +86,79 @@ impl FileFinder {
     false
   }
 
-  fn parse(config: &str, source: &Utf8Path) -> Result<FileFinder> {
-    let mut globs = vec![];
-    for (i, line) in config.lines().enumerate() {
-      if line.is_empty() || line.starts_with('#') {
-        continue;
-      }
-      match glob::Pattern::new(line) {
-        Ok(pattern) => globs.push(pattern),
-        Err(err) => {
-          return Err(UserError::IgnoreFileInvalidGlob {
-            file: source.into(),
-            line: i,
-            reason: format!("Invalid glob pattern '{}': {}", line, err),
-          });
-        }
+  /// indicates whether the given file path should be included
+  /// If no include patterns are specified, all files are included by default
+  fn should_include(&self, file: &Utf8Path) -> bool {
+    if self.include_globs.is_empty() {
+      return true;
+    }
+    for glob in &self.include_globs {
+      if glob.matches(file.as_str()) {
+        return true;
       }
     }
-    Ok(FileFinder { globs })
+    false
   }
 }
 
 #[cfg(test)]
 mod tests {
+  use crate::config::JsonConfig;
 
   #[test]
-  fn is_ignored_file() {
-    let config = r#"
-features/unordered*.feature
-features/weird*.feature
-"#;
-    let ignorer = super::FileFinder::parse(config, "config file name".into()).unwrap();
-    assert!(ignorer.is_ignored("features/unordered1.feature".into()));
-    assert!(ignorer.is_ignored("features/unordered2.feature".into()));
-    assert!(ignorer.is_ignored("features/weird1.feature".into()));
-    assert!(ignorer.is_ignored("features/weird2.feature".into()));
-    assert!(!ignorer.is_ignored("features/ordered.feature".into()));
+  fn should_exclude_file() {
+    let config = JsonConfig {
+      exclude: vec![
+        "features/unordered*.feature".to_string(),
+        "features/weird*.feature".to_string(),
+      ],
+      ..Default::default()
+    };
+    let finder = super::FileFinder::from_json_config(&config).unwrap();
+    assert!(finder.should_exclude("features/unordered1.feature".into()));
+    assert!(finder.should_exclude("features/unordered2.feature".into()));
+    assert!(finder.should_exclude("features/weird1.feature".into()));
+    assert!(finder.should_exclude("features/weird2.feature".into()));
+    assert!(!finder.should_exclude("features/ordered.feature".into()));
   }
 
-  mod parse {
-    use crate::FileFinder;
-    use crate::errors::UserError;
-    use core::panic;
+  #[test]
+  fn should_include_all_when_no_patterns() {
+    let config = JsonConfig::default();
+    let finder = super::FileFinder::from_json_config(&config).unwrap();
+    assert!(finder.should_include("features/any.feature".into()));
+    assert!(finder.should_include("features/test.feature".into()));
+  }
 
-    #[test]
-    fn correct() {
-      let config = r#"
-        features/one*.feature
-        features/two*.feature
-      "#;
-      FileFinder::parse(config, "somefile".into()).unwrap();
-    }
+  #[test]
+  fn should_include_only_matching() {
+    let config = JsonConfig {
+      include: vec!["features/important*.feature".to_string()],
+      ..Default::default()
+    };
+    let finder = super::FileFinder::from_json_config(&config).unwrap();
+    assert!(finder.should_include("features/important1.feature".into()));
+    assert!(finder.should_include("features/important2.feature".into()));
+    assert!(!finder.should_include("features/other.feature".into()));
+  }
 
-    #[test]
-    fn invalid_glob() {
-      let config = r#"
-features/valid.feature
-file[name
-"#;
-      let Err(UserError::IgnoreFileInvalidGlob { file, line, reason }) =
-        FileFinder::parse(config, "somefile".into())
-      else {
-        panic!()
-      };
-      assert_eq!(file, "somefile");
-      assert_eq!(line, 2);
-      assert_eq!(
-        reason,
-        "Invalid glob pattern 'file[name': Pattern syntax error near position 4: invalid range pattern"
-      );
-    }
+  #[test]
+  fn invalid_exclude_glob() {
+    let config = JsonConfig {
+      exclude: vec!["file[name".to_string()],
+      ..Default::default()
+    };
+    let result = super::FileFinder::from_json_config(&config);
+    assert!(result.is_err());
+  }
+
+  #[test]
+  fn invalid_include_glob() {
+    let config = JsonConfig {
+      include: vec!["file[name".to_string()],
+      ..Default::default()
+    };
+    let result = super::FileFinder::from_json_config(&config);
+    assert!(result.is_err());
   }
 }
