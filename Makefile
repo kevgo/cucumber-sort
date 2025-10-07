@@ -6,6 +6,9 @@ clear:  # removes all temporary artifacts
 	rm -rf node_modules
 	rm -rf target
 
+contest: tools/rta@${RUN_THAT_APP_VERSION}  # starts the contest server
+	tools/rta dprint fmt
+
 cuke: build  # runs the end-to-end tests
 	cargo test --quiet --locked --test cuke
 
