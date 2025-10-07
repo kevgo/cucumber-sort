@@ -150,53 +150,53 @@ mod tests {
   mod strip_comments {
     #[test]
     fn no_comments() {
-      let input = r#"{"key": "value"}"#;
-      assert_eq!(super::strip_comments(input), input);
+      let give = r#"{"key": "value"}"#;
+      assert_eq!(super::strip_comments(give), give);
     }
 
     #[test]
     fn single_line_comment_at_end() {
-      let input = r#"{"key": "value"} // this is a comment"#;
-      let expected = r#"{"key": "value"}                     "#;
-      assert_eq!(super::strip_comments(input), expected);
+      let give = r#"{"key": "value"} // this is a comment"#;
+      let want = r#"{"key": "value"}                     "#;
+      assert_eq!(super::strip_comments(give), want);
     }
 
     #[test]
     fn in_frontine_comment_own_line() {
-      let input = "// comment\n{\"key\": \"value\"}";
-      let expected = "          \n{\"key\": \"value\"}";
-      assert_eq!(super::strip_comments(input), expected);
+      let give = "// comment\n{\"key\": \"value\"}";
+      let want = "          \n{\"key\": \"value\"}";
+      assert_eq!(super::strip_comments(give), want);
     }
 
     #[test]
     fn multiple_comments() {
-      let input = r#"{
+      let give = r#"{
   // first comment
   "key": "value", // inline comment
   // another comment
   "key2": "value2"
 }"#;
-      let expected = "{\n                  \n  \"key\": \"value\",                  \n                    \n  \"key2\": \"value2\"\n}";
-      assert_eq!(super::strip_comments(input), expected);
+      let want = "{\n                  \n  \"key\": \"value\",                  \n                    \n  \"key2\": \"value2\"\n}";
+      assert_eq!(super::strip_comments(give), want);
     }
 
     #[test]
     fn preserves_slashes_in_strings() {
-      let input = r#"{"url": "https://example.com", "comment": "// not a comment"}"#;
-      assert_eq!(super::strip_comments(input), input);
+      let give = r#"{"url": "https://example.com", "comment": "// not a comment"}"#;
+      assert_eq!(super::strip_comments(give), give);
     }
 
     #[test]
     fn escaped_quotes_in_strings() {
-      let input = r#"{"text": "She said \"hello\" // still in string"}"#;
-      assert_eq!(super::strip_comments(input), input);
+      let give = r#"{"text": "She said \"hello\" // still in string"}"#;
+      assert_eq!(super::strip_comments(give), give);
     }
 
     #[test]
     fn comment_at_eof_no_newline() {
-      let input = r#"{"key": "value"} // comment"#;
-      let expected = r#"{"key": "value"}           "#;
-      assert_eq!(super::strip_comments(input), expected);
+      let give = r#"{"key": "value"} // comment"#;
+      let want = r#"{"key": "value"}           "#;
+      assert_eq!(super::strip_comments(give), want);
     }
 
     #[test]
@@ -206,33 +206,33 @@ mod tests {
 
     #[test]
     fn only_comment() {
-      let input = "// just a comment";
-      let expected = "                 ";
-      assert_eq!(super::strip_comments(input), expected);
+      let give = "// just a comment";
+      let want = "                 ";
+      assert_eq!(super::strip_comments(give), want);
     }
 
     #[test]
     fn single_slash() {
-      let input = r#"{"path": "/home/user"}"#;
-      assert_eq!(super::strip_comments(input), input);
+      let give = r#"{"path": "/home/user"}"#;
+      assert_eq!(super::strip_comments(give), give);
     }
 
     #[test]
     fn backslash_before_quote() {
-      let input = r#"{"pattern": "\\\"}"#;
-      assert_eq!(super::strip_comments(input), input);
+      let give = r#"{"pattern": "\\\"}"#;
+      assert_eq!(super::strip_comments(give), give);
     }
 
     #[test]
     fn complex_json() {
-      let input = r#"{
+      let give = r#"{
   // Configuration file
   "include": ["*.feature"], // glob patterns
   "exclude": [], // none
   "record": false // don't record
 }"#;
-      let expected = "{\n                       \n  \"include\": [\"*.feature\"],                 \n  \"exclude\": [],        \n  \"record\": false                \n}";
-      assert_eq!(super::strip_comments(input), expected);
+      let want = "{\n                       \n  \"include\": [\"*.feature\"],                 \n  \"exclude\": [],        \n  \"record\": false                \n}";
+      assert_eq!(super::strip_comments(give), want);
     }
   }
 }
