@@ -149,27 +149,27 @@ mod tests {
 
   mod strip_comments {
     #[test]
-    fn test_no_comments() {
+    fn no_comments() {
       let input = r#"{"key": "value"}"#;
       assert_eq!(super::strip_comments(input), input);
     }
 
     #[test]
-    fn test_single_line_comment_at_end() {
+    fn single_line_comment_at_end() {
       let input = r#"{"key": "value"} // this is a comment"#;
       let expected = r#"{"key": "value"}                     "#;
       assert_eq!(super::strip_comments(input), expected);
     }
 
     #[test]
-    fn test_in_frontine_comment_own_line() {
+    fn in_frontine_comment_own_line() {
       let input = "// comment\n{\"key\": \"value\"}";
       let expected = "          \n{\"key\": \"value\"}";
       assert_eq!(super::strip_comments(input), expected);
     }
 
     #[test]
-    fn test_multiple_comments() {
+    fn multiple_comments() {
       let input = r#"{
   // first comment
   "key": "value", // inline comment
@@ -181,50 +181,50 @@ mod tests {
     }
 
     #[test]
-    fn test_preserves_slashes_in_strings() {
+    fn preserves_slashes_in_strings() {
       let input = r#"{"url": "https://example.com", "comment": "// not a comment"}"#;
       assert_eq!(super::strip_comments(input), input);
     }
 
     #[test]
-    fn test_escaped_quotes_in_strings() {
+    fn escaped_quotes_in_strings() {
       let input = r#"{"text": "She said \"hello\" // still in string"}"#;
       assert_eq!(super::strip_comments(input), input);
     }
 
     #[test]
-    fn test_comment_at_eof_no_newline() {
+    fn comment_at_eof_no_newline() {
       let input = r#"{"key": "value"} // comment"#;
       let expected = r#"{"key": "value"}           "#;
       assert_eq!(super::strip_comments(input), expected);
     }
 
     #[test]
-    fn test_empty_string() {
+    fn empty_string() {
       assert_eq!(super::strip_comments(""), "");
     }
 
     #[test]
-    fn test_only_comment() {
+    fn only_comment() {
       let input = "// just a comment";
       let expected = "                 ";
       assert_eq!(super::strip_comments(input), expected);
     }
 
     #[test]
-    fn test_single_slash() {
+    fn single_slash() {
       let input = r#"{"path": "/home/user"}"#;
       assert_eq!(super::strip_comments(input), input);
     }
 
     #[test]
-    fn test_backslash_before_quote() {
+    fn backslash_before_quote() {
       let input = r#"{"pattern": "\\\"}"#;
       assert_eq!(super::strip_comments(input), input);
     }
 
     #[test]
-    fn test_complex_json() {
+    fn complex_json() {
       let input = r#"{
   // Configuration file
   "include": ["*.feature"], // glob patterns
