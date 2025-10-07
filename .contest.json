@@ -7,12 +7,12 @@
     },
     {
       "type": "test-file",
-      "files": "**/*.feature",
+      "files": "*.feature",
       "run": "cargo test --quiet --locked --test cuke -- --input {{file}}"
     },
     {
       "type": "test-file-line",
-      "files": "**/*.feature",
+      "files": "*.feature",
       "run": "make cukethis"
     }
   ],
