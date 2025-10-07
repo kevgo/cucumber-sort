@@ -162,7 +162,7 @@ mod tests {
     }
 
     #[test]
-    fn in_frontine_comment_own_line() {
+    fn comment_on_own_line() {
       let give = "// comment\n{\"key\": \"value\"}";
       let want = "          \n{\"key\": \"value\"}";
       assert_eq!(super::strip_comments(give), want);
