@@ -125,7 +125,7 @@ fn strip_comments(text: &str) -> String {
           chars.next(); // consume '*'
           result.push(' ');
           let mut prev_was_star = false;
-          while let Some(next_ch) = chars.next() {
+          for next_ch in chars.by_ref() {
             if prev_was_star && next_ch == '/' {
               result.push(' ');
               break;
@@ -140,7 +140,7 @@ fn strip_comments(text: &str) -> String {
       // Inside a string: copy everything as-is until closing quote
       result.push(ch);
       let mut escaped = false;
-      while let Some(next_ch) = chars.next() {
+      for next_ch in chars.by_ref() {
         result.push(next_ch);
         if escaped {
           escaped = false;
