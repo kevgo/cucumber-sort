@@ -1,18 +1,22 @@
 Feature: check ordered steps
 
   Scenario:
-    Given file ".cucumber-sort-order" with content:
+    Given file "cucumber-sort.json" with content:
       """
-      file .* with content:
-      step 2
-      step 3
-      file .* now has content:
-      step 5
+      {
+        "steps": [
+          "file .* with content:",
+          "step 2",
+          "step 3",
+          "file .* now has content:",
+          "step 5"
+        ]
+      }
       """
     And file "features/one.feature" with content:
       """
       Feature: example
-
+      
         Background:
           Given file "foo" with content:
             '''
@@ -20,7 +24,7 @@ Feature: check ordered steps
             '''
           And step 2
           When step 3
-
+      
         Scenario: result
           Then file "foo" now has content:
             '''
