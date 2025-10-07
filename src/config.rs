@@ -8,17 +8,6 @@ use std::io::ErrorKind;
 /// the filename of the configuration file
 pub const CONFIG_FILE_NAME: &str = "cucumber-sort.json";
 
-/// template for new config files
-const TEMPLATE: &str = r#"{
-  "include": [],
-  "exclude": [],
-  "record": false,
-  "fail-fast": false,
-  "steps": [],
-  "unknown-steps": []
-}
-"#;
-
 #[derive(Debug, Serialize, Deserialize, Default)]
 pub struct JsonConfig {
   #[serde(default)]
@@ -90,10 +79,7 @@ pub fn save_json_config(config: &JsonConfig) -> Result<()> {
 }
 
 pub fn create() -> Result<()> {
-  fs::write(CONFIG_FILE_NAME, TEMPLATE).map_err(|err| UserError::ConfigFileCreate {
-    file: CONFIG_FILE_NAME.into(),
-    message: err.to_string(),
-  })
+  save_json_config(&JsonConfig::default())
 }
 
 /// Strips single-line (//) and multi-line (/* */) comments from JSON text,
