@@ -1,15 +1,19 @@
 Feature: check a single file
 
   Scenario: unordered step in a scenario
-    Given file ".cucumber-sort-order" with content:
+    Given file "cucumber-sort.json" with content:
       """
-      step 1
-      step 2
+      {
+        "steps": [
+          "step 1",
+          "step 2"
+        ]
+      }
       """
     And file "features/unordered.feature" with content:
       """
       Feature: example
-
+      
         Scenario: steps out of order
           Then step 2
           And step 1
@@ -17,7 +21,7 @@ Feature: check a single file
     And file "features/ordered.feature" with content:
       """
       Feature: example
-
+      
         Scenario: steps in order
           Then step 1
           And step 2

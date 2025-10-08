@@ -1,14 +1,14 @@
 Feature: check unordered steps while failing fast
 
   Scenario: unordered step in a scenario
-    Given file ".cucumber-sort-order" with content:
+    Given file "cucumber-sort.json" with content:
       """
       step 1
       """
     And file "features/one.feature" with content:
       """
       Feature: example
-
+      
         Scenario: steps out of order
           Then step 2
           And step 1
@@ -16,7 +16,7 @@ Feature: check unordered steps while failing fast
     And file "features/two.feature" with content:
       """
       Feature: example
-
+      
         Scenario: steps out of order
           Then step 2
           And step 1

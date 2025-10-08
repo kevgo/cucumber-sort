@@ -43,8 +43,8 @@ cucumber-sort check --record
 
 <a type="workspace/existing-file-with-content">
 
-This creates file named **.cucumber-sort-order**, which defines the expected
-step order. Currently, it looks like this:
+This creates file named **cucumber-sort.json**, which defines the expected step
+order. Currently, it looks like this:
 
 ```sh
 # UNKNOWN STEPS
@@ -58,7 +58,7 @@ step order. Currently, it looks like this:
 </a>
 
 Everything below
-<code type="workspace/existing-file-with-content" filename=".cucumber-sort-order" partial-match>#
+<code type="workspace/existing-file-with-content" filename="cucumber-sort.json" partial-match>#
 UNKNOWN STEPS</code> are Gherkin steps that _cucumber-sort_ can see but doesn't
 yet know how to order.
 
@@ -66,7 +66,7 @@ yet know how to order.
 
 <a type="workspace/new-file">
 
-Edit **.cucumber-sort-order** to arrange the steps in the order you want them to
+Edit **cucumber-sort.json** to arrange the steps in the order you want them to
 appear in the recipes. For example:
 
 ```sh
@@ -152,7 +152,7 @@ cucumber-sort init
 
 This command creates three files:
 
-### .cucumber-sort-order
+### cucumber-sort.json
 
 Defines the expected step order. Add step names (without `Given`/`When`/`Then`)
 in the sequence you want them to appear in your `.feature` files.
@@ -161,8 +161,8 @@ in the sequence you want them to appear in your `.feature` files.
 - Regex only need to match the text, no captures required
 
 > [!TIP]
-> See our own [.cucumber-sort-order file](.cucumber-sort-order) file for a
-> working example.
+> See our own [cucumber-sort.json file](cucumber-sort.json) file for a working
+> example.
 
 ### .cucumber-sort-ignore
 
@@ -186,7 +186,7 @@ Check whether your `.feature` files match the configured order:
 cucumber-sort check
 </pre>
 
-If you would like to add unknown steps to `.cucumber-sort-order`, run:
+If you would like to add unknown steps to `cucumber-sort.json`, run:
 
 <pre type="subcommand">
 cucumber-sort check --record

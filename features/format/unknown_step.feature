@@ -1,14 +1,14 @@
 Feature: format unknown steps
 
   Background:
-    Given file ".cucumber-sort-order" with content:
+    Given file "cucumber-sort.json" with content:
       """
       step 1
       """
     And file "features/one.feature" with content:
       """
       Feature: example
-
+      
         Background:
           Given step 1
           And step 3
@@ -30,20 +30,20 @@ Feature: format unknown steps
       features/one.feature:5  unknown step: step 3
       """
     And the exit code is failure
-    And file ".cucumber-sort-order" now has content:
+    And file "cucumber-sort.json" now has content:
       """
       step 1
-
+      
       # UNKNOWN STEPS
       ^step 3$
       """
     And file "features/one.feature" hasn't changed
 
   Scenario: run with recording and existing marker
-    Given file ".cucumber-sort-order" with content:
+    Given file "cucumber-sort.json" with content:
       """
       step 1
-
+      
       # UNKNOWN STEPS
       ^step 3$
       """
@@ -53,10 +53,10 @@ Feature: format unknown steps
       features/one.feature:5  unknown step: step 3
       """
     And the exit code is failure
-    And file ".cucumber-sort-order" now has content:
+    And file "cucumber-sort.json" now has content:
       """
       step 1
-
+      
       # UNKNOWN STEPS
       ^step 3$
       """
