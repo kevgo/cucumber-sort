@@ -4,32 +4,16 @@ Feature: creating the config files
     When I run "cucumber-sort init"
     Then it prints:
       """
-      config files created
+      config file created: cucumber-sort.json
       """
     And file "cucumber-sort.json" now has content:
       """
-      # More info at https://github.com/kevgo/cucumber-sort
-      #
-      # This file lists Gherkin steps in the desired order
-      # without Given/When/Then, using regular expressions.
-
-      # step 1
-      # step 2
-      """
-    And file ".cucumber-sort-ignore" now has content:
-      """
-      # More info at https://github.com/kevgo/cucumber-sort
-      #
-      # This file lists files that cucumber-sort should ignore,
-      # using glob expressions.
-
-      # features/foo.feature
-      """
-    And file ".cucumber-sort-opts" now has content:
-      """
-      # More info at https://github.com/kevgo/cucumber-sort
-      #
-      # This file contains cucumber-sort CLI arguments that you always want to enable.
-
-      # --fail-fast --record
+      {
+        "include": [],
+        "exclude": [],
+        "record": false,
+        "fail-fast": false,
+        "steps": [],
+        "unknown-steps": []
+      }
       """
