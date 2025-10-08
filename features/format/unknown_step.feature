@@ -3,12 +3,16 @@ Feature: format unknown steps
   Background:
     Given file "cucumber-sort.json" with content:
       """
-      step 1
+      {
+        "steps": [
+          "step 1"
+        ]
+      }
       """
     And file "features/one.feature" with content:
       """
       Feature: example
-
+      
         Background:
           Given step 1
           And step 3
@@ -32,20 +36,32 @@ Feature: format unknown steps
     And the exit code is failure
     And file "cucumber-sort.json" now has content:
       """
-      step 1
-
-      # UNKNOWN STEPS
-      ^step 3$
+      {
+        "include": [],
+        "exclude": [],
+        "record": false,
+        "fail-fast": false,
+        "steps": [
+          "step 1"
+        ],
+        "unknown-steps": [
+          "^step 3$"
+        ]
+      }
       """
     And file "features/one.feature" hasn't changed
 
   Scenario: run with recording and existing marker
     Given file "cucumber-sort.json" with content:
       """
-      step 1
-
-      # UNKNOWN STEPS
-      ^step 3$
+      {
+        "steps": [
+          "step 1"
+        ],
+        "unknown-steps": [
+          "^step 3$"
+        ]
+      }
       """
     When I run "cucumber-sort format --record"
     Then it prints:
@@ -55,8 +71,16 @@ Feature: format unknown steps
     And the exit code is failure
     And file "cucumber-sort.json" now has content:
       """
-      step 1
-
-      # UNKNOWN STEPS
-      ^step 3$
+      {
+        "include": [],
+        "exclude": [],
+        "record": false,
+        "fail-fast": false,
+        "steps": [
+          "step 1"
+        ],
+        "unknown-steps": [
+          "^step 3$"
+        ]
+      }
       """

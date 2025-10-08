@@ -4,7 +4,7 @@ Feature: run without config file
     Given file "features/one.feature" with content:
       """
       Feature: example
-
+      
         Scenario: test
           Given file "foo" with content:
             '''
@@ -33,8 +33,16 @@ Feature: run without config file
     And the exit code is failure
     And file "cucumber-sort.json" now has content:
       """
-      # UNKNOWN STEPS
-      ^file ".*" with content:$
-      ^step 2$
+      {
+        "include": [],
+        "exclude": [],
+        "record": false,
+        "fail-fast": false,
+        "steps": [],
+        "unknown-steps": [
+          "^file \".*\" with content:$",
+          "^step 2$"
+        ]
+      }
       """
     And file contents haven't changed

@@ -3,8 +3,15 @@ Feature: ignoring files
   Scenario: file with unordered steps is ignored
     Given file "cucumber-sort.json" with content:
       """
-      step 1
-      step 2
+      {
+        "exclude": [
+          "features/unordered*.feature"
+        ],
+        "steps": [
+          "step 1",
+          "step 2"
+        ]
+      }
       """
     And file ".cucumber-sort-ignore" with content:
       """
@@ -13,7 +20,7 @@ Feature: ignoring files
     And file "features/unordered.feature" with content:
       """
       Feature: example
-
+      
         Scenario: steps out of order
           When step 2
           And step 1

@@ -3,13 +3,17 @@ Feature: format a single file
   Scenario: unordered step in a scenario
     Given file "cucumber-sort.json" with content:
       """
-      step 1
-      step 2
+      {
+        "steps": [
+          "step 1",
+          "step 2"
+        ]
+      }
       """
     And file "features/unordered.feature" with content:
       """
       Feature: example
-
+      
         Scenario: steps out of order
           When step 2
           Then step 1
@@ -17,7 +21,7 @@ Feature: format a single file
     And file "features/ordered.feature" with content:
       """
       Feature: example
-
+      
         Scenario: steps in order
           When step 1
           Then step 2

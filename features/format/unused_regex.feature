@@ -3,14 +3,18 @@ Feature: formatting in the presence of an unused regex
   Background: regex "file .* now has content" isn't used
     Given file "cucumber-sort.json" with content:
       """
-      file .* with content:
-      step 1
-      file .* now has content:
+      {
+        "steps": [
+          "file .* with content:",
+          "step 1",
+          "file .* now has content:"
+        ]
+      }
       """
     And file "features/one.feature" with content:
       """
       Feature: example
-
+      
         Scenario: test
           Given step 1
           And file "foo" with content:
@@ -29,7 +33,7 @@ Feature: formatting in the presence of an unused regex
     And file "features/one.feature" now has content:
       """
       Feature: example
-
+      
         Scenario: test
           Given file "foo" with content:
             '''
@@ -49,7 +53,7 @@ Feature: formatting in the presence of an unused regex
     And file "features/one.feature" now has content:
       """
       Feature: example
-
+      
         Scenario: test
           Given file "foo" with content:
             '''

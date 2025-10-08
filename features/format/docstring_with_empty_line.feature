@@ -3,20 +3,24 @@ Feature: docstring with empty line
   Scenario: docstring with empty line
     Given file "cucumber-sort.json" with content:
       """
-      step 1
-      step 2
-      file .* with content:
+      {
+        "steps": [
+          "step 1",
+          "step 2",
+          "file .* with content:"
+        ]
+      }
       """
     And file "features/one.feature" with content:
       """
       Feature: example
-
+      
         Scenario: test
           Given step 1
           And file "foo" with content:
             '''
             Feature: example
-
+      
               Scenario: steps out of order
                 When step 1
                 And step 2
@@ -29,14 +33,14 @@ Feature: docstring with empty line
     And file "features/one.feature" now has content:
       """
       Feature: example
-
+      
         Scenario: test
           Given step 1
           And step 2
           And file "foo" with content:
             '''
             Feature: example
-
+      
               Scenario: steps out of order
                 When step 1
                 And step 2
