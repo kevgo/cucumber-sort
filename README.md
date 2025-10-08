@@ -166,7 +166,8 @@ Generate the default configuration with:
 cucumber-sort init
 </pre>
 
-This command creates three files:
+This command creates file
+<b type="workspace/existing-file">cucumber-sort.json</b>.
 
 ### cucumber-sort.json
 
@@ -179,14 +180,6 @@ in the sequence you want them to appear in your `.feature` files.
 > [!TIP]
 > See our own [cucumber-sort.json file](cucumber-sort.json) file for a working
 > example.
-
-### .cucumber-sort-ignore
-
-Lists files that `cucumber-sort` should ignore via glob patterns.
-
-### .cucumber-sort-opts
-
-Stores CLI options you want to enable by default.
 
 ## Commands
 
