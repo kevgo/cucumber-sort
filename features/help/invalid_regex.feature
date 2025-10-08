@@ -14,7 +14,7 @@ Feature: format already ordered steps
     Then it prints the error:
       """
       cucumber-sort.json:1  invalid regular expression
-      
+
       Invalid regex 'invalid (': regex parse error:
           invalid (
                   ^

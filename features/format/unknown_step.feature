@@ -12,7 +12,7 @@ Feature: format unknown steps
     And file "features/one.feature" with content:
       """
       Feature: example
-      
+
         Background:
           Given step 1
           And step 3

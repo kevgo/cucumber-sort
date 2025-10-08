@@ -12,20 +12,20 @@ Feature: check unknown steps
     And file "features/one.feature" with content:
       """
       Feature: example
-      
+
         Background: contains an unknown step
           Given step 1
           And file "foo.feature" with content:
             '''
             bar
             '''
-      
+
         Scenario: contains the same unknown step
           Given file "foo.feature" with content:
             '''
             bar
             '''
-      
+
         Scenario: contains a different unknown step
           Given another unknown step
       """
