@@ -3,8 +3,12 @@ Feature: list unused steps while checking
   Scenario: doesn't use "file .* now has content" regex
     Given file "cucumber-sort.json" with content:
       """
-      file .* with content:
-      file .* now has content:
+      {
+        "steps": [
+          "file .* with content:",
+          "file .* now has content:"
+        ]
+      }
       """
     And file "features/one.feature" with content:
       """
