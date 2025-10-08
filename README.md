@@ -47,20 +47,28 @@ This creates file named **cucumber-sort.json**, which defines the expected step
 order. Currently, it looks like this:
 
 ```sh
-# UNKNOWN STEPS
-^a mixing bowl$
-^apples$
-^butter$
-^cinnamon$
-^flour$
+{
+  "include": [],
+  "exclude": [],
+  "record": false,
+  "fail-fast": false,
+  "steps": [],
+  "unknown-steps": [
+    "^a mixing bowl$",
+    "^apples$",
+    "^butter$",
+    "^cinnamon$",
+    "^flour$"
+  ]
+}
 ```
 
 </a>
 
-Everything below
-<code type="workspace/existing-file-with-content" filename="cucumber-sort.json" partial-match>#
-UNKNOWN STEPS</code> are Gherkin steps that _cucumber-sort_ can see but doesn't
-yet know how to order.
+Everything inside
+<code type="workspace/existing-file-with-content" filename="cucumber-sort.json" partial-match>
+"unknown-steps"</code> are Gherkin steps that _cucumber-sort_ can see but
+doesn't yet know how to order.
 
 ### Step 2: arrange the steps in the desired order
 
@@ -70,18 +78,26 @@ Edit **cucumber-sort.json** to arrange the steps in the order you want them to
 appear in the recipes. For example:
 
 ```sh
-# TOOLS
-a mixing bowl
+{
+  "include": [],
+  "exclude": [],
+  "record": false,
+  "fail-fast": false,
+  "steps": [
+    // TOOLS
+    "^a mixing bowl$",
 
-# BASE DOUGH
-flour
-butter
+    // BASE DOUGH
+    "^flour$",
+    "^butter$",
 
-# FRUITS
-apples
+    // FRUITS
+    "^apples$",
 
-# SPICES
-cinnamon
+    // SPICES
+    "^cinnamon$"
+  ]
+}
 ```
 
 </a>
