@@ -167,15 +167,8 @@ cucumber-sort init
 </pre>
 
 This command creates file
-<b type="workspace/existing-file">cucumber-sort.json</b>.
-
-### cucumber-sort.json
-
-Defines the expected step order. Add step names (without `Given`/`When`/`Then`)
-in the sequence you want them to appear in your `.feature` files.
-
-- Supports regular expressions
-- Regex only need to match the text, no captures required
+<b type="workspace/existing-file">cucumber-sort.json</b>. JSON-Schema is
+available.
 
 > [!TIP]
 > See our own [cucumber-sort.json file](cucumber-sort.json) file for a working
