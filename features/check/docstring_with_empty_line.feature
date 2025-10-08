@@ -3,7 +3,11 @@ Feature: docstring with empty line
   Scenario: docstring with empty line
     Given file "cucumber-sort.json" with content:
       """
-      file .* with content:
+      {
+        "steps": [
+          "file .* with content:"
+        ]
+      }
       """
     And file "features/one.feature" with content:
       """

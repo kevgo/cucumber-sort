@@ -4,10 +4,18 @@ Feature: enable options through the opts file
     Given file "cucumber-sort.json" with content:
       """
       {
+        "include": [],
+        "exclude": [],
+        "record": true,
+        "fail-fast": true,
         "steps": [
           "step 1",
           "step 2"
         ],
+        "unknown-steps": [
+          "^another unknown step$",
+          "^file \".*\" with content:$"
+        ]
       }
       """
     And file ".cucumber-sort-opts" with content:
