@@ -17,18 +17,18 @@ pub enum Command {
     /// The file to check (optional)
     file: Option<Utf8PathBuf>,
     /// Record undefined steps in the config file
-    #[arg(short, long, action = clap::ArgAction::SetTrue)]
+    #[arg(short, long)]
     record: bool,
   },
   /// Format Cucumber files by sorting them
   Format {
     /// Stop at the first file that encounters problems
-    #[arg(short, long, action = clap::ArgAction::SetTrue)]
+    #[arg(short, long)]
     fail_fast: bool,
     /// The file to format (optional)
     file: Option<Utf8PathBuf>,
     /// Record undefined steps in the config file
-    #[arg(short, long, action = clap::ArgAction::SetTrue)]
+    #[arg(short, long)]
     record: bool,
   },
   /// Create the configuration file
