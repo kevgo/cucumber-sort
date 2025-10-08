@@ -12,7 +12,7 @@ pub enum Command {
   /// Check if Cucumber files are properly sorted
   Check {
     /// Stop at the first file that encounters problems
-    #[arg(short, long, action = clap::ArgAction::SetTrue)]
+    #[arg(short, long)]
     fail_fast: bool,
     /// The file to check (optional)
     file: Option<Utf8PathBuf>,
