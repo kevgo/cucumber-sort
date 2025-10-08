@@ -1,5 +1,5 @@
 # dev tooling and versions
-RUN_THAT_APP_VERSION = 0.21.0
+RUN_THAT_APP_VERSION = 0.22.0
 
 clear:  # removes all temporary artifacts
 	rm -f tools/rta*
