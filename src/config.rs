@@ -54,6 +54,7 @@ pub fn load_json_config() -> Result<JsonConfig> {
       let sanitized = strip_comments(&text);
       serde_json::from_str(&sanitized).map_err(|err| UserError::ConfigFileRead {
         file: CONFIG_FILE_NAME.into(),
+        content: text,
         reason: format!("Invalid JSON: {}", err),
       })
     }
@@ -61,6 +62,7 @@ pub fn load_json_config() -> Result<JsonConfig> {
       ErrorKind::NotFound => Ok(JsonConfig::default()),
       _ => Err(UserError::ConfigFileRead {
         file: CONFIG_FILE_NAME.into(),
+        content: String::new(),
         reason: err.to_string(),
       }),
     },
