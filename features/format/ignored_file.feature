@@ -13,7 +13,7 @@ Feature: ignoring files
     And file "features/unordered.feature" with content:
       """
       Feature: example
-      
+
         Scenario: steps out of order
           When step 2
           And step 1

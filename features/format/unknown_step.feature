@@ -8,7 +8,7 @@ Feature: format unknown steps
     And file "features/one.feature" with content:
       """
       Feature: example
-      
+
         Background:
           Given step 1
           And step 3
@@ -33,7 +33,7 @@ Feature: format unknown steps
     And file "cucumber-sort.json" now has content:
       """
       step 1
-      
+
       # UNKNOWN STEPS
       ^step 3$
       """
@@ -43,7 +43,7 @@ Feature: format unknown steps
     Given file "cucumber-sort.json" with content:
       """
       step 1
-      
+
       # UNKNOWN STEPS
       ^step 3$
       """
@@ -56,7 +56,7 @@ Feature: format unknown steps
     And file "cucumber-sort.json" now has content:
       """
       step 1
-      
+
       # UNKNOWN STEPS
       ^step 3$
       """

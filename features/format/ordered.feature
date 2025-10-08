@@ -14,12 +14,12 @@ Feature: format already ordered steps
       Feature: example
         Comment text
         describing the feature.
-      
+
         Background:
           Given step 1
           And step 2
           When step 3
-      
+
         Scenario: result
           Then step 4
           And step 5

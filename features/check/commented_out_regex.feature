@@ -14,7 +14,7 @@ Feature: ignoring regexes
     And file "features/ordered.feature" with content:
       """
       Feature: example
-      
+
         Scenario: steps out of order
           When step 1
           And step 2
