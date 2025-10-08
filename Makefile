@@ -1,10 +1,13 @@
 # dev tooling and versions
-RUN_THAT_APP_VERSION = 0.18.0
+RUN_THAT_APP_VERSION = 0.21.0
 
 clear:  # removes all temporary artifacts
 	rm -f tools/rta*
 	rm -rf node_modules
 	rm -rf target
+
+contest: tools/rta@${RUN_THAT_APP_VERSION}  # starts the contest server
+	tools/rta contest
 
 cuke: build  # runs the end-to-end tests
 	cargo test --quiet --locked --test cuke
