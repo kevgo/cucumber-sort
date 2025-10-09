@@ -48,7 +48,6 @@ impl Sorter {
       }
     }
     config.unknown_steps.sort();
-
     config.save()
   }
 
