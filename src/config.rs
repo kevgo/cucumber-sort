@@ -88,39 +88,42 @@ fn strip_comments(text: &str) -> String {
   let mut chars = text.chars();
 
   while let Some(ch) = chars.next() {
-    if ch == '/' {
-      match chars.next() {
-        Some('/') => {
-          // Single-line comment: replace with spaces until newline
-          result.push(' ');
-          result.push(' ');
-          for next_ch in chars.by_ref() {
-            if next_ch == '\n' {
-              result.push(next_ch);
-              break;
-            }
+    match ch {
+      '/' => {
+        match chars.next() {
+          Some('/') => {
+            // Single-line comment: replace with spaces until newline
             result.push(' ');
+            result.push(' ');
+            for next_ch in chars.by_ref() {
+              if next_ch == '\n' {
+                result.push(next_ch);
+                break;
+              }
+              result.push(' ');
+            }
+          }
+          Some(other) => result.push(other),
+          None => break,
+        }
+      }
+      '"' => {
+        // Inside a string: copy everything as-is until closing quote
+        result.push(ch);
+        let mut escaped = false;
+        for next_ch in chars.by_ref() {
+          result.push(next_ch);
+          if escaped {
+            escaped = false;
+          } else if next_ch == '\\' {
+            escaped = true;
+          } else if next_ch == '"' {
+            break;
           }
         }
-        Some(other) => result.push(other),
-        None => break,
       }
-    } else if ch == '"' {
-      // Inside a string: copy everything as-is until closing quote
-      result.push(ch);
-      let mut escaped = false;
-      for next_ch in chars.by_ref() {
-        result.push(next_ch);
-        if escaped {
-          escaped = false;
-        } else if next_ch == '\\' {
-          escaped = true;
-        } else if next_ch == '"' {
-          break;
-        }
-      }
-    } else {
-      result.push(ch);
+
+      _ => result.push(ch),
     }
   }
 
