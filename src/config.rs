@@ -55,8 +55,8 @@ impl Config {
     Config {
       include: self.include,
       exclude: self.exclude,
-      record: flags.record || self.record,
-      fail_fast: flags.fail_fast || self.fail_fast,
+      record: self.record || flags.record,
+      fail_fast: self.fail_fast || flags.fail_fast,
       steps: self.steps,
       unknown_steps: self.unknown_steps,
     }
