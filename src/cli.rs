@@ -11,30 +11,31 @@ pub fn parse() -> Command {
 pub enum Command {
   /// Check if Cucumber files are properly sorted
   Check {
-    /// Stop at the first file that encounters problems
-    #[arg(short, long)]
-    fail_fast: bool,
+    #[command(flatten)]
+    args: CommonArgs,
 
-    /// The file to check (optional)
+    /// The file to process (optional)
     file: Option<Utf8PathBuf>,
-
-    /// Record undefined steps in the config file
-    #[arg(short, long)]
-    record: bool,
   },
   /// Format Cucumber files by sorting them
   Format {
-    /// Stop at the first file that encounters problems
-    #[arg(short, long)]
-    fail_fast: bool,
+    #[command(flatten)]
+    args: CommonArgs,
 
-    /// The file to format (optional)
+    /// The file to process (optional)
     file: Option<Utf8PathBuf>,
-
-    /// Record undefined steps in the config file
-    #[arg(short, long)]
-    record: bool,
   },
   /// Create the configuration file
   Init,
+}
+
+#[derive(Parser)]
+pub struct CommonArgs {
+  /// Stop at the first file that encounters problems
+  #[arg(short, long)]
+  pub fail_fast: bool,
+
+  /// Record undefined steps in the config file
+  #[arg(short, long)]
+  pub record: bool,
 }

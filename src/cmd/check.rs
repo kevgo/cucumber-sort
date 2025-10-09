@@ -1,3 +1,4 @@
+use crate::cli::CommonArgs;
 use crate::errors::{Finding, Result};
 use crate::gherkin::Sorter;
 use crate::{config, gherkin};
@@ -5,9 +6,9 @@ use camino::Utf8PathBuf;
 use std::process::ExitCode;
 
 /// verifies whether the given or all files contain sorted steps
-pub fn check(filepath: Option<Utf8PathBuf>, record: bool, fail_fast: bool) -> Result<ExitCode> {
+pub fn check(args: CommonArgs, filepath: Option<Utf8PathBuf>) -> Result<ExitCode> {
   let mut config = config::load()?;
-  config.merge(fail_fast, record);
+  config.merge(args);
   let mut findings = match filepath {
     Some(filepath) => file(filepath, &mut config.sorter),
     None => all(&mut config),

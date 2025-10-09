@@ -1,4 +1,5 @@
 use crate::FileFinder;
+use crate::cli::CommonArgs;
 use crate::errors::{Result, UserError};
 use crate::gherkin::Sorter;
 use serde::{Deserialize, Serialize};
@@ -39,11 +40,11 @@ pub struct Config {
 }
 
 impl Config {
-  pub fn merge(&mut self, fail_fast: bool, record: bool) {
-    if fail_fast {
+  pub fn merge(&mut self, args: CommonArgs) {
+    if args.fail_fast {
       self.fail_fast = true;
     }
-    if record {
+    if args.record {
       self.record = true;
     }
   }
