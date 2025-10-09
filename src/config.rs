@@ -9,6 +9,7 @@ use std::io::ErrorKind;
 /// the filename of the configuration file
 pub const CONFIG_FILE_NAME: &str = "cucumber-sort.json";
 
+/// low-level configuration, structured as in the config file
 #[derive(Debug, Serialize, Deserialize, Default)]
 pub struct JsonConfig {
   #[serde(default)]
@@ -32,6 +33,7 @@ pub enum StepPattern {
   Group(Vec<String>),
 }
 
+/// high-level configuration to be used by the application
 pub struct Config {
   pub finder: FileFinder,
   pub sorter: Sorter,
