@@ -85,43 +85,39 @@ pub enum StepPattern {
 /// replacing them with spaces to preserve line numbers for error reporting.
 fn strip_comments(text: &str) -> String {
   let mut result = String::with_capacity(text.len());
-  let mut chars = text.chars();
-  while let Some(ch) = chars.next() {
-    match ch {
-      '/' => {
-        match chars.next() {
-          Some('/') => {
-            // Single-line comment: replace with spaces until newline
-            result.push_str("  "); // two spaces for both slashes
-            for next_ch in chars.by_ref() {
-              if next_ch == '\n' {
-                result.push(next_ch);
-                break;
-              }
-              result.push(' ');
-            }
-          }
-          Some(other) => result.push(other),
-          None => break,
-        }
-      }
-      '"' => {
-        // Inside a string: copy everything as-is until closing quote
-        result.push(ch);
-        let mut escaped = false;
-        for next_ch in chars.by_ref() {
-          result.push(next_ch);
-          if escaped {
-            escaped = false;
-          } else if next_ch == '\\' {
-            escaped = true;
-          } else if next_ch == '"' {
-            break;
-          }
-        }
-      }
+  let mut chars = text.chars().peekable();
+  let mut in_string = false;
+  let mut escaped = false;
 
-      _ => result.push(ch),
+  while let Some(ch) = chars.next() {
+    if in_string {
+      result.push(ch);
+      if escaped {
+        escaped = false;
+      } else if ch == '\\' {
+        escaped = true;
+      } else if ch == '"' {
+        in_string = false;
+      }
+    } else {
+      match ch {
+        '"' => {
+          result.push(ch);
+          in_string = true;
+        }
+        '/' if chars.peek() == Some(&'/') => {
+          chars.next(); // consume second '/'
+          result.push_str("  ");
+          for c in chars.by_ref() {
+            if c == '\n' {
+              result.push(c);
+              break;
+            }
+            result.push(' ');
+          }
+        }
+        _ => result.push(ch),
+      }
     }
   }
   result
