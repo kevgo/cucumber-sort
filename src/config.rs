@@ -86,15 +86,13 @@ pub enum StepPattern {
 fn strip_comments(text: &str) -> String {
   let mut result = String::with_capacity(text.len());
   let mut chars = text.chars();
-
   while let Some(ch) = chars.next() {
     match ch {
       '/' => {
         match chars.next() {
           Some('/') => {
             // Single-line comment: replace with spaces until newline
-            result.push(' ');
-            result.push(' ');
+            result.push_str("  ");
             for next_ch in chars.by_ref() {
               if next_ch == '\n' {
                 result.push(next_ch);
@@ -126,7 +124,6 @@ fn strip_comments(text: &str) -> String {
       _ => result.push(ch),
     }
   }
-
   result
 }
 
