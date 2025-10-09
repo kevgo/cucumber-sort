@@ -41,13 +41,7 @@ impl Sorter {
       return Ok(());
     }
     new_steps.sort();
-    new_steps.dedup();
-
-    // load the config data from disk again
-    // because the config in use is polluted by CLI flags
     let mut config = Config::load()?;
-
-    // Add new steps to unknown-steps, avoiding duplicates
     for step in new_steps {
       if !config.unknown_steps.contains(&step) {
         config.unknown_steps.push(step);
@@ -55,7 +49,6 @@ impl Sorter {
     }
     config.unknown_steps.sort();
 
-    // Save updated config
     config.save()
   }
 
