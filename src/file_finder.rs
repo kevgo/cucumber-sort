@@ -1,4 +1,4 @@
-use crate::config::JsonConfig;
+use crate::config::Config;
 use crate::errors::{Result, UserError};
 use camino::{Utf8DirEntry, Utf8Path, Utf8PathBuf};
 
@@ -65,11 +65,11 @@ impl FileFinder {
   }
 }
 
-impl TryFrom<&JsonConfig> for FileFinder {
+impl TryFrom<&Config> for FileFinder {
   type Error = UserError;
 
   /// Creates a new FileFinder from the JSON configuration
-  fn try_from(config: &JsonConfig) -> Result<Self> {
+  fn try_from(config: &Config) -> Result<Self> {
     let mut include_globs = vec![];
     for pattern in &config.include {
       match glob::Pattern::new(pattern) {
@@ -107,11 +107,11 @@ impl TryFrom<&JsonConfig> for FileFinder {
 
 #[cfg(test)]
 mod tests {
-  use crate::config::JsonConfig;
+  use crate::config::Config;
 
   #[test]
   fn should_exclude_file() {
-    let config = JsonConfig {
+    let config = Config {
       exclude: vec![
         "features/unordered*.feature".to_string(),
         "features/weird*.feature".to_string(),
@@ -128,7 +128,7 @@ mod tests {
 
   #[test]
   fn should_include_all_when_no_patterns() {
-    let config = JsonConfig::default();
+    let config = Config::default();
     let finder = super::FileFinder::try_from(&config).unwrap();
     assert!(finder.should_include("features/any.feature".into()));
     assert!(finder.should_include("features/test.feature".into()));
@@ -136,7 +136,7 @@ mod tests {
 
   #[test]
   fn should_include_only_matching() {
-    let config = JsonConfig {
+    let config = Config {
       include: vec!["features/important*.feature".to_string()],
       ..Default::default()
     };
@@ -148,7 +148,7 @@ mod tests {
 
   #[test]
   fn invalid_exclude_glob() {
-    let config = JsonConfig {
+    let config = Config {
       exclude: vec!["file[name".to_string()],
       ..Default::default()
     };
@@ -158,7 +158,7 @@ mod tests {
 
   #[test]
   fn invalid_include_glob() {
-    let config = JsonConfig {
+    let config = Config {
       include: vec!["file[name".to_string()],
       ..Default::default()
     };

@@ -1,4 +1,4 @@
-use crate::config::{JsonConfig, StepPattern};
+use crate::config::{Config, StepPattern};
 use crate::errors::{Finding, Issue, Result, UserError};
 use crate::gherkin::{self, Keyword};
 use crate::regex::make_regex;
@@ -44,7 +44,7 @@ impl Sorter {
     new_steps.dedup();
 
     // Load current config
-    let mut config = JsonConfig::load()?;
+    let mut config = Config::load()?;
 
     // Add new steps to unknown-steps, avoiding duplicates
     for step in new_steps {
@@ -129,11 +129,11 @@ impl Sorter {
   }
 }
 
-impl TryFrom<&JsonConfig> for Sorter {
+impl TryFrom<&Config> for Sorter {
   type Error = UserError;
 
   /// Creates a new Sorter from the JSON configuration
-  fn try_from(config: &JsonConfig) -> std::result::Result<Self, Self::Error> {
+  fn try_from(config: &Config) -> std::result::Result<Self, Self::Error> {
     let mut entries = vec![];
     for (i, step_pattern) in config.steps.iter().enumerate() {
       match step_pattern {
@@ -320,12 +320,12 @@ mod tests {
   }
 
   mod from_json_config {
-    use crate::config::{JsonConfig, StepPattern};
+    use crate::config::{Config, StepPattern};
     use crate::gherkin::Sorter;
 
     #[test]
     fn with_single_steps() {
-      let config = JsonConfig {
+      let config = Config {
         steps: vec![
           StepPattern::Single("step 1".to_string()),
           StepPattern::Single("step 2".to_string()),
@@ -340,7 +340,7 @@ mod tests {
 
     #[test]
     fn with_grouped_steps() {
-      let config = JsonConfig {
+      let config = Config {
         steps: vec![
           StepPattern::Group(vec!["step 1".to_string(), "step 2".to_string()]),
           StepPattern::Single("step 3".to_string()),
@@ -356,7 +356,7 @@ mod tests {
 
     #[test]
     fn invalid_regex() {
-      let config = JsonConfig {
+      let config = Config {
         steps: vec![StepPattern::Single("[invalid".to_string())],
         ..Default::default()
       };
@@ -366,7 +366,7 @@ mod tests {
   }
 
   mod sort_steps {
-    use crate::config::{JsonConfig, StepPattern};
+    use crate::config::{Config, StepPattern};
     use crate::errors::{Finding, Issue};
     use crate::gherkin;
     use crate::gherkin::{Keyword, Sorter};
@@ -374,7 +374,7 @@ mod tests {
 
     #[test]
     fn already_ordered() {
-      let config = JsonConfig {
+      let config = Config {
         steps: vec![
           StepPattern::Single("step 1".to_string()),
           StepPattern::Single("step 2".to_string()),
@@ -414,7 +414,7 @@ mod tests {
 
     #[test]
     fn unordered() {
-      let config = JsonConfig {
+      let config = Config {
         steps: vec![
           StepPattern::Single("step 1".to_string()),
           StepPattern::Single("step 2".to_string()),
@@ -476,7 +476,7 @@ mod tests {
 
     #[test]
     fn unknown_step() {
-      let config = JsonConfig {
+      let config = Config {
         steps: vec![
           StepPattern::Single("step 1".to_string()),
           StepPattern::Single("step 2".to_string()),

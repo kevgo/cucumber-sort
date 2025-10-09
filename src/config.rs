@@ -1,7 +1,5 @@
-use crate::FileFinder;
 use crate::cli::Flags;
 use crate::errors::{Result, UserError};
-use crate::gherkin::Sorter;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::io::ErrorKind;
@@ -9,9 +7,13 @@ use std::io::ErrorKind;
 /// the filename of the configuration file
 pub const CONFIG_FILE_NAME: &str = "cucumber-sort.json";
 
+pub fn create() -> Result<()> {
+  Config::default().save()
+}
+
 /// low-level configuration, structured as in the config file
 #[derive(Debug, Serialize, Deserialize, Default)]
-pub struct JsonConfig {
+pub struct Config {
   #[serde(default)]
   pub include: Vec<String>,
   #[serde(default)]
@@ -26,8 +28,8 @@ pub struct JsonConfig {
   pub unknown_steps: Vec<String>,
 }
 
-impl JsonConfig {
-  pub fn load() -> Result<JsonConfig> {
+impl Config {
+  pub fn load() -> Result<Config> {
     match fs::read_to_string(CONFIG_FILE_NAME) {
       Ok(text) => {
         let sanitized = strip_comments(&text);
@@ -38,13 +40,23 @@ impl JsonConfig {
         })
       }
       Err(err) => match err.kind() {
-        ErrorKind::NotFound => Ok(JsonConfig::default()),
+        ErrorKind::NotFound => Ok(Config::default()),
         _ => Err(UserError::ConfigFileRead {
           file: CONFIG_FILE_NAME.into(),
           content: String::new(),
           reason: err.to_string(),
         }),
       },
+    }
+  }
+
+  /// merges the given CLI flags into the configuration
+  pub fn merge(&mut self, flags: Flags) {
+    if flags.fail_fast {
+      self.fail_fast = true;
+    }
+    if flags.record {
+      self.record = true;
     }
   }
 
@@ -65,40 +77,6 @@ impl JsonConfig {
 pub enum StepPattern {
   Single(String),
   Group(Vec<String>),
-}
-
-/// high-level configuration to be used by the application
-pub struct Config {
-  pub finder: FileFinder,
-  pub sorter: Sorter,
-  pub record: bool,
-  pub fail_fast: bool,
-}
-
-impl Config {
-  /// merges the given CLI flags into the configuration
-  pub fn merge(&mut self, flags: Flags) {
-    if flags.fail_fast {
-      self.fail_fast = true;
-    }
-    if flags.record {
-      self.record = true;
-    }
-  }
-}
-
-pub fn load() -> Result<Config> {
-  let json_config = JsonConfig::load()?;
-  Ok(Config {
-    finder: FileFinder::try_from(&json_config)?,
-    sorter: Sorter::try_from(&json_config)?,
-    record: json_config.record,
-    fail_fast: json_config.fail_fast,
-  })
-}
-
-pub fn create() -> Result<()> {
-  JsonConfig::default().save()
 }
 
 /// Strips single-line (//) and multi-line (/* */) comments from JSON text,
