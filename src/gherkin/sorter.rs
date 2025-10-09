@@ -44,7 +44,7 @@ impl Sorter {
     new_steps.dedup();
 
     // Load current config
-    let mut config = crate::config::load_json_config()?;
+    let mut config = crate::config::load_json()?;
 
     // Add new steps to unknown-steps, avoiding duplicates
     for step in new_steps {
@@ -55,7 +55,7 @@ impl Sorter {
     config.unknown_steps.sort();
 
     // Save updated config
-    crate::config::save_json_config(&config)
+    crate::config::save_json(&config)
   }
 
   /// provides a copy of the given document with all Gherkin steps sorted the same way as in the given configuration

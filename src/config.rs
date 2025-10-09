@@ -54,7 +54,7 @@ impl Config {
 }
 
 pub fn load() -> Result<Config> {
-  let json_config = load_json_config()?;
+  let json_config = load_json()?;
   Ok(Config {
     finder: FileFinder::try_from(&json_config)?,
     sorter: Sorter::try_from(&json_config)?,
@@ -63,7 +63,7 @@ pub fn load() -> Result<Config> {
   })
 }
 
-pub fn load_json_config() -> Result<JsonConfig> {
+pub fn load_json() -> Result<JsonConfig> {
   match fs::read_to_string(CONFIG_FILE_NAME) {
     Ok(text) => {
       let sanitized = strip_comments(&text);
@@ -84,7 +84,7 @@ pub fn load_json_config() -> Result<JsonConfig> {
   }
 }
 
-pub fn save_json_config(config: &JsonConfig) -> Result<()> {
+pub fn save_json(config: &JsonConfig) -> Result<()> {
   let json = serde_json::to_string_pretty(config).map_err(|err| UserError::ConfigFileCreate {
     file: CONFIG_FILE_NAME.into(),
     message: format!("Failed to serialize config: {}", err),
@@ -96,7 +96,7 @@ pub fn save_json_config(config: &JsonConfig) -> Result<()> {
 }
 
 pub fn create() -> Result<()> {
-  save_json_config(&JsonConfig::default())
+  save_json(&JsonConfig::default())
 }
 
 /// Strips single-line (//) and multi-line (/* */) comments from JSON text,
