@@ -10,8 +10,7 @@ use std::process::ExitCode;
 
 /// updates the given or all files to contain sorted steps
 pub fn format(flags: Flags, filepath: Option<Utf8PathBuf>) -> Result<ExitCode> {
-  let mut config = Config::load()?;
-  config.merge(flags);
+  let config = Config::load()?.merge(flags);
   let mut sorter = Sorter::try_from(&config)?;
   let mut findings = match filepath {
     Some(filepath) => file(filepath, &mut sorter),

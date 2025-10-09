@@ -51,12 +51,14 @@ impl Config {
   }
 
   /// merges the given CLI flags into the configuration
-  pub fn merge(&mut self, flags: Flags) {
-    if flags.fail_fast {
-      self.fail_fast = true;
-    }
-    if flags.record {
-      self.record = true;
+  pub fn merge(self, flags: Flags) -> Self {
+    Config {
+      include: self.include,
+      exclude: self.exclude,
+      record: flags.record || self.record,
+      fail_fast: flags.fail_fast || self.fail_fast,
+      steps: self.steps,
+      unknown_steps: self.unknown_steps,
     }
   }
 

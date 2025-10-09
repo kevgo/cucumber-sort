@@ -8,8 +8,7 @@ use std::process::ExitCode;
 
 /// verifies whether the given or all files contain sorted steps
 pub fn check(flags: Flags, filepath: Option<Utf8PathBuf>) -> Result<ExitCode> {
-  let mut config = Config::load()?;
-  config.merge(flags);
+  let config = Config::load()?.merge(flags);
   let mut sorter = Sorter::try_from(&config)?;
   let mut findings = match filepath {
     Some(filepath) => file(filepath, &mut sorter),
