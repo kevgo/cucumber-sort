@@ -10,42 +10,6 @@ pub struct FileFinder {
 }
 
 impl FileFinder {
-  /// Creates a new FileFinder from the JSON configuration
-  pub fn from_json_config(config: &JsonConfig) -> Result<FileFinder> {
-    let mut include_globs = vec![];
-    for pattern in &config.include {
-      match glob::Pattern::new(pattern) {
-        Ok(glob) => include_globs.push(glob),
-        Err(err) => {
-          return Err(UserError::IgnoreFileInvalidGlob {
-            file: crate::config::CONFIG_FILE_NAME.into(),
-            line: 0,
-            reason: format!("Invalid include glob pattern '{}': {}", pattern, err),
-          });
-        }
-      }
-    }
-
-    let mut exclude_globs = vec![];
-    for pattern in &config.exclude {
-      match glob::Pattern::new(pattern) {
-        Ok(glob) => exclude_globs.push(glob),
-        Err(err) => {
-          return Err(UserError::IgnoreFileInvalidGlob {
-            file: crate::config::CONFIG_FILE_NAME.into(),
-            line: 0,
-            reason: format!("Invalid exclude glob pattern '{}': {}", pattern, err),
-          });
-        }
-      }
-    }
-
-    Ok(FileFinder {
-      include_globs,
-      exclude_globs,
-    })
-  }
-
   pub fn search_folder(&self, dir: impl AsRef<Utf8Path>) -> Result<Vec<Utf8PathBuf>> {
     let mut result = vec![];
     let entries: Vec<Utf8DirEntry> = dir
@@ -101,6 +65,46 @@ impl FileFinder {
   }
 }
 
+impl TryFrom<&JsonConfig> for FileFinder {
+  type Error = UserError;
+
+  /// Creates a new FileFinder from the JSON configuration
+  fn try_from(config: &JsonConfig) -> Result<Self> {
+    let mut include_globs = vec![];
+    for pattern in &config.include {
+      match glob::Pattern::new(pattern) {
+        Ok(glob) => include_globs.push(glob),
+        Err(err) => {
+          return Err(UserError::IgnoreFileInvalidGlob {
+            file: crate::config::CONFIG_FILE_NAME.into(),
+            line: 0,
+            reason: format!("Invalid include glob pattern '{}': {}", pattern, err),
+          });
+        }
+      }
+    }
+
+    let mut exclude_globs = vec![];
+    for pattern in &config.exclude {
+      match glob::Pattern::new(pattern) {
+        Ok(glob) => exclude_globs.push(glob),
+        Err(err) => {
+          return Err(UserError::IgnoreFileInvalidGlob {
+            file: crate::config::CONFIG_FILE_NAME.into(),
+            line: 0,
+            reason: format!("Invalid exclude glob pattern '{}': {}", pattern, err),
+          });
+        }
+      }
+    }
+
+    Ok(FileFinder {
+      include_globs,
+      exclude_globs,
+    })
+  }
+}
+
 #[cfg(test)]
 mod tests {
   use crate::config::JsonConfig;
@@ -114,7 +118,7 @@ mod tests {
       ],
       ..Default::default()
     };
-    let finder = super::FileFinder::from_json_config(&config).unwrap();
+    let finder = super::FileFinder::try_from(&config).unwrap();
     assert!(finder.should_exclude("features/unordered1.feature".into()));
     assert!(finder.should_exclude("features/unordered2.feature".into()));
     assert!(finder.should_exclude("features/weird1.feature".into()));
@@ -125,7 +129,7 @@ mod tests {
   #[test]
   fn should_include_all_when_no_patterns() {
     let config = JsonConfig::default();
-    let finder = super::FileFinder::from_json_config(&config).unwrap();
+    let finder = super::FileFinder::try_from(&config).unwrap();
     assert!(finder.should_include("features/any.feature".into()));
     assert!(finder.should_include("features/test.feature".into()));
   }
@@ -136,7 +140,7 @@ mod tests {
       include: vec!["features/important*.feature".to_string()],
       ..Default::default()
     };
-    let finder = super::FileFinder::from_json_config(&config).unwrap();
+    let finder = super::FileFinder::try_from(&config).unwrap();
     assert!(finder.should_include("features/important1.feature".into()));
     assert!(finder.should_include("features/important2.feature".into()));
     assert!(!finder.should_include("features/other.feature".into()));
@@ -148,7 +152,7 @@ mod tests {
       exclude: vec!["file[name".to_string()],
       ..Default::default()
     };
-    let result = super::FileFinder::from_json_config(&config);
+    let result = super::FileFinder::try_from(&config);
     assert!(result.is_err());
   }
 
@@ -158,7 +162,7 @@ mod tests {
       include: vec!["file[name".to_string()],
       ..Default::default()
     };
-    let result = super::FileFinder::from_json_config(&config);
+    let result = super::FileFinder::try_from(&config);
     assert!(result.is_err());
   }
 }

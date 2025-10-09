@@ -22,48 +22,6 @@ pub struct Entry {
 }
 
 impl Sorter {
-  /// Creates a new Sorter from the JSON configuration
-  pub fn from_json_config(config: &JsonConfig) -> Result<Sorter> {
-    let mut entries = vec![];
-    for (i, step_pattern) in config.steps.iter().enumerate() {
-      match step_pattern {
-        StepPattern::Single(pattern) => match Regex::new(pattern) {
-          Ok(regex) => entries.push(Entry {
-            regex,
-            used: false,
-            line_no: i,
-          }),
-          Err(err) => {
-            return Err(UserError::ConfigFileInvalidRegex {
-              file: crate::config::CONFIG_FILE_NAME.into(),
-              line: i,
-              message: format!("Invalid regex '{}': {}", pattern, err),
-            });
-          }
-        },
-        StepPattern::Group(patterns) => {
-          for pattern in patterns {
-            match Regex::new(pattern) {
-              Ok(regex) => entries.push(Entry {
-                regex,
-                used: false,
-                line_no: i,
-              }),
-              Err(err) => {
-                return Err(UserError::ConfigFileInvalidRegex {
-                  file: crate::config::CONFIG_FILE_NAME.into(),
-                  line: i,
-                  message: format!("Invalid regex '{}': {}", pattern, err),
-                });
-              }
-            }
-          }
-        }
-      }
-    }
-    Ok(Sorter { entries })
-  }
-
   /// records the given missing steps in the config file
   pub fn store_missing(&self, missings: &[Finding]) -> Result<()> {
     if missings.is_empty() {
@@ -168,6 +126,52 @@ impl Sorter {
       });
     }
     (optimize_keywords(result), issues)
+  }
+}
+
+impl TryFrom<&JsonConfig> for Sorter {
+  type Error = UserError;
+
+  /// Creates a new Sorter from the JSON configuration
+  fn try_from(config: &JsonConfig) -> std::result::Result<Self, Self::Error> {
+    let mut entries = vec![];
+    for (i, step_pattern) in config.steps.iter().enumerate() {
+      match step_pattern {
+        StepPattern::Single(pattern) => match Regex::new(pattern) {
+          Ok(regex) => entries.push(Entry {
+            regex,
+            used: false,
+            line_no: i,
+          }),
+          Err(err) => {
+            return Err(UserError::ConfigFileInvalidRegex {
+              file: crate::config::CONFIG_FILE_NAME.into(),
+              line: i,
+              message: format!("Invalid regex '{}': {}", pattern, err),
+            });
+          }
+        },
+        StepPattern::Group(patterns) => {
+          for pattern in patterns {
+            match Regex::new(pattern) {
+              Ok(regex) => entries.push(Entry {
+                regex,
+                used: false,
+                line_no: i,
+              }),
+              Err(err) => {
+                return Err(UserError::ConfigFileInvalidRegex {
+                  file: crate::config::CONFIG_FILE_NAME.into(),
+                  line: i,
+                  message: format!("Invalid regex '{}': {}", pattern, err),
+                });
+              }
+            }
+          }
+        }
+      }
+    }
+    Ok(Sorter { entries })
   }
 }
 
@@ -328,7 +332,7 @@ mod tests {
         ],
         ..Default::default()
       };
-      let sorter = Sorter::from_json_config(&config).unwrap();
+      let sorter = Sorter::try_from(&config).unwrap();
       assert_eq!(sorter.entries.len(), 2);
       assert_eq!(sorter.entries[0].regex.as_str(), "step 1");
       assert_eq!(sorter.entries[1].regex.as_str(), "step 2");
@@ -343,7 +347,7 @@ mod tests {
         ],
         ..Default::default()
       };
-      let sorter = Sorter::from_json_config(&config).unwrap();
+      let sorter = Sorter::try_from(&config).unwrap();
       assert_eq!(sorter.entries.len(), 3);
       assert_eq!(sorter.entries[0].regex.as_str(), "step 1");
       assert_eq!(sorter.entries[1].regex.as_str(), "step 2");
@@ -356,7 +360,7 @@ mod tests {
         steps: vec![StepPattern::Single("[invalid".to_string())],
         ..Default::default()
       };
-      let result = Sorter::from_json_config(&config);
+      let result = Sorter::try_from(&config);
       assert!(result.is_err());
     }
   }
@@ -378,7 +382,7 @@ mod tests {
         ],
         ..Default::default()
       };
-      let mut sorter = Sorter::from_json_config(&config).unwrap();
+      let mut sorter = Sorter::try_from(&config).unwrap();
       let give_steps = vec![
         gherkin::Step {
           line_no: 0,
@@ -418,7 +422,7 @@ mod tests {
         ],
         ..Default::default()
       };
-      let mut sorter = Sorter::from_json_config(&config).unwrap();
+      let mut sorter = Sorter::try_from(&config).unwrap();
       let give_block = gherkin::Block::Sortable(vec![
         gherkin::Step {
           line_no: 0,
@@ -479,7 +483,7 @@ mod tests {
         ],
         ..Default::default()
       };
-      let mut sorter = Sorter::from_json_config(&config).unwrap();
+      let mut sorter = Sorter::try_from(&config).unwrap();
       let give_block = gherkin::Block::Sortable(vec![
         gherkin::Step {
           line_no: 0,

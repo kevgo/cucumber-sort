@@ -54,8 +54,8 @@ impl Config {
 pub fn load() -> Result<Config> {
   let json_config = load_json_config()?;
   Ok(Config {
-    finder: FileFinder::from_json_config(&json_config)?,
-    sorter: Sorter::from_json_config(&json_config)?,
+    finder: FileFinder::try_from(&json_config)?,
+    sorter: Sorter::try_from(&json_config)?,
     record: json_config.record,
     fail_fast: json_config.fail_fast,
   })
