@@ -203,6 +203,12 @@ mod tests {
     }
 
     #[test]
+    fn double_backslash() {
+      let give = r#"{"pattern": "\\\\"}"#;
+      assert_eq!(super::strip_comments(give), give);
+    }
+
+    #[test]
     fn complex_json() {
       let give = r#"{
   // Configuration file
