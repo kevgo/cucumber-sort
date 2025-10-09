@@ -14,8 +14,10 @@ pub enum Command {
     /// Stop at the first file that encounters problems
     #[arg(short, long)]
     fail_fast: bool,
+
     /// The file to check (optional)
     file: Option<Utf8PathBuf>,
+
     /// Record undefined steps in the config file
     #[arg(short, long)]
     record: bool,
@@ -25,8 +27,10 @@ pub enum Command {
     /// Stop at the first file that encounters problems
     #[arg(short, long)]
     fail_fast: bool,
+
     /// The file to format (optional)
     file: Option<Utf8PathBuf>,
+
     /// Record undefined steps in the config file
     #[arg(short, long)]
     record: bool,

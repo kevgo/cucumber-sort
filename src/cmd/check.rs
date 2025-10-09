@@ -7,18 +7,16 @@ use std::process::ExitCode;
 /// verifies whether the given or all files contain sorted steps
 pub fn check(filepath: Option<Utf8PathBuf>, record: bool, fail_fast: bool) -> Result<ExitCode> {
   let mut config = config::load()?;
-  // CLI flags override config file options
-  let record = if record { true } else { config.record };
-  let fail_fast = if fail_fast { true } else { config.fail_fast };
+  config.merge(fail_fast, record);
   let mut findings = match filepath {
     Some(filepath) => file(filepath, &mut config.sorter),
-    None => all(&mut config, fail_fast),
+    None => all(&mut config),
   }?;
   findings.sort();
   for finding in &findings {
     println!("{}", finding);
   }
-  if record {
+  if config.record {
     config.sorter.store_missing(&findings)?;
   }
   if findings.is_empty() {
@@ -29,13 +27,13 @@ pub fn check(filepath: Option<Utf8PathBuf>, record: bool, fail_fast: bool) -> Re
 }
 
 /// checks all files in the current folder
-fn all(config: &mut config::Config, fail_fast: bool) -> Result<Vec<Finding>> {
+fn all(config: &mut config::Config) -> Result<Vec<Finding>> {
   let mut result = vec![];
   for filepath in config.finder.search_folder(".")? {
     let findings = file(filepath, &mut config.sorter)?;
     let found_problems = !findings.is_empty();
     result.extend(findings);
-    if fail_fast && found_problems {
+    if config.fail_fast && found_problems {
       break;
     }
   }

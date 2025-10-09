@@ -38,6 +38,17 @@ pub struct Config {
   pub fail_fast: bool,
 }
 
+impl Config {
+  pub fn merge(&mut self, fail_fast: bool, record: bool) {
+    if fail_fast {
+      self.fail_fast = true;
+    }
+    if record {
+      self.record = true;
+    }
+  }
+}
+
 pub fn load() -> Result<Config> {
   let json_config = load_json_config()?;
   Ok(Config {
