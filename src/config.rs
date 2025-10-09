@@ -89,11 +89,10 @@ fn strip_comments(text: &str) -> String {
 
   while let Some(ch) = chars.next() {
     if ch == '/' {
-      match chars.peek() {
-        Some(&'/') => {
+      match chars.next() {
+        Some('/') => {
           // Single-line comment: replace with spaces until newline
           result.push(' ');
-          chars.next(); // consume second '/'
           result.push(' ');
           while let Some(&next_ch) = chars.peek() {
             if next_ch == '\n' {
@@ -104,7 +103,8 @@ fn strip_comments(text: &str) -> String {
             result.push(' ');
           }
         }
-        _ => result.push(ch),
+        Some(other) => result.push(other),
+        None => break,
       }
     } else if ch == '"' {
       // Inside a string: copy everything as-is until closing quote
