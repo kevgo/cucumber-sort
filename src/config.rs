@@ -88,7 +88,6 @@ fn strip_comments(text: &str) -> String {
   let mut chars = text.chars().peekable();
   let mut in_string = false;
   let mut escaped = false;
-
   while let Some(ch) = chars.next() {
     if in_string {
       result.push(ch);
