@@ -43,7 +43,8 @@ impl Sorter {
     new_steps.sort();
     new_steps.dedup();
 
-    // Load current config
+    // load the config data from disk again
+    // because the config in use is polluted by CLI flags
     let mut config = Config::load()?;
 
     // Add new steps to unknown-steps, avoiding duplicates
