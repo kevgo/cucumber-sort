@@ -40,6 +40,7 @@ pub struct Config {
 }
 
 impl Config {
+  /// merges the given CLI flags into the configuration
   pub fn merge(&mut self, flags: Flags) {
     if flags.fail_fast {
       self.fail_fast = true;
