@@ -94,12 +94,11 @@ fn strip_comments(text: &str) -> String {
           // Single-line comment: replace with spaces until newline
           result.push(' ');
           result.push(' ');
-          while let Some(&next_ch) = chars.peek() {
+          for next_ch in chars.by_ref() {
             if next_ch == '\n' {
-              result.push(chars.next().unwrap());
+              result.push(next_ch);
               break;
             }
-            chars.next();
             result.push(' ');
           }
         }
