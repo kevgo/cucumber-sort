@@ -92,7 +92,7 @@ fn strip_comments(text: &str) -> String {
         match chars.next() {
           Some('/') => {
             // Single-line comment: replace with spaces until newline
-            result.push_str("  ");
+            result.push_str("  "); // two spaces for both slashes
             for next_ch in chars.by_ref() {
               if next_ch == '\n' {
                 result.push(next_ch);
