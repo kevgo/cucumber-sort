@@ -81,7 +81,7 @@ pub enum StepPattern {
   Group(Vec<String>),
 }
 
-/// Strips single-line (//) and multi-line (/* */) comments from JSON text,
+/// Strips single-line comments from JSON text,
 /// replacing them with spaces to preserve line numbers for error reporting.
 fn strip_comments(text: &str) -> String {
   let mut result = String::with_capacity(text.len());
