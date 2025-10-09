@@ -26,6 +26,40 @@ pub struct JsonConfig {
   pub unknown_steps: Vec<String>,
 }
 
+impl JsonConfig {
+  pub fn load() -> Result<JsonConfig> {
+    match fs::read_to_string(CONFIG_FILE_NAME) {
+      Ok(text) => {
+        let sanitized = strip_comments(&text);
+        serde_json::from_str(&sanitized).map_err(|err| UserError::ConfigFileRead {
+          file: CONFIG_FILE_NAME.into(),
+          content: text,
+          reason: format!("Invalid JSON: {}", err),
+        })
+      }
+      Err(err) => match err.kind() {
+        ErrorKind::NotFound => Ok(JsonConfig::default()),
+        _ => Err(UserError::ConfigFileRead {
+          file: CONFIG_FILE_NAME.into(),
+          content: String::new(),
+          reason: err.to_string(),
+        }),
+      },
+    }
+  }
+
+  pub fn save(&self) -> Result<()> {
+    let json = serde_json::to_string_pretty(self).map_err(|err| UserError::ConfigFileCreate {
+      file: CONFIG_FILE_NAME.into(),
+      message: format!("Failed to serialize config: {}", err),
+    })?;
+    fs::write(CONFIG_FILE_NAME, json).map_err(|err| UserError::ConfigFileCreate {
+      file: CONFIG_FILE_NAME.into(),
+      message: err.to_string(),
+    })
+  }
+}
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(untagged)]
 pub enum StepPattern {
@@ -54,7 +88,7 @@ impl Config {
 }
 
 pub fn load() -> Result<Config> {
-  let json_config = load_json()?;
+  let json_config = JsonConfig::load()?;
   Ok(Config {
     finder: FileFinder::try_from(&json_config)?,
     sorter: Sorter::try_from(&json_config)?,
@@ -63,40 +97,8 @@ pub fn load() -> Result<Config> {
   })
 }
 
-pub fn load_json() -> Result<JsonConfig> {
-  match fs::read_to_string(CONFIG_FILE_NAME) {
-    Ok(text) => {
-      let sanitized = strip_comments(&text);
-      serde_json::from_str(&sanitized).map_err(|err| UserError::ConfigFileRead {
-        file: CONFIG_FILE_NAME.into(),
-        content: text,
-        reason: format!("Invalid JSON: {}", err),
-      })
-    }
-    Err(err) => match err.kind() {
-      ErrorKind::NotFound => Ok(JsonConfig::default()),
-      _ => Err(UserError::ConfigFileRead {
-        file: CONFIG_FILE_NAME.into(),
-        content: String::new(),
-        reason: err.to_string(),
-      }),
-    },
-  }
-}
-
-pub fn save_json(config: &JsonConfig) -> Result<()> {
-  let json = serde_json::to_string_pretty(config).map_err(|err| UserError::ConfigFileCreate {
-    file: CONFIG_FILE_NAME.into(),
-    message: format!("Failed to serialize config: {}", err),
-  })?;
-  fs::write(CONFIG_FILE_NAME, json).map_err(|err| UserError::ConfigFileCreate {
-    file: CONFIG_FILE_NAME.into(),
-    message: err.to_string(),
-  })
-}
-
 pub fn create() -> Result<()> {
-  save_json(&JsonConfig::default())
+  JsonConfig::default().save()
 }
 
 /// Strips single-line (//) and multi-line (/* */) comments from JSON text,
