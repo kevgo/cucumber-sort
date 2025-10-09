@@ -72,32 +72,23 @@ impl TryFrom<&Config> for FileFinder {
   fn try_from(config: &Config) -> Result<Self> {
     let mut include_globs = vec![];
     for pattern in &config.include {
-      match glob::Pattern::new(pattern) {
-        Ok(glob) => include_globs.push(glob),
-        Err(err) => {
-          return Err(UserError::IgnoreFileInvalidGlob {
-            file: crate::config::CONFIG_FILE_NAME.into(),
-            line: 0,
-            reason: format!("Invalid include glob pattern '{}': {}", pattern, err),
-          });
-        }
-      }
+      let glob = glob::Pattern::new(pattern).map_err(|err| UserError::IgnoreFileInvalidGlob {
+        file: crate::config::CONFIG_FILE_NAME.into(),
+        line: 0,
+        reason: format!("Invalid include glob pattern '{}': {}", pattern, err),
+      })?;
+      include_globs.push(glob);
     }
 
     let mut exclude_globs = vec![];
     for pattern in &config.exclude {
-      match glob::Pattern::new(pattern) {
-        Ok(glob) => exclude_globs.push(glob),
-        Err(err) => {
-          return Err(UserError::IgnoreFileInvalidGlob {
-            file: crate::config::CONFIG_FILE_NAME.into(),
-            line: 0,
-            reason: format!("Invalid exclude glob pattern '{}': {}", pattern, err),
-          });
-        }
-      }
+      let glob = glob::Pattern::new(pattern).map_err(|err| UserError::IgnoreFileInvalidGlob {
+        file: crate::config::CONFIG_FILE_NAME.into(),
+        line: 0,
+        reason: format!("Invalid exclude glob pattern '{}': {}", pattern, err),
+      })?;
+      exclude_globs.push(glob);
     }
-
     Ok(FileFinder {
       include_globs,
       exclude_globs,
