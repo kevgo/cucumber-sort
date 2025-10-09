@@ -9,7 +9,6 @@ mod regex;
 use crate::errors::Result;
 use ansi_term::Color::Red;
 use cli::Command::{Check, Format, Init};
-use file_finder::FileFinder;
 use std::process::ExitCode;
 
 fn main() -> ExitCode {
@@ -28,16 +27,8 @@ fn main() -> ExitCode {
 
 fn inner() -> Result<ExitCode> {
   match cli::parse() {
-    Check {
-      fail_fast,
-      file,
-      record,
-    } => cmd::check(file, record, fail_fast),
-    Format {
-      fail_fast,
-      file,
-      record,
-    } => cmd::format(file, record, fail_fast),
+    Check { flags, file } => cmd::check(flags, file),
+    Format { flags, file } => cmd::format(flags, file),
     Init => cmd::init(),
   }
 }

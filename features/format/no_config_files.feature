@@ -31,10 +31,18 @@ Feature: run without config file
       features/one.feature:8  unknown step: step 2
       """
     And the exit code is failure
-    And file ".cucumber-sort-order" now has content:
+    And file "cucumber-sort.json" now has content:
       """
-      # UNKNOWN STEPS
-      ^file ".*" with content:$
-      ^step 2$
+      {
+        "include": [],
+        "exclude": [],
+        "record": false,
+        "fail-fast": false,
+        "steps": [],
+        "unknown-steps": [
+          "^file \".*\" with content:$",
+          "^step 2$"
+        ]
+      }
       """
     And file contents haven't changed

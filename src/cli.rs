@@ -1,23 +1,8 @@
-use crate::errors::{Result, UserError};
 use camino::Utf8PathBuf;
 use clap::Parser;
-use std::fs;
-
-const FILENAME: &str = ".cucumber-sort-opts";
-const TEMPLATE: &str = r#"
-# More info at https://github.com/kevgo/cucumber-sort
-#
-# This file contains cucumber-sort CLI arguments that you always want to enable.
-
-# --fail-fast --record
-"#;
 
 pub fn parse() -> Command {
-  let cli_args = std::env::args();
-  match read_file() {
-    Some(file_args) => Command::parse_from(cli_args.chain(file_args)),
-    None => Command::parse_from(cli_args),
-  }
+  Command::parse()
 }
 
 #[derive(Parser)]
@@ -26,48 +11,31 @@ pub fn parse() -> Command {
 pub enum Command {
   /// Check if Cucumber files are properly sorted
   Check {
-    /// Stop at the first file that encounters problems
-    #[arg(short, long)]
-    fail_fast: bool,
-    /// The file to check (optional)
+    #[command(flatten)]
+    flags: Flags,
+
+    /// The file to process (optional)
     file: Option<Utf8PathBuf>,
-    /// Record undefined steps in the config file
-    #[arg(short, long)]
-    record: bool,
   },
   /// Format Cucumber files by sorting them
   Format {
-    /// Stop at the first file that encounters problems
-    #[arg(short, long)]
-    fail_fast: bool,
-    /// The file to format (optional)
+    #[command(flatten)]
+    flags: Flags,
+
+    /// The file to process (optional)
     file: Option<Utf8PathBuf>,
-    /// Record undefined steps in the config file
-    #[arg(short, long)]
-    record: bool,
   },
-  /// Create the configuration files
+  /// Create the configuration file
   Init,
 }
 
-/// creates a default opts config file
-pub fn create() -> Result<()> {
-  fs::write(FILENAME, &TEMPLATE[1..]).map_err(|err| UserError::ConfigFileCreate {
-    file: FILENAME.into(),
-    message: err.to_string(),
-  })
-}
+#[derive(Parser)]
+pub struct Flags {
+  /// Stop at the first file that encounters problems
+  #[arg(short, long)]
+  pub fail_fast: bool,
 
-/// provides the content of the opts config file
-fn read_file() -> Option<Vec<String>> {
-  let Ok(text) = fs::read_to_string(FILENAME) else {
-    return None;
-  };
-  let flags = text
-    .lines()
-    .filter(|line| !line.starts_with('#'))
-    .flat_map(|line| line.split_whitespace())
-    .map(String::from)
-    .collect();
-  Some(flags)
+  /// Record undefined steps in the config file
+  #[arg(short, long)]
+  pub record: bool,
 }

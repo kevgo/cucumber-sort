@@ -1,13 +1,17 @@
 Feature: format already ordered steps
 
   Scenario:
-    Given file ".cucumber-sort-order" with content:
+    Given file "cucumber-sort.json" with content:
       """
-      step 1
-      step 2
-      step 3
-      step 4
-      step 5
+      {
+        "steps": [
+          "step 1",
+          "step 2",
+          "step 3",
+          "step 4",
+          "step 5"
+        ]
+      }
       """
     And file "features/one.feature" with content:
       """

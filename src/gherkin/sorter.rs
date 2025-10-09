@@ -1,28 +1,9 @@
+use crate::config::{Config, StepPattern};
 use crate::errors::{Finding, Issue, Result, UserError};
 use crate::gherkin::{self, Keyword};
 use crate::regex::make_regex;
-use big_s::S;
 use camino::Utf8Path;
 use regex::Regex;
-use std::fs;
-use std::io::ErrorKind;
-
-/// the filename of the configuration file
-const FILE_NAME: &str = ".cucumber-sort-order";
-
-/// marker in the config file that separates undefined steps from defined ones
-const MARKER: &str = "# UNKNOWN STEPS";
-
-/// template for new config files
-const TEMPLATE: &str = r#"
-# More info at https://github.com/kevgo/cucumber-sort
-#
-# This file lists Gherkin steps in the desired order
-# without Given/When/Then, using regular expressions.
-
-# step 1
-# step 2
-"#;
 
 /// Sorter encapsulates the minutiae around checking the order of Gherkin steps.
 /// You give it a config file and it sorts Steps for you.
@@ -36,68 +17,38 @@ pub struct Entry {
   /// whether this regex was used in the current invocation of the tool
   used: bool,
 
-  /// where in the config file this regex is defined, 0-based
+  /// where in the config this regex is defined, 0-based
   line_no: usize,
 }
 
 impl Sorter {
-  pub fn load() -> Result<Sorter> {
-    match fs::read_to_string(FILE_NAME) {
-      Ok(text) => Sorter::parse(&text),
-      Err(err) => match err.kind() {
-        ErrorKind::NotFound => Ok(Sorter { entries: vec![] }),
-        _ => Err(UserError::ConfigFileRead {
-          file: FILE_NAME.into(),
-          reason: err.to_string(),
-        }),
-      },
-    }
-  }
-
-  pub fn create() -> Result<()> {
-    fs::write(FILE_NAME, &TEMPLATE[1..]).map_err(|err| UserError::ConfigFileCreate {
-      file: FILE_NAME.into(),
-      message: err.to_string(),
-    })
-  }
-
   /// records the given missing steps in the config file
   pub fn store_missing(&self, missings: &[Finding]) -> Result<()> {
     if missings.is_empty() {
       return Ok(());
     }
-    let mut serialized = vec![];
+    let mut new_steps = vec![];
     for missing in missings {
       match &missing.problem {
         Issue::UndefinedStep(text) => {
-          serialized.push(make_regex(text));
+          new_steps.push(make_regex(text));
         }
         Issue::UnsortedLine { have: _, want: _ } => {}
         Issue::UnusedRegex(_) => {}
       }
     }
-    if serialized.is_empty() {
+    if new_steps.is_empty() {
       return Ok(());
     }
-    serialized.sort();
-    serialized.dedup();
-    let old_content = fs::read_to_string(FILE_NAME).unwrap_or(S(""));
-    let mut new_content = vec![];
-    for line in old_content.lines() {
-      if line == MARKER {
-        break;
+    new_steps.sort();
+    let mut config = Config::load()?;
+    for step in new_steps {
+      if !config.unknown_steps.contains(&step) {
+        config.unknown_steps.push(step);
       }
-      new_content.push(line.to_string());
     }
-    if !new_content.last().is_none_or(|s| s.is_empty()) {
-      new_content.push(S(""));
-    }
-    new_content.push(MARKER.to_string());
-    new_content.extend(serialized);
-    fs::write(FILE_NAME, new_content.join("\n")).map_err(|err| UserError::ConfigFileCreate {
-      file: MARKER.into(),
-      message: err.to_string(),
-    })
+    config.unknown_steps.sort();
+    config.save()
   }
 
   /// provides a copy of the given document with all Gherkin steps sorted the same way as in the given configuration
@@ -121,7 +72,7 @@ impl Sorter {
     for entry in &self.entries {
       if !entry.used {
         result.push(Finding {
-          file: FILE_NAME.into(),
+          file: crate::config::CONFIG_FILE_NAME.into(),
           line: entry.line_no,
           problem: Issue::UnusedRegex(entry.regex.to_string()),
         });
@@ -169,28 +120,47 @@ impl Sorter {
     }
     (optimize_keywords(result), issues)
   }
+}
 
-  fn parse(text: &str) -> Result<Sorter> {
+impl TryFrom<&Config> for Sorter {
+  type Error = UserError;
+
+  /// Creates a new Sorter from the JSON configuration
+  fn try_from(config: &Config) -> std::result::Result<Self, Self::Error> {
     let mut entries = vec![];
-    for (i, line) in text.lines().enumerate() {
-      if line == MARKER {
-        break;
-      }
-      if line.is_empty() || line.starts_with('#') {
-        continue;
-      }
-      match Regex::new(line) {
-        Ok(regex) => entries.push(Entry {
-          regex,
-          used: false,
-          line_no: i,
-        }),
-        Err(err) => {
-          return Err(UserError::ConfigFileInvalidRegex {
-            file: FILE_NAME.into(),
-            line: i,
-            message: err.to_string(),
-          });
+    for (i, step_pattern) in config.steps.iter().enumerate() {
+      match step_pattern {
+        StepPattern::Single(pattern) => match Regex::new(pattern) {
+          Ok(regex) => entries.push(Entry {
+            regex,
+            used: false,
+            line_no: i,
+          }),
+          Err(err) => {
+            return Err(UserError::ConfigFileInvalidRegex {
+              file: crate::config::CONFIG_FILE_NAME.into(),
+              line: i,
+              message: format!("Invalid regex '{}': {}", pattern, err),
+            });
+          }
+        },
+        StepPattern::Group(patterns) => {
+          for pattern in patterns {
+            match Regex::new(pattern) {
+              Ok(regex) => entries.push(Entry {
+                regex,
+                used: false,
+                line_no: i,
+              }),
+              Err(err) => {
+                return Err(UserError::ConfigFileInvalidRegex {
+                  file: crate::config::CONFIG_FILE_NAME.into(),
+                  line: i,
+                  message: format!("Invalid regex '{}': {}", pattern, err),
+                });
+              }
+            }
+          }
         }
       }
     }
@@ -342,24 +312,54 @@ mod tests {
     pretty::assert_eq!(have_optimized, steps);
   }
 
-  mod parse {
+  mod from_json_config {
+    use crate::config::{Config, StepPattern};
     use crate::gherkin::Sorter;
 
     #[test]
-    fn with_unknown_step() {
-      let give = "step 1\n\n# UNKNOWN STEPS\nstep 2\nstep 3";
-      let have = Sorter::parse(give).unwrap();
-      let have_entries: Vec<&str> = have
-        .entries
-        .iter()
-        .map(|entry| entry.regex.as_str())
-        .collect();
-      let want_entries = vec!["step 1"];
-      pretty::assert_eq!(want_entries, have_entries);
+    fn with_single_steps() {
+      let config = Config {
+        steps: vec![
+          StepPattern::Single("step 1".to_string()),
+          StepPattern::Single("step 2".to_string()),
+        ],
+        ..Default::default()
+      };
+      let sorter = Sorter::try_from(&config).unwrap();
+      assert_eq!(sorter.entries.len(), 2);
+      assert_eq!(sorter.entries[0].regex.as_str(), "step 1");
+      assert_eq!(sorter.entries[1].regex.as_str(), "step 2");
+    }
+
+    #[test]
+    fn with_grouped_steps() {
+      let config = Config {
+        steps: vec![
+          StepPattern::Group(vec!["step 1".to_string(), "step 2".to_string()]),
+          StepPattern::Single("step 3".to_string()),
+        ],
+        ..Default::default()
+      };
+      let sorter = Sorter::try_from(&config).unwrap();
+      assert_eq!(sorter.entries.len(), 3);
+      assert_eq!(sorter.entries[0].regex.as_str(), "step 1");
+      assert_eq!(sorter.entries[1].regex.as_str(), "step 2");
+      assert_eq!(sorter.entries[2].regex.as_str(), "step 3");
+    }
+
+    #[test]
+    fn invalid_regex() {
+      let config = Config {
+        steps: vec![StepPattern::Single("[invalid".to_string())],
+        ..Default::default()
+      };
+      let result = Sorter::try_from(&config);
+      assert!(result.is_err());
     }
   }
 
   mod sort_steps {
+    use crate::config::{Config, StepPattern};
     use crate::errors::{Finding, Issue};
     use crate::gherkin;
     use crate::gherkin::{Keyword, Sorter};
@@ -367,7 +367,15 @@ mod tests {
 
     #[test]
     fn already_ordered() {
-      let mut sorter = Sorter::parse("step 1\nstep 2\nstep 3").unwrap();
+      let config = Config {
+        steps: vec![
+          StepPattern::Single("step 1".to_string()),
+          StepPattern::Single("step 2".to_string()),
+          StepPattern::Single("step 3".to_string()),
+        ],
+        ..Default::default()
+      };
+      let mut sorter = Sorter::try_from(&config).unwrap();
       let give_steps = vec![
         gherkin::Step {
           line_no: 0,
@@ -399,7 +407,15 @@ mod tests {
 
     #[test]
     fn unordered() {
-      let mut sorter = Sorter::parse("step 1\nstep 2\nstep 3").unwrap();
+      let config = Config {
+        steps: vec![
+          StepPattern::Single("step 1".to_string()),
+          StepPattern::Single("step 2".to_string()),
+          StepPattern::Single("step 3".to_string()),
+        ],
+        ..Default::default()
+      };
+      let mut sorter = Sorter::try_from(&config).unwrap();
       let give_block = gherkin::Block::Sortable(vec![
         gherkin::Step {
           line_no: 0,
@@ -453,7 +469,14 @@ mod tests {
 
     #[test]
     fn unknown_step() {
-      let mut sorter = Sorter::parse("step 1\nstep 2").unwrap();
+      let config = Config {
+        steps: vec![
+          StepPattern::Single("step 1".to_string()),
+          StepPattern::Single("step 2".to_string()),
+        ],
+        ..Default::default()
+      };
+      let mut sorter = Sorter::try_from(&config).unwrap();
       let give_block = gherkin::Block::Sortable(vec![
         gherkin::Step {
           line_no: 0,

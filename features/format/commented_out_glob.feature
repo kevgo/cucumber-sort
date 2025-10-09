@@ -1,10 +1,17 @@
 Feature: ignoring globs
 
   Scenario: comment out a regex
-    Given file ".cucumber-sort-order" with content:
+    Given file "cucumber-sort.json" with content:
       """
-      step 1
-      step 2
+      {
+        "exclude": [
+          // "features/unordered.feature"
+        ],
+        "steps": [
+          "step 1",
+          "step 2"
+        ]
+      }
       """
     And file ".cucumber-sort-ignore" with content:
       """

@@ -16,6 +16,7 @@ pub enum UserError {
   },
   ConfigFileRead {
     file: Utf8PathBuf,
+    content: String,
     reason: String,
   },
   FileRead {
@@ -50,9 +51,13 @@ impl UserError {
         format!("{}:{}  invalid regular expression", file, line),
         Some(message),
       ),
-      UserError::ConfigFileRead { file, reason } => (
-        format!("cannot read configuration file: {reason}"),
-        Some(format!("The configuration file has name {}.", file)),
+      UserError::ConfigFileRead {
+        file,
+        content,
+        reason,
+      } => (
+        format!("cannot read configuration file ({file}): {reason}"),
+        Some(content),
       ),
       UserError::FileRead { file, reason } => (format!("cannot read file {file}: {reason}"), None),
       UserError::FileWrite { file, reason } => {

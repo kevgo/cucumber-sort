@@ -43,45 +43,61 @@ cucumber-sort check --record
 
 <a type="workspace/existing-file-with-content">
 
-This creates file named **.cucumber-sort-order**, which defines the expected
-step order. Currently, it looks like this:
+This creates file named **cucumber-sort.json**, which defines the expected step
+order. Currently, it looks like this:
 
 ```sh
-# UNKNOWN STEPS
-^a mixing bowl$
-^apples$
-^butter$
-^cinnamon$
-^flour$
+{
+  "include": [],
+  "exclude": [],
+  "record": false,
+  "fail-fast": false,
+  "steps": [],
+  "unknown-steps": [
+    "^a mixing bowl$",
+    "^apples$",
+    "^butter$",
+    "^cinnamon$",
+    "^flour$"
+  ]
+}
 ```
 
 </a>
 
-Everything below
-<code type="workspace/existing-file-with-content" filename=".cucumber-sort-order" partial-match>#
-UNKNOWN STEPS</code> are Gherkin steps that _cucumber-sort_ can see but doesn't
-yet know how to order.
+Everything inside
+<code type="workspace/existing-file-with-content" filename="cucumber-sort.json" partial-match>
+"unknown-steps"</code> are Gherkin steps that _cucumber-sort_ can see but
+doesn't yet know how to order.
 
 ### Step 2: arrange the steps in the desired order
 
 <a type="workspace/new-file">
 
-Edit **.cucumber-sort-order** to arrange the steps in the order you want them to
+Edit **cucumber-sort.json** to arrange the steps in the order you want them to
 appear in the recipes. For example:
 
 ```sh
-# TOOLS
-a mixing bowl
+{
+  "include": [],
+  "exclude": [],
+  "record": false,
+  "fail-fast": false,
+  "steps": [
+    // TOOLS
+    "^a mixing bowl$",
 
-# BASE DOUGH
-flour
-butter
+    // BASE DOUGH
+    "^flour$",
+    "^butter$",
 
-# FRUITS
-apples
+    // FRUITS
+    "^apples$",
 
-# SPICES
-cinnamon
+    // SPICES
+    "^cinnamon$"
+  ]
+}
 ```
 
 </a>
@@ -150,27 +166,13 @@ Generate the default configuration with:
 cucumber-sort init
 </pre>
 
-This command creates three files:
-
-### .cucumber-sort-order
-
-Defines the expected step order. Add step names (without `Given`/`When`/`Then`)
-in the sequence you want them to appear in your `.feature` files.
-
-- Supports regular expressions
-- Regex only need to match the text, no captures required
+This command creates file
+<b type="workspace/existing-file">cucumber-sort.json</b>. JSON-Schema is
+available.
 
 > [!TIP]
-> See our own [.cucumber-sort-order file](.cucumber-sort-order) file for a
-> working example.
-
-### .cucumber-sort-ignore
-
-Lists files that `cucumber-sort` should ignore via glob patterns.
-
-### .cucumber-sort-opts
-
-Stores CLI options you want to enable by default.
+> See our own [cucumber-sort.json file](cucumber-sort.json) file for a working
+> example.
 
 ## Commands
 
@@ -186,7 +188,7 @@ Check whether your `.feature` files match the configured order:
 cucumber-sort check
 </pre>
 
-If you would like to add unknown steps to `.cucumber-sort-order`, run:
+If you would like to add unknown steps to `cucumber-sort.json`, run:
 
 <pre type="subcommand">
 cucumber-sort check --record

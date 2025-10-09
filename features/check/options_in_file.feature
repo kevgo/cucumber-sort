@@ -1,15 +1,22 @@
 Feature: enable options through the opts file
 
   Scenario: unordered step in a scenario
-    Given file ".cucumber-sort-order" with content:
+    Given file "cucumber-sort.json" with content:
       """
-      step 1
-      step 2
-      """
-    And file ".cucumber-sort-opts" with content:
-      """
-      # the opts file
-      --fail-fast --record
+      {
+        "include": [],
+        "exclude": [],
+        "record": true,
+        "fail-fast": true,
+        "steps": [
+          "step 1",
+          "step 2"
+        ],
+        "unknown-steps": [
+          "^another unknown step$",
+          "^file \".*\" with content:$"
+        ]
+      }
       """
     And file "features/one.feature" with content:
       """

@@ -1,11 +1,15 @@
 Feature: docstring with empty line
 
   Scenario: docstring with empty line
-    Given file ".cucumber-sort-order" with content:
+    Given file "cucumber-sort.json" with content:
       """
-      step 1
-      step 2
-      file .* with content:
+      {
+        "steps": [
+          "step 1",
+          "step 2",
+          "file .* with content:"
+        ]
+      }
       """
     And file "features/one.feature" with content:
       """

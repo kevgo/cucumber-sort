@@ -1,0 +1,15 @@
+{
+  "include": ["features/**/*.feature"],
+  "record": true,
+  "fail-fast": true,
+  "steps": [
+    "file .* with content:",
+    "I run .*",
+    "it prints",
+    "the exit code is",
+    "file .* now has content",
+    "file .* hasn't changed",
+    "file contents haven't changed"
+  ],
+  "unknown-steps": []
+}

@@ -1,10 +1,14 @@
 Feature: list unused steps while checking
 
   Scenario: doesn't use "file .* now has content" regex
-    Given file ".cucumber-sort-order" with content:
+    Given file "cucumber-sort.json" with content:
       """
-      file .* with content:
-      file .* now has content:
+      {
+        "steps": [
+          "file .* with content:",
+          "file .* now has content:"
+        ]
+      }
       """
     And file "features/one.feature" with content:
       """
@@ -19,6 +23,6 @@ Feature: list unused steps while checking
     When I run "cucumber-sort check"
     Then it prints:
       """
-      .cucumber-sort-order:2  unused regex: file .* now has content:
+      cucumber-sort.json:2  unused regex: file .* now has content:
       """
     And the exit code is failure

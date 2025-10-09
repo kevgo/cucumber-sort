@@ -1,23 +1,27 @@
+use crate::cli::Flags;
+use crate::config::Config;
 use crate::errors::{Finding, Result, UserError};
+use crate::file_finder::FileFinder;
+use crate::gherkin;
 use crate::gherkin::Sorter;
-use crate::{config, gherkin};
 use camino::Utf8PathBuf;
 use std::fs;
 use std::process::ExitCode;
 
 /// updates the given or all files to contain sorted steps
-pub fn format(filepath: Option<Utf8PathBuf>, record: bool, fail_fast: bool) -> Result<ExitCode> {
-  let mut config = config::load()?;
+pub fn format(flags: Flags, filepath: Option<Utf8PathBuf>) -> Result<ExitCode> {
+  let config = Config::load()?.merge(flags);
+  let mut sorter = Sorter::try_from(&config)?;
   let mut findings = match filepath {
-    Some(filepath) => file(filepath, &mut config.sorter),
-    None => all(&mut config, fail_fast),
+    Some(filepath) => file(filepath, &mut sorter),
+    None => all(&config, &mut sorter),
   }?;
   findings.sort();
   for finding in &findings {
     println!("{}", finding);
   }
-  if record {
-    config.sorter.store_missing(&findings)?;
+  if config.record {
+    sorter.store_missing(&findings)?;
   }
   if findings.is_empty() {
     Ok(ExitCode::SUCCESS)
@@ -27,17 +31,18 @@ pub fn format(filepath: Option<Utf8PathBuf>, record: bool, fail_fast: bool) -> R
 }
 
 /// updates all files in the current folder to contain sorted steps
-fn all(config: &mut config::Config, fail_fast: bool) -> Result<Vec<Finding>> {
+fn all(config: &Config, sorter: &mut Sorter) -> Result<Vec<Finding>> {
   let mut result = vec![];
-  for filepath in config.finder.search_folder(".")? {
-    let findings = file(filepath, &mut config.sorter)?;
+  let finder = FileFinder::try_from(config)?;
+  for filepath in finder.search_folder(".")? {
+    let findings = file(filepath, sorter)?;
     let found_problems = !findings.is_empty();
     result.extend(findings);
-    if fail_fast && found_problems {
+    if config.fail_fast && found_problems {
       break;
     }
   }
-  result.extend(config.sorter.unused_regexes());
+  result.extend(sorter.unused_regexes());
   Ok(result)
 }
 

@@ -1,10 +1,17 @@
 Feature: ignoring files
 
   Scenario: file with unordered steps is ignored
-    Given file ".cucumber-sort-order" with content:
+    Given file "cucumber-sort.json" with content:
       """
-      step 1
-      step 2
+      {
+        "exclude": [
+          "features/unordered*.feature"
+        ],
+        "steps": [
+          "step 1",
+          "step 2"
+        ]
+      }
       """
     And file ".cucumber-sort-ignore" with content:
       """
@@ -21,7 +28,7 @@ Feature: ignoring files
     When I run "cucumber-sort format"
     Then it prints:
       """
-      .cucumber-sort-order:1  unused regex: step 1
-      .cucumber-sort-order:2  unused regex: step 2
+      cucumber-sort.json:1  unused regex: step 1
+      cucumber-sort.json:2  unused regex: step 2
       """
     And the exit code is failure

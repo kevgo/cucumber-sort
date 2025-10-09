@@ -1,9 +1,13 @@
 Feature: check unordered steps while failing fast
 
   Scenario: unordered step in a scenario
-    Given file ".cucumber-sort-order" with content:
+    Given file "cucumber-sort.json" with content:
       """
-      step 1
+      {
+        "steps": [
+          "step 1"
+        ]
+      }
       """
     And file "features/one.feature" with content:
       """

@@ -1,11 +1,15 @@
 Feature: formatting in the presence of an unused regex
 
   Background: regex "file .* now has content" isn't used
-    Given file ".cucumber-sort-order" with content:
+    Given file "cucumber-sort.json" with content:
       """
-      file .* with content:
-      step 1
-      file .* now has content:
+      {
+        "steps": [
+          "file .* with content:",
+          "step 1",
+          "file .* now has content:"
+        ]
+      }
       """
     And file "features/one.feature" with content:
       """
@@ -23,7 +27,7 @@ Feature: formatting in the presence of an unused regex
     When I run "cucumber-sort format"
     Then it prints:
       """
-      .cucumber-sort-order:3  unused regex: file .* now has content:
+      cucumber-sort.json:3  unused regex: file .* now has content:
       """
     And the exit code is failure
     And file "features/one.feature" now has content:
@@ -37,13 +41,13 @@ Feature: formatting in the presence of an unused regex
             '''
           And step 1
       """
-    And file ".cucumber-sort-order" hasn't changed
+    And file "cucumber-sort.json" hasn't changed
 
   Scenario: with record
     When I run "cucumber-sort format --record"
     Then it prints:
       """
-      .cucumber-sort-order:3  unused regex: file .* now has content:
+      cucumber-sort.json:3  unused regex: file .* now has content:
       """
     And the exit code is failure
     And file "features/one.feature" now has content:
@@ -57,4 +61,4 @@ Feature: formatting in the presence of an unused regex
             '''
           And step 1
       """
-    And file ".cucumber-sort-order" hasn't changed
+    And file "cucumber-sort.json" hasn't changed

@@ -1,15 +1,19 @@
 Feature: format unordered steps
 
   Scenario: unordered step in a scenario
-    Given file ".cucumber-sort-order" with content:
+    Given file "cucumber-sort.json" with content:
       """
-      file .* with content:
-      step 2
-      step 3
-      step 4
-      step 5
-      step 6
-      the commits are:
+      {
+        "steps": [
+          "file .* with content:",
+          "step 2",
+          "step 3",
+          "step 4",
+          "step 5",
+          "step 6",
+          "the commits are:"
+        ]
+      }
       """
     And file "features/one.feature" with content:
       """

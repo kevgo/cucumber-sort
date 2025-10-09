@@ -1,9 +1,13 @@
 Feature: check unknown steps
 
   Background:
-    Given file ".cucumber-sort-order" with content:
+    Given file "cucumber-sort.json" with content:
       """
-      step 1
+      {
+        "steps": [
+          "step 1"
+        ]
+      }
       """
     And file "features/one.feature" with content:
       """
@@ -45,23 +49,35 @@ Feature: check unknown steps
       features/one.feature:17  unknown step: another unknown step
       """
     And the exit code is failure
-    And file ".cucumber-sort-order" now has content:
+    And file "cucumber-sort.json" now has content:
       """
-      step 1
-
-      # UNKNOWN STEPS
-      ^another unknown step$
-      ^file ".*" with content:$
+      {
+        "include": [],
+        "exclude": [],
+        "record": false,
+        "fail-fast": false,
+        "steps": [
+          "step 1"
+        ],
+        "unknown-steps": [
+          "^another unknown step$",
+          "^file \".*\" with content:$"
+        ]
+      }
       """
 
   Scenario: run with recording and existing marker
-    Given file ".cucumber-sort-order" with content:
+    Given file "cucumber-sort.json" with content:
       """
-      step 1
-
-      # UNKNOWN STEPS
-      ^another unknown step$
-      ^file .* with content:$
+      {
+        "steps": [
+          "step 1"
+        ],
+        "unknown-steps": [
+          "^another unknown step$",
+          "^file \".*\" with content:$"
+        ]
+      }
       """
     When I run "cucumber-sort check --record"
     Then it prints:
@@ -71,11 +87,19 @@ Feature: check unknown steps
       features/one.feature:17  unknown step: another unknown step
       """
     And the exit code is failure
-    And file ".cucumber-sort-order" now has content:
+    And file "cucumber-sort.json" now has content:
       """
-      step 1
-
-      # UNKNOWN STEPS
-      ^another unknown step$
-      ^file ".*" with content:$
+      {
+        "include": [],
+        "exclude": [],
+        "record": false,
+        "fail-fast": false,
+        "steps": [
+          "step 1"
+        ],
+        "unknown-steps": [
+          "^another unknown step$",
+          "^file \".*\" with content:$"
+        ]
+      }
       """

@@ -4,6 +4,6 @@ use std::process::ExitCode;
 
 pub fn init() -> Result<ExitCode> {
   config::create()?;
-  println!("config files created");
+  println!("config file created: {}", config::CONFIG_FILE_NAME);
   Ok(ExitCode::SUCCESS)
 }
