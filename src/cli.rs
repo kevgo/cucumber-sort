@@ -12,7 +12,7 @@ pub enum Command {
   /// Check if Cucumber files are properly sorted
   Check {
     #[command(flatten)]
-    args: CommonArgs,
+    flags: Flags,
 
     /// The file to process (optional)
     file: Option<Utf8PathBuf>,
@@ -20,7 +20,7 @@ pub enum Command {
   /// Format Cucumber files by sorting them
   Format {
     #[command(flatten)]
-    args: CommonArgs,
+    flags: Flags,
 
     /// The file to process (optional)
     file: Option<Utf8PathBuf>,
@@ -30,7 +30,7 @@ pub enum Command {
 }
 
 #[derive(Parser)]
-pub struct CommonArgs {
+pub struct Flags {
   /// Stop at the first file that encounters problems
   #[arg(short, long)]
   pub fail_fast: bool,

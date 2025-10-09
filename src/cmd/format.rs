@@ -1,4 +1,4 @@
-use crate::cli::CommonArgs;
+use crate::cli::Flags;
 use crate::errors::{Finding, Result, UserError};
 use crate::gherkin::Sorter;
 use crate::{config, gherkin};
@@ -7,9 +7,9 @@ use std::fs;
 use std::process::ExitCode;
 
 /// updates the given or all files to contain sorted steps
-pub fn format(args: CommonArgs, filepath: Option<Utf8PathBuf>) -> Result<ExitCode> {
+pub fn format(flags: Flags, filepath: Option<Utf8PathBuf>) -> Result<ExitCode> {
   let mut config = config::load()?;
-  config.merge(args);
+  config.merge(flags);
   let mut findings = match filepath {
     Some(filepath) => file(filepath, &mut config.sorter),
     None => all(&mut config),
