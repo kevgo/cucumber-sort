@@ -85,7 +85,7 @@ pub enum StepPattern {
 /// replacing them with spaces to preserve line numbers for error reporting.
 fn strip_comments(text: &str) -> String {
   let mut result = String::with_capacity(text.len());
-  let mut chars = text.chars().peekable();
+  let mut chars = text.chars();
 
   while let Some(ch) = chars.next() {
     if ch == '/' {
