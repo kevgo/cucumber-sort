@@ -152,10 +152,10 @@ impl TryFrom<&Config> for Sorter {
           }
         },
         StepPattern::Group(patterns) => {
-          let mut used_regexes = vec![];
+          let mut regexes = vec![];
           for pattern in patterns {
             match Regex::new(pattern) {
-              Ok(regex) => used_regexes.push(UsedRegex { regex, used: false }),
+              Ok(regex) => regexes.push(UsedRegex { regex, used: false }),
               Err(err) => {
                 return Err(UserError::ConfigFileInvalidRegex {
                   file: crate::config::CONFIG_FILE_NAME.into(),
@@ -165,10 +165,7 @@ impl TryFrom<&Config> for Sorter {
               }
             }
           }
-          entries.push(Entry {
-            regexes: used_regexes,
-            line: i,
-          });
+          entries.push(Entry { regexes, line: i });
         }
       }
     }
