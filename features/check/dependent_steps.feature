@@ -15,7 +15,7 @@ Feature: check unordered steps
     And file "features/one.feature" with content:
       """
       Feature: example
-      
+
         Scenario: steps out of order
           Given a repo
           And a file
