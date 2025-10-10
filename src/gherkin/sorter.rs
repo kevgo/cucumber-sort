@@ -169,6 +169,7 @@ impl TryFrom<&Config> for Sorter {
 }
 
 /// a Vec that makes it efficient to delete elements from it
+#[derive(Debug, Eq, PartialEq)]
 struct DeletableSteps(Vec<Option<gherkin::Step>>);
 
 impl DeletableSteps {
@@ -231,6 +232,79 @@ fn optimize_keywords(steps: Vec<gherkin::Step>) -> Vec<gherkin::Step> {
 mod tests {
   use crate::gherkin::{Keyword, Step};
   use big_s::S;
+
+  mod deletable_steps {
+    use crate::gherkin::sorter::DeletableSteps;
+    use crate::gherkin::{Keyword, Step};
+    use big_s::S;
+    use regex::Regex;
+
+    #[test]
+    fn extract_single_step() {
+      let step_1 = Step {
+        line_no: 1,
+        indent: S("  "),
+        keyword: Keyword::Given,
+        title: S("step 1"),
+        additional_lines: vec![],
+      };
+      let step_2 = Step {
+        line_no: 2,
+        indent: S("  "),
+        keyword: Keyword::Given,
+        title: S("step 2"),
+        additional_lines: vec![],
+      };
+      let step_3 = Step {
+        line_no: 3,
+        indent: S("  "),
+        keyword: Keyword::Given,
+        title: S("step 3"),
+        additional_lines: vec![],
+      };
+      let mut steps = DeletableSteps::from(vec![step_1.clone(), step_2.clone(), step_3.clone()]);
+      let extracted = steps.extract(&Regex::new("step 2").unwrap());
+      assert_eq!(vec![step_2], extracted);
+      let want_steps = DeletableSteps(vec![Some(step_1), None, Some(step_3)]);
+      assert_eq!(want_steps, steps);
+    }
+
+    #[test]
+    fn extract_multiple_instances_of_same_step() {
+      let step_1 = Step {
+        line_no: 1,
+        indent: S("  "),
+        keyword: Keyword::Given,
+        title: S("step 1"),
+        additional_lines: vec![],
+      };
+      let step_2 = Step {
+        line_no: 2,
+        indent: S("  "),
+        keyword: Keyword::Given,
+        title: S("step 2"),
+        additional_lines: vec![],
+      };
+      let step_3 = Step {
+        line_no: 3,
+        indent: S("  "),
+        keyword: Keyword::Given,
+        title: S("step 3"),
+        additional_lines: vec![],
+      };
+      let mut steps = DeletableSteps::from(vec![
+        step_1.clone(),
+        step_2.clone(),
+        step_2.clone(),
+        step_3.clone(),
+        step_2.clone(),
+      ]);
+      let extracted = steps.extract(&Regex::new("step 2").unwrap());
+      assert_eq!(vec![step_2.clone(), step_2.clone(), step_2], extracted);
+      let want_steps = DeletableSteps(vec![Some(step_1), None, None, Some(step_3), None]);
+      assert_eq!(want_steps, steps);
+    }
+  }
 
   #[test]
   fn deoptimize_and_optimize_keywords() {
