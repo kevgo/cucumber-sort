@@ -15,17 +15,17 @@ Feature: check unordered steps
     And file "features/one.feature" with content:
       """
       Feature: example
-
+      
         Scenario: steps out of order
           Given a repo
           And a file
           And the branches
             | branch-1 |
             | branch-2 |
+          And another thing
           And the commits
             | commit 1 |
             | commit 2 |
-          And another thing
       """
     When I run "cucumber-sort format"
     Then it prints nothing
@@ -33,7 +33,7 @@ Feature: check unordered steps
     And file "features/one.feature" now has content:
       """
       Feature: example
-
+      
         Scenario: steps out of order
           Given a repo
           And the branches
