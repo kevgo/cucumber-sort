@@ -547,7 +547,7 @@ mod tests {
         ..Default::default()
       };
       let mut sorter = Sorter::try_from(&config).unwrap();
-      let give_block = gherkin::Block::Sortable(vec![
+      let give = vec![
         gherkin::Step {
           line_no: 0,
           indent: S(""),
@@ -569,8 +569,8 @@ mod tests {
           title: S("step 1"),
           additional_lines: vec![],
         },
-      ]);
-      let want_block = gherkin::Block::Sortable(vec![
+      ];
+      let want = vec![
         gherkin::Step {
           line_no: 2,
           indent: S(""),
@@ -592,9 +592,9 @@ mod tests {
           title: S("step 3"),
           additional_lines: vec![],
         },
-      ]);
-      let (have_block, issues) = sorter.sort_block(give_block, "test.feature".into());
-      pretty::assert_eq!(want_block, have_block);
+      ];
+      let (have_block, issues) = sorter.sort_steps(give, "test.feature".into());
+      pretty::assert_eq!(want, have_block);
       assert!(issues.is_empty());
     }
 
@@ -608,7 +608,7 @@ mod tests {
         ..Default::default()
       };
       let mut sorter = Sorter::try_from(&config).unwrap();
-      let give_block = gherkin::Block::Sortable(vec![
+      let give = vec![
         gherkin::Step {
           line_no: 0,
           indent: S(""),
@@ -630,8 +630,8 @@ mod tests {
           title: S("step 1"),
           additional_lines: vec![],
         },
-      ]);
-      let want_block = gherkin::Block::Sortable(vec![
+      ];
+      let want = vec![
         gherkin::Step {
           line_no: 2,
           indent: S(""),
@@ -646,9 +646,9 @@ mod tests {
           title: S("step 2"),
           additional_lines: vec![],
         },
-      ]);
-      let (have_block, issues) = sorter.sort_block(give_block, "test.feature".into());
-      pretty::assert_eq!(want_block, have_block);
+      ];
+      let (have_block, issues) = sorter.sort_steps(give, "test.feature".into());
+      pretty::assert_eq!(want, have_block);
       let want_issues = vec![Finding {
         file: "test.feature".into(),
         line: 1,
