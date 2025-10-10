@@ -109,10 +109,10 @@ impl Sorter {
     let mut result = Vec::<gherkin::Step>::with_capacity(unordered_steps.len());
     let mut deletable_steps = DeletableSteps::from(deoptimize_keywords(unordered_steps));
     for entry in &mut self.entries {
-      for entry_regex in &mut entry.regexes {
-        let extracted = deletable_steps.extract(&entry_regex.regex);
+      for used_regex in &mut entry.regexes {
+        let extracted = deletable_steps.extract(&used_regex.regex);
         if !extracted.is_empty() {
-          entry_regex.used = true;
+          used_regex.used = true;
         }
         result.extend(extracted);
       }
