@@ -183,6 +183,7 @@ impl DeletableSteps {
           if regex.regex.is_match(&entry.title) {
             result.push(entry_opt.take().unwrap());
             regex.used = true;
+            break;
           }
         }
       }
