@@ -1,4 +1,4 @@
-Feature: check unordered steps
+Feature: format dependent steps
 
   Scenario: dependent step
     Given file "cucumber-sort.json" with content:
@@ -22,10 +22,16 @@ Feature: check unordered steps
           And the branches
             | branch-1 |
             | branch-2 |
-          And another thing
           And the commits
             | commit 1 |
             | commit 2 |
+          And another thing
+          And the branches
+            | branch-3 |
+            | branch-4 |
+          And the commits
+            | commit 3 |
+            | commit 4 |
       """
     When I run "cucumber-sort format"
     Then it prints nothing
@@ -42,6 +48,12 @@ Feature: check unordered steps
           And the commits
             | commit 1 |
             | commit 2 |
+          And the branches
+            | branch-3 |
+            | branch-4 |
+          And the commits
+            | commit 3 |
+            | commit 4 |
           And a file
           And another thing
       """
@@ -82,12 +94,12 @@ Feature: check unordered steps
 
         Scenario: steps out of order
           Given a repo
-          And the branches
-            | branch-1 |
-            | branch-2 |
           And the commits
             | commit 1 |
             | commit 2 |
+          And the branches
+            | branch-1 |
+            | branch-2 |
           And a file
           And another thing
       """
