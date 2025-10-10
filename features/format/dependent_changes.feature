@@ -15,7 +15,7 @@ Feature: format dependent steps
     And file "features/one.feature" with content:
       """
       Feature: example
-      
+
         Scenario: steps out of order
           Given a repo
           And a file
@@ -39,7 +39,7 @@ Feature: format dependent steps
     And file "features/one.feature" now has content:
       """
       Feature: example
-      
+
         Scenario: steps out of order
           Given a repo
           And the branches
@@ -58,7 +58,6 @@ Feature: format dependent steps
           And another thing
       """
 
-  @this
   Scenario: dependent steps in opposite order
     Given file "cucumber-sort.json" with content:
       """
@@ -74,7 +73,7 @@ Feature: format dependent steps
     And file "features/one.feature" with content:
       """
       Feature: example
-      
+
         Scenario: steps out of order
           Given a repo
           And the commits
@@ -92,15 +91,15 @@ Feature: format dependent steps
     And file "features/one.feature" now has content:
       """
       Feature: example
-      
+
         Scenario: steps out of order
           Given a repo
-          And the branches
-            | branch-1 |
-            | branch-2 |
           And the commits
             | commit 1 |
             | commit 2 |
+          And the branches
+            | branch-1 |
+            | branch-2 |
           And a file
           And another thing
       """
