@@ -197,6 +197,7 @@ impl From<Vec<gherkin::Step>> for DeletableSteps {
   }
 }
 
+/// converts Gherkin steps where some are starting with "And" to a form where each one starts with Given/When/Then
 fn deoptimize_keywords(steps: Vec<gherkin::Step>) -> Vec<gherkin::Step> {
   let mut result = Vec::with_capacity(steps.len());
   let mut previous_keyword = Keyword::And;
@@ -211,6 +212,7 @@ fn deoptimize_keywords(steps: Vec<gherkin::Step>) -> Vec<gherkin::Step> {
   result
 }
 
+/// converts Gherkin steps where each one starts with Given/When/Then to the optimized form where subsequent ones start with And
 fn optimize_keywords(steps: Vec<gherkin::Step>) -> Vec<gherkin::Step> {
   let mut result = Vec::with_capacity(steps.len());
   let mut previous_keyword = Keyword::And;
