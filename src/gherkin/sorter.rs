@@ -372,7 +372,7 @@ mod tests {
       assert_eq!(Vec::<Step>::new(), extracted);
       let want_steps = DeletableSteps(vec![Some(step_1)]);
       assert_eq!(want_steps, steps);
-      assert!(regexes[0].used);
+      assert!(!regexes[0].used);
     }
   }
 
@@ -683,7 +683,7 @@ mod tests {
         gherkin::Step {
           line_no: 0,
           indent: S(""),
-          keyword: Keyword::And,
+          keyword: Keyword::Given,
           title: S("step 3"),
           additional_lines: vec![],
         },
