@@ -567,48 +567,42 @@ mod tests {
       let mut sorter = Sorter::try_from(&config).unwrap();
       let give = vec![
         gherkin::Step {
-          line_no: 0,
-          indent: S(""),
-          keyword: Keyword::Given,
           title: S("step 3"),
-          additional_lines: vec![],
+          line_no: 0,
+          keyword: Keyword::Given,
+          ..Default::default()
         },
         gherkin::Step {
-          line_no: 1,
-          indent: S(""),
           title: S("step 2"),
+          line_no: 1,
           keyword: Keyword::And,
-          additional_lines: vec![],
+          ..Default::default()
         },
         gherkin::Step {
-          line_no: 2,
-          indent: S(""),
-          keyword: Keyword::And,
           title: S("step 1"),
-          additional_lines: vec![],
+          line_no: 2,
+          keyword: Keyword::And,
+          ..Default::default()
         },
       ];
       let want = vec![
         gherkin::Step {
-          line_no: 2,
-          indent: S(""),
-          keyword: Keyword::Given,
           title: S("step 1"),
-          additional_lines: vec![],
+          line_no: 2,
+          keyword: Keyword::Given,
+          ..Default::default()
         },
         gherkin::Step {
-          line_no: 1,
-          indent: S(""),
-          keyword: Keyword::And,
           title: S("step 2"),
-          additional_lines: vec![],
+          line_no: 1,
+          keyword: Keyword::And,
+          ..Default::default()
         },
         gherkin::Step {
-          line_no: 0,
-          indent: S(""),
-          keyword: Keyword::And,
           title: S("step 3"),
-          additional_lines: vec![],
+          line_no: 0,
+          keyword: Keyword::And,
+          ..Default::default()
         },
       ];
       let (have_block, issues) = sorter.sort_steps(give, "test.feature".into());
