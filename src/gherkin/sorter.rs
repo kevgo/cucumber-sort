@@ -12,13 +12,13 @@ pub struct Sorter {
 }
 
 pub struct Entry {
-  entry_regexes: Vec<EntryRegex>,
+  regexes: Vec<UsedRegex>,
 
   /// where in the config this regex is defined, 0-based
-  line_no: usize,
+  line: usize,
 }
 
-pub struct EntryRegex {
+pub struct UsedRegex {
   regex: Regex,
 
   /// whether this regex was used in the current invocation of the tool
@@ -74,11 +74,11 @@ impl Sorter {
   pub fn unused_regexes(&self) -> Vec<Finding> {
     let mut result = vec![];
     for entry in &self.entries {
-      for entry_regex in &entry.entry_regexes {
+      for entry_regex in &entry.regexes {
         if !entry_regex.used {
           result.push(Finding {
             file: crate::config::CONFIG_FILE_NAME.into(),
-            line: entry.line_no,
+            line: entry.line,
             problem: Issue::UnusedRegex(entry_regex.regex.to_string()),
           });
         }
@@ -109,7 +109,7 @@ impl Sorter {
     let mut result = Vec::<gherkin::Step>::with_capacity(unordered_steps.len());
     let mut deletable_steps = DeletableSteps::from(deoptimize_keywords(unordered_steps));
     for entry in &mut self.entries {
-      for entry_regex in &mut entry.entry_regexes {
+      for entry_regex in &mut entry.regexes {
         let extracted = deletable_steps.extract(&entry_regex.regex);
         if !extracted.is_empty() {
           entry_regex.used = true;
@@ -140,8 +140,8 @@ impl TryFrom<&Config> for Sorter {
       match step_pattern {
         StepPattern::Single(pattern) => match Regex::new(pattern) {
           Ok(regex) => entries.push(Entry {
-            entry_regexes: vec![EntryRegex { regex, used: false }],
-            line_no: i,
+            regexes: vec![UsedRegex { regex, used: false }],
+            line: i,
           }),
           Err(err) => {
             return Err(UserError::ConfigFileInvalidRegex {
@@ -155,7 +155,7 @@ impl TryFrom<&Config> for Sorter {
           let mut entry_regexes = vec![];
           for pattern in patterns {
             match Regex::new(pattern) {
-              Ok(regex) => entry_regexes.push(EntryRegex { regex, used: false }),
+              Ok(regex) => entry_regexes.push(UsedRegex { regex, used: false }),
               Err(err) => {
                 return Err(UserError::ConfigFileInvalidRegex {
                   file: crate::config::CONFIG_FILE_NAME.into(),
@@ -166,8 +166,8 @@ impl TryFrom<&Config> for Sorter {
             }
           }
           entries.push(Entry {
-            entry_regexes,
-            line_no: i,
+            regexes: entry_regexes,
+            line: i,
           });
         }
       }
@@ -457,10 +457,10 @@ mod tests {
       };
       let sorter = Sorter::try_from(&config).unwrap();
       assert_eq!(sorter.entries.len(), 2);
-      assert_eq!(sorter.entries[0].entry_regexes.len(), 1);
-      assert_eq!(sorter.entries[0].entry_regexes[0].regex.as_str(), "step 1");
-      assert_eq!(sorter.entries[1].entry_regexes.len(), 1);
-      assert_eq!(sorter.entries[1].entry_regexes[0].regex.as_str(), "step 2");
+      assert_eq!(sorter.entries[0].regexes.len(), 1);
+      assert_eq!(sorter.entries[0].regexes[0].regex.as_str(), "step 1");
+      assert_eq!(sorter.entries[1].regexes.len(), 1);
+      assert_eq!(sorter.entries[1].regexes[0].regex.as_str(), "step 2");
     }
 
     #[test]
@@ -474,11 +474,11 @@ mod tests {
       };
       let sorter = Sorter::try_from(&config).unwrap();
       assert_eq!(sorter.entries.len(), 2);
-      assert_eq!(sorter.entries[0].entry_regexes.len(), 2);
-      assert_eq!(sorter.entries[0].entry_regexes[0].regex.as_str(), "step 1");
-      assert_eq!(sorter.entries[0].entry_regexes[1].regex.as_str(), "step 2");
-      assert_eq!(sorter.entries[1].entry_regexes.len(), 1);
-      assert_eq!(sorter.entries[1].entry_regexes[0].regex.as_str(), "step 3");
+      assert_eq!(sorter.entries[0].regexes.len(), 2);
+      assert_eq!(sorter.entries[0].regexes[0].regex.as_str(), "step 1");
+      assert_eq!(sorter.entries[0].regexes[1].regex.as_str(), "step 2");
+      assert_eq!(sorter.entries[1].regexes.len(), 1);
+      assert_eq!(sorter.entries[1].regexes[0].regex.as_str(), "step 3");
     }
 
     #[test]
