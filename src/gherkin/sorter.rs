@@ -12,13 +12,17 @@ pub struct Sorter {
 }
 
 pub struct Entry {
+  entry_regexes: Vec<EntryRegex>,
+
+  /// where in the config this regex is defined, 0-based
+  line_no: usize,
+}
+
+pub struct EntryRegex {
   regex: Regex,
 
   /// whether this regex was used in the current invocation of the tool
   used: bool,
-
-  /// where in the config this regex is defined, 0-based
-  line_no: usize,
 }
 
 impl Sorter {
@@ -70,12 +74,14 @@ impl Sorter {
   pub fn unused_regexes(&self) -> Vec<Finding> {
     let mut result = vec![];
     for entry in &self.entries {
-      if !entry.used {
-        result.push(Finding {
-          file: crate::config::CONFIG_FILE_NAME.into(),
-          line: entry.line_no,
-          problem: Issue::UnusedRegex(entry.regex.to_string()),
-        });
+      for entry_regex in &entry.entry_regexes {
+        if !entry_regex.used {
+          result.push(Finding {
+            file: crate::config::CONFIG_FILE_NAME.into(),
+            line: entry.line_no,
+            problem: Issue::UnusedRegex(entry_regex.regex.to_string()),
+          });
+        }
       }
     }
     result
@@ -103,11 +109,13 @@ impl Sorter {
     let mut result = Vec::<gherkin::Step>::with_capacity(unordered_steps.len());
     let mut deletable_steps = DeletableSteps::from(deoptimize_keywords(unordered_steps));
     for entry in &mut self.entries {
-      let extracted = deletable_steps.extract(&entry.regex);
-      if !extracted.is_empty() {
-        entry.used = true;
+      for entry_regex in &mut entry.entry_regexes {
+        let extracted = deletable_steps.extract(&entry_regex.regex);
+        if !extracted.is_empty() {
+          entry_regex.used = true;
+        }
+        result.extend(extracted);
       }
-      result.extend(extracted);
     }
     // report the remaining unextracted steps as unknown steps
     let mut issues = vec![];
@@ -132,8 +140,7 @@ impl TryFrom<&Config> for Sorter {
       match step_pattern {
         StepPattern::Single(pattern) => match Regex::new(pattern) {
           Ok(regex) => entries.push(Entry {
-            regex,
-            used: false,
+            entry_regexes: vec![EntryRegex { regex, used: false }],
             line_no: i,
           }),
           Err(err) => {
@@ -145,13 +152,10 @@ impl TryFrom<&Config> for Sorter {
           }
         },
         StepPattern::Group(patterns) => {
+          let mut entry_regexes = vec![];
           for pattern in patterns {
             match Regex::new(pattern) {
-              Ok(regex) => entries.push(Entry {
-                regex,
-                used: false,
-                line_no: i,
-              }),
+              Ok(regex) => entry_regexes.push(EntryRegex { regex, used: false }),
               Err(err) => {
                 return Err(UserError::ConfigFileInvalidRegex {
                   file: crate::config::CONFIG_FILE_NAME.into(),
@@ -161,6 +165,10 @@ impl TryFrom<&Config> for Sorter {
               }
             }
           }
+          entries.push(Entry {
+            entry_regexes,
+            line_no: i,
+          });
         }
       }
     }
