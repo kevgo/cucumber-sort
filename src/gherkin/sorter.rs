@@ -102,10 +102,10 @@ impl Sorter {
   ) -> (Vec<gherkin::Step>, Vec<Finding>) {
     let mut result = Vec::<gherkin::Step>::with_capacity(unordered_steps.len());
     let mut deletable_steps = DeletableSteps::from(deoptimize_keywords(unordered_steps));
-    for config_step in &mut self.entries {
-      let extracted = deletable_steps.extract(&config_step.regex);
+    for entry in &mut self.entries {
+      let extracted = deletable_steps.extract(&entry.regex);
       if !extracted.is_empty() {
-        config_step.used = true;
+        entry.used = true;
       }
       result.extend(extracted);
     }
