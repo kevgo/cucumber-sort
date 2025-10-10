@@ -74,12 +74,12 @@ impl Sorter {
   pub fn unused_regexes(&self) -> Vec<Finding> {
     let mut result = vec![];
     for entry in &self.entries {
-      for entry_regex in &entry.regexes {
-        if !entry_regex.used {
+      for used_regex in &entry.regexes {
+        if !used_regex.used {
           result.push(Finding {
             file: crate::config::CONFIG_FILE_NAME.into(),
             line: entry.line,
-            problem: Issue::UnusedRegex(entry_regex.regex.to_string()),
+            problem: Issue::UnusedRegex(used_regex.regex.to_string()),
           });
         }
       }
