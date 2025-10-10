@@ -29,6 +29,20 @@
     },
 
     {
+      "comment": "single test in Rust file",
+      "type": "test-file-line",
+      "files": "*.rs",
+      "run": "cargo test -- {{fn_name}} --show-output ",
+      "vars": [
+        {
+          "name": "fn_name",
+          "source": "currentOrAboveLineContent",
+          "filter": "fn (.*)\\(\\)"
+        }
+      ]
+    },
+
+    {
       "comment": "verify a Markdown file",
       "type": "test-file",
       "files": "*.md",
