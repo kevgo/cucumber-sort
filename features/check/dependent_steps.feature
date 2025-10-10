@@ -15,7 +15,7 @@ Feature: check unordered steps
     And file "features/one.feature" with content:
       """
       Feature: example
-      
+
         Scenario: steps out of order
           Given a repo
           And a file
@@ -40,7 +40,6 @@ Feature: check unordered steps
       """
     And the exit code is failure
 
-  @this
   Scenario: dependent steps in opposite order
     Given file "cucumber-sort.json" with content:
       """
@@ -56,7 +55,7 @@ Feature: check unordered steps
     And file "features/one.feature" with content:
       """
       Feature: example
-      
+
         Scenario: steps out of order
           Given a repo
           And the commits
