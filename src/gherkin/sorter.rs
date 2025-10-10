@@ -175,7 +175,7 @@ struct DeletableSteps(Vec<Option<gherkin::Step>>);
 impl DeletableSteps {
   /// moves all steps from self that match the given config_step
   /// into the given result Vec
-  fn extract(&mut self, regexes: &mut Vec<UsedRegex>) -> Vec<gherkin::Step> {
+  fn extract(&mut self, regexes: &mut [UsedRegex]) -> Vec<gherkin::Step> {
     let mut result = vec![];
     for entry_opt in self.0.iter_mut() {
       if let Some(entry) = &entry_opt {

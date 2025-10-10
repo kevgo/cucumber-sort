@@ -16,7 +16,7 @@ Feature: format dependent steps
     And file "features/one.feature" with content:
       """
       Feature: example
-      
+
         Scenario: steps out of order
           Given a repo
           And a file
@@ -40,7 +40,7 @@ Feature: format dependent steps
     And file "features/one.feature" now has content:
       """
       Feature: example
-      
+
         Scenario: steps out of order
           Given a repo
           And the branches
@@ -74,7 +74,7 @@ Feature: format dependent steps
     And file "features/one.feature" with content:
       """
       Feature: example
-      
+
         Scenario: steps out of order
           Given a repo
           And the commits
@@ -92,7 +92,7 @@ Feature: format dependent steps
     And file "features/one.feature" now has content:
       """
       Feature: example
-      
+
         Scenario: steps out of order
           Given a repo
           And the branches
