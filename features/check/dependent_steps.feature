@@ -30,9 +30,12 @@ Feature: check unordered steps
     When I run "cucumber-sort check"
     Then it prints:
       """
-      features/one.feature:4  expected Then step 1 but found Then step 2
-      features/one.feature:5  expected And step 2 but found And step 1
-      features/two.feature:4  expected Then step 1 but found Then step 2
-      features/two.feature:5  expected And step 2 but found And step 1
+      features/one.feature:5  expected And the branches but found And a file
+      features/one.feature:6  expected | branch-1 | but found And the branches
+      features/one.feature:7  expected | branch-2 | but found | branch-1 |
+      features/one.feature:8  expected And the commits but found | branch-2 |
+      features/one.feature:9  expected | commit 1 | but found And the commits
+      features/one.feature:10  expected | commit 2 | but found | commit 1 |
+      features/one.feature:11  expected And a file but found | commit 2 |
       """
     And the exit code is failure
