@@ -179,7 +179,7 @@ impl DeletableSteps {
     let mut result = vec![];
     for entry_opt in self.0.iter_mut() {
       if let Some(entry) = &entry_opt {
-        for regex in regexes {
+        for regex in regexes.iter_mut() {
           if regex.regex.is_match(&entry.title) {
             result.push(entry_opt.take().unwrap());
             regex.used = true;
