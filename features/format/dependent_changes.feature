@@ -1,6 +1,5 @@
 Feature: format dependent steps
 
-  @this
   Scenario: dependent step
     Given file "cucumber-sort.json" with content:
       """
@@ -16,13 +15,16 @@ Feature: format dependent steps
     And file "features/one.feature" with content:
       """
       Feature: example
-
+      
         Scenario: steps out of order
           Given a repo
           And a file
           And the branches
             | branch-1 |
             | branch-2 |
+          And the commits
+            | commit 1 |
+            | commit 2 |
           And another thing
           And the branches
             | branch-3 |
@@ -30,9 +32,6 @@ Feature: format dependent steps
           And the commits
             | commit 3 |
             | commit 4 |
-          And the commits
-            | commit 1 |
-            | commit 2 |
       """
     When I run "cucumber-sort format"
     Then it prints nothing
@@ -40,7 +39,7 @@ Feature: format dependent steps
     And file "features/one.feature" now has content:
       """
       Feature: example
-
+      
         Scenario: steps out of order
           Given a repo
           And the branches
@@ -59,6 +58,7 @@ Feature: format dependent steps
           And another thing
       """
 
+  @this
   Scenario: dependent steps in opposite order
     Given file "cucumber-sort.json" with content:
       """
@@ -74,7 +74,7 @@ Feature: format dependent steps
     And file "features/one.feature" with content:
       """
       Feature: example
-
+      
         Scenario: steps out of order
           Given a repo
           And the commits
@@ -92,7 +92,7 @@ Feature: format dependent steps
     And file "features/one.feature" now has content:
       """
       Feature: example
-
+      
         Scenario: steps out of order
           Given a repo
           And the branches
