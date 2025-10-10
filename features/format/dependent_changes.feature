@@ -1,5 +1,6 @@
-Feature: check unordered steps
+Feature: format dependent steps
 
+  @this
   Scenario: dependent step
     Given file "cucumber-sort.json" with content:
       """
@@ -23,6 +24,12 @@ Feature: check unordered steps
             | branch-1 |
             | branch-2 |
           And another thing
+          And the branches
+            | branch-3 |
+            | branch-4 |
+          And the commits
+            | commit 3 |
+            | commit 4 |
           And the commits
             | commit 1 |
             | commit 2 |
@@ -42,6 +49,12 @@ Feature: check unordered steps
           And the commits
             | commit 1 |
             | commit 2 |
+          And the branches
+            | branch-3 |
+            | branch-4 |
+          And the commits
+            | commit 3 |
+            | commit 4 |
           And a file
           And another thing
       """

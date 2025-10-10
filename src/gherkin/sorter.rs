@@ -599,6 +599,96 @@ mod tests {
     }
 
     #[test]
+    fn multiple_steps() {
+      let config = Config {
+        steps: vec![
+          StepPattern::Single("step 1".to_string()),
+          StepPattern::Group(vec![S("step 2"), S("step 3")]),
+          StepPattern::Single("step 4".to_string()),
+        ],
+        ..Default::default()
+      };
+      let mut sorter = Sorter::try_from(&config).unwrap();
+      let give_block = gherkin::Block::Sortable(vec![
+        gherkin::Step {
+          line_no: 1,
+          indent: S(""),
+          title: S("step 2"),
+          keyword: Keyword::And,
+          additional_lines: vec![],
+        },
+        gherkin::Step {
+          line_no: 0,
+          indent: S(""),
+          keyword: Keyword::Given,
+          title: S("step 3"),
+          additional_lines: vec![],
+        },
+        gherkin::Step {
+          line_no: 1,
+          indent: S(""),
+          title: S("step 2"),
+          keyword: Keyword::And,
+          additional_lines: vec![],
+        },
+        gherkin::Step {
+          line_no: 0,
+          indent: S(""),
+          keyword: Keyword::Given,
+          title: S("step 3"),
+          additional_lines: vec![],
+        },
+        gherkin::Step {
+          line_no: 2,
+          indent: S(""),
+          keyword: Keyword::And,
+          title: S("step 1"),
+          additional_lines: vec![],
+        },
+      ]);
+      let want_block = gherkin::Block::Sortable(vec![
+        gherkin::Step {
+          line_no: 2,
+          indent: S(""),
+          keyword: Keyword::Given,
+          title: S("step 1"),
+          additional_lines: vec![],
+        },
+        gherkin::Step {
+          line_no: 1,
+          indent: S(""),
+          keyword: Keyword::And,
+          title: S("step 2"),
+          additional_lines: vec![],
+        },
+        gherkin::Step {
+          line_no: 0,
+          indent: S(""),
+          keyword: Keyword::And,
+          title: S("step 3"),
+          additional_lines: vec![],
+        },
+        gherkin::Step {
+          line_no: 1,
+          indent: S(""),
+          keyword: Keyword::And,
+          title: S("step 2"),
+          additional_lines: vec![],
+        },
+        gherkin::Step {
+          line_no: 0,
+          indent: S(""),
+          keyword: Keyword::And,
+          title: S("step 3"),
+          additional_lines: vec![],
+        },
+      ]);
+      let (have_block, issues) = sorter.sort_block(give_block, "test.feature".into());
+      pretty::assert_eq!(want_block, have_block);
+      assert!(issues.is_empty());
+    }
+
+    #[test]
     fn unknown_step() {
       let config = Config {
         steps: vec![
