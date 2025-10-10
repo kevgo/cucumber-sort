@@ -110,7 +110,6 @@ impl Sorter {
     let mut deletable_steps = DeletableSteps::from(deoptimize_keywords(unordered_steps));
     for entry in &mut self.entries {
       let extracted = deletable_steps.extract(&mut entry.regexes);
-
       if !extracted.is_empty() {
         result.extend(extracted);
       }
