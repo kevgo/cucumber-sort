@@ -473,10 +473,12 @@ mod tests {
         ..Default::default()
       };
       let sorter = Sorter::try_from(&config).unwrap();
-      assert_eq!(sorter.entries.len(), 3);
-      assert_eq!(sorter.entries[0].regex.as_str(), "step 1");
-      assert_eq!(sorter.entries[1].regex.as_str(), "step 2");
-      assert_eq!(sorter.entries[2].regex.as_str(), "step 3");
+      assert_eq!(sorter.entries.len(), 2);
+      assert_eq!(sorter.entries[0].entry_regexes.len(), 2);
+      assert_eq!(sorter.entries[0].entry_regexes[0].regex.as_str(), "step 1");
+      assert_eq!(sorter.entries[0].entry_regexes[1].regex.as_str(), "step 2");
+      assert_eq!(sorter.entries[1].entry_regexes.len(), 1);
+      assert_eq!(sorter.entries[1].entry_regexes[0].regex.as_str(), "step 3");
     }
 
     #[test]
