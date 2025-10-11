@@ -53,7 +53,7 @@ impl Sorter {
     filename: &Utf8Path,
   ) -> (gherkin::Document, Vec<Finding>) {
     let mut doc_issues = vec![];
-    let mut new_blocks = Vec::<gherkin::Block>::new();
+    let mut new_blocks = Vec::<gherkin::Block>::with_capacity(file.blocks.len());
     for file_block in file.blocks {
       let (sorted_block, block_issues) = self.sort_block(file_block, filename);
       new_blocks.push(sorted_block);
@@ -140,7 +140,7 @@ impl TryFrom<&Config> for Sorter {
           }
         },
         StepPattern::Group(patterns) => {
-          let mut regexes = vec![];
+          let mut regexes = Vec::with_capacity(patterns.len());
           for pattern in patterns {
             match Regex::new(pattern) {
               Ok(regex) => regexes.push(TrackedRegex::new(regex)),
