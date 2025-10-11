@@ -8,17 +8,20 @@ use regex::Regex;
 /// Sorter encapsulates the minutiae around checking the order of Gherkin steps.
 /// You give it a config file and it sorts Steps for you.
 pub struct Sorter {
+  /// the lines from the "steps" section in the config file
   pub entries: Vec<Entry>,
 }
 
+/// an line from the "steps" section of the config file
 pub struct Entry {
-  regexes: Vec<UsedRegex>,
+  /// the regexes that are defined on this line
+  regexes: Vec<TrackedRegex>,
 
-  /// where in the config this regex is defined, 0-based
+  /// where in the config this line exists, 0-based
   line: usize,
 }
 
-pub struct UsedRegex {
+pub struct TrackedRegex {
   regex: Regex,
 
   /// whether this regex was used in the current invocation of the tool
@@ -137,7 +140,7 @@ impl TryFrom<&Config> for Sorter {
       match step_pattern {
         StepPattern::Single(pattern) => match Regex::new(pattern) {
           Ok(regex) => entries.push(Entry {
-            regexes: vec![UsedRegex { regex, used: false }],
+            regexes: vec![TrackedRegex { regex, used: false }],
             line: i,
           }),
           Err(err) => {
@@ -152,7 +155,7 @@ impl TryFrom<&Config> for Sorter {
           let mut regexes = vec![];
           for pattern in patterns {
             match Regex::new(pattern) {
-              Ok(regex) => regexes.push(UsedRegex { regex, used: false }),
+              Ok(regex) => regexes.push(TrackedRegex { regex, used: false }),
               Err(err) => {
                 return Err(UserError::ConfigFileInvalidRegex {
                   file: crate::config::CONFIG_FILE_NAME.into(),
@@ -177,7 +180,7 @@ struct DeletableSteps(Vec<Option<gherkin::Step>>);
 impl DeletableSteps {
   /// moves all steps from self that match the given config_step
   /// into the given result Vec
-  fn extract(&mut self, regexes: &mut [UsedRegex]) -> Vec<gherkin::Step> {
+  fn extract(&mut self, regexes: &mut [TrackedRegex]) -> Vec<gherkin::Step> {
     let mut result = vec![];
     for entry_opt in self.0.iter_mut() {
       if let Some(entry) = &entry_opt {
@@ -240,7 +243,7 @@ mod tests {
   use big_s::S;
 
   mod deletable_steps {
-    use crate::gherkin::sorter::{DeletableSteps, UsedRegex};
+    use crate::gherkin::sorter::{DeletableSteps, TrackedRegex};
     use crate::gherkin::{Keyword, Step};
     use big_s::S;
     use regex::Regex;
@@ -269,7 +272,7 @@ mod tests {
         additional_lines: vec![],
       };
       let mut steps = DeletableSteps::from(vec![step_1.clone(), step_2.clone(), step_3.clone()]);
-      let mut regexes = vec![UsedRegex {
+      let mut regexes = vec![TrackedRegex {
         regex: Regex::new("step 2").unwrap(),
         used: false,
       }];
@@ -310,7 +313,7 @@ mod tests {
         step_3.clone(),
         step_2.clone(),
       ]);
-      let mut regexes = vec![UsedRegex {
+      let mut regexes = vec![TrackedRegex {
         regex: Regex::new("step 2").unwrap(),
         used: false,
       }];
@@ -345,7 +348,7 @@ mod tests {
         additional_lines: vec![],
       };
       let mut steps = DeletableSteps::from(vec![step_1.clone(), step_2.clone(), step_3.clone()]);
-      let mut regexes = vec![UsedRegex {
+      let mut regexes = vec![TrackedRegex {
         regex: Regex::new("step [23]").unwrap(),
         used: false,
       }];
@@ -366,7 +369,7 @@ mod tests {
         additional_lines: vec![],
       };
       let mut steps = DeletableSteps::from(vec![step_1.clone()]);
-      let mut regexes = vec![UsedRegex {
+      let mut regexes = vec![TrackedRegex {
         regex: Regex::new("step 2").unwrap(),
         used: false,
       }];
