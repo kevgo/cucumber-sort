@@ -175,15 +175,29 @@ impl TryFrom<&Config> for Sorter {
 struct DeletableSteps(Vec<Option<gherkin::Step>>);
 
 impl DeletableSteps {
-  /// moves all steps from self that match the given config_step
-  /// into the given result Vec
+  /// moves all steps from self that match one of the given UsedRegexes
+  /// into the result
   fn extract(&mut self, regexes: &mut [UsedRegex]) -> Vec<gherkin::Step> {
     let mut result = vec![];
-    for entry_opt in self.0.iter_mut() {
+    // step 1: find the longest matching entry
+    for entry_opt in self.0.iter_mut().enumerate() {
       if let Some(entry) = &entry_opt {
-        for regex in regexes.iter_mut() {
+        let mut longest_matching_regex: Option<&str> = None;
+        for regex in regexes.iter() {
           if regex.regex.is_match(&entry.title) {
-            result.push(entry_opt.take().unwrap());
+            let current_longest = longest_matching_regex.map(|regex| regex.len()).unwrap_or(0);
+            if regex.regex.as_str().len() > current_longest {
+              current_longest = Some(regex.regex.as_str());
+            }
+          }
+        }
+        if let Some(longest) = longest_matching_regex {
+            // find the regex matching "longest"
+
+            //
+        }
+        result
+            .push(entry_opt.take().unwrap());
             regex.used = true;
             break;
           }
@@ -732,6 +746,67 @@ mod tests {
           title: S("step 2"),
           line_no: 0,
           keyword: Keyword::And,
+          ..Default::default()
+        },
+      ];
+      let (have_block, issues) = sorter.sort_steps(give, "test.feature".into());
+      pretty::assert_eq!(want, have_block);
+      let want_issues = vec![Finding {
+        file: "test.feature".into(),
+        line: 1,
+        problem: Issue::UndefinedStep(S("step 3")),
+      }];
+      pretty::assert_eq!(want_issues, issues);
+    }
+
+    #[test]
+    fn multiple_matching_regex() {
+      let config = Config {
+        steps: vec![
+          StepPattern::Single("file".to_string()),
+          StepPattern::Single("another step".to_string()),
+          StepPattern::Single("file one.txt".to_string()),
+        ],
+        ..Default::default()
+      };
+      let mut sorter = Sorter::try_from(&config).unwrap();
+      let give = vec![
+        gherkin::Step {
+          title: S("file one.txt"),
+          line_no: 0,
+          keyword: Keyword::Given,
+          ..Default::default()
+        },
+        gherkin::Step {
+          title: S("file two.txt"),
+          line_no: 1,
+          keyword: Keyword::And,
+          ..Default::default()
+        },
+        gherkin::Step {
+          title: S("another step"),
+          line_no: 2,
+          keyword: Keyword::And,
+          ..Default::default()
+        },
+      ];
+      let want = vec![
+        gherkin::Step {
+          title: S("file two.txt"),
+          line_no: 2,
+          keyword: Keyword::Given,
+          ..Default::default()
+        },
+        gherkin::Step {
+          title: S("another step"),
+          line_no: 0,
+          keyword: Keyword::And,
+          ..Default::default()
+        },
+        gherkin::Step {
+          title: S("file one.txt"),
+          line_no: 2,
+          keyword: Keyword::Given,
           ..Default::default()
         },
       ];
