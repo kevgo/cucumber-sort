@@ -3,6 +3,9 @@ use crate::gherkin::lexer::{self, Keyword, LineType};
 use camino::Utf8Path;
 use std::fmt::{Display, Write};
 
+/// the standard indentation
+const INDENT: usize = 2;
+
 pub fn file(lines: Vec<lexer::Line>) -> AppResult<Document> {
   let mut blocks: Vec<Block> = vec![];
   let mut open_block: Option<Block> = None; // the block that is currently being populated
@@ -210,7 +213,7 @@ impl Step {
   fn has_open_docstring(&self) -> bool {
     let mut result = false;
     for additional_line in &self.additional_lines {
-      if is_docstring(additional_line, self.indent.len() + 2) {
+      if is_docstring(additional_line, self.indent.len() + INDENT) {
         result = !result;
       }
     }
