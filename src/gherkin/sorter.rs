@@ -38,12 +38,6 @@ impl TrackedRegex {
   }
 }
 
-impl TrackedRegex {
-  pub fn new(regex: Regex) -> TrackedRegex {
-    TrackedRegex { regex, used: false }
-  }
-}
-
 impl TryFrom<&str> for TrackedRegex {
   type Error = regex::Error;
 
