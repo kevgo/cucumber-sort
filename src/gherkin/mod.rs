@@ -1,6 +1,6 @@
 mod lexer;
 mod parser;
-mod sorter;
+pub mod sorter;
 
 use crate::errors::{Result, UserError};
 use camino::Utf8Path;

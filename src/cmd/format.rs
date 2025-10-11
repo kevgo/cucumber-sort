@@ -2,8 +2,7 @@ use crate::cli::Flags;
 use crate::config::Config;
 use crate::errors::{Finding, Result, UserError};
 use crate::file_finder::FileFinder;
-use crate::gherkin;
-use crate::gherkin::Sorter;
+use crate::gherkin::{self, Sorter, sorter};
 use camino::Utf8PathBuf;
 use std::fs;
 use std::process::ExitCode;
@@ -21,7 +20,7 @@ pub fn format(flags: Flags, filepath: Option<Utf8PathBuf>) -> Result<ExitCode> {
     println!("{}", finding);
   }
   if config.record {
-    sorter.store_missing(&findings)?;
+    sorter::store_missing(&findings)?;
   }
   if findings.is_empty() {
     Ok(ExitCode::SUCCESS)

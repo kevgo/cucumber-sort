@@ -98,35 +98,6 @@ impl Sorter {
     }
     (optimize_keywords(result), issues)
   }
-
-  /// records the given missing steps in the config file
-  pub fn store_missing(&self, missings: &[Finding]) -> Result<()> {
-    if missings.is_empty() {
-      return Ok(());
-    }
-    let mut new_steps = vec![];
-    for missing in missings {
-      match &missing.problem {
-        Issue::UndefinedStep(text) => {
-          new_steps.push(make_regex(text));
-        }
-        Issue::UnsortedLine { have: _, want: _ } => {}
-        Issue::UnusedRegex(_) => {}
-      }
-    }
-    if new_steps.is_empty() {
-      return Ok(());
-    }
-    new_steps.sort();
-    let mut config = Config::load()?;
-    for step in new_steps {
-      if !config.unknown_steps.contains(&step) {
-        config.unknown_steps.push(step);
-      }
-    }
-    config.unknown_steps.sort();
-    config.save()
-  }
 }
 
 impl TryFrom<&Config> for Sorter {
@@ -244,6 +215,35 @@ fn optimize_keywords(steps: Vec<gherkin::Step>) -> Vec<gherkin::Step> {
     result.push(step);
   }
   result
+}
+
+/// records the given missing steps in the config file
+pub fn store_missing(missings: &[Finding]) -> Result<()> {
+  if missings.is_empty() {
+    return Ok(());
+  }
+  let mut new_steps = vec![];
+  for missing in missings {
+    match &missing.problem {
+      Issue::UndefinedStep(text) => {
+        new_steps.push(make_regex(text));
+      }
+      Issue::UnsortedLine { have: _, want: _ } => {}
+      Issue::UnusedRegex(_) => {}
+    }
+  }
+  if new_steps.is_empty() {
+    return Ok(());
+  }
+  new_steps.sort();
+  let mut config = Config::load()?;
+  for step in new_steps {
+    if !config.unknown_steps.contains(&step) {
+      config.unknown_steps.push(step);
+    }
+  }
+  config.unknown_steps.sort();
+  config.save()
 }
 
 #[cfg(test)]
