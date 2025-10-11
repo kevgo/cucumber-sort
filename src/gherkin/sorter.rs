@@ -141,7 +141,7 @@ impl TryFrom<&Config> for Sorter {
           }
         },
         StepPattern::Group(patterns) => {
-          let mut regexes = vec![];
+          let mut regexes = Vec::with_capacity(patterns.len());
           for pattern in patterns {
             match Regex::new(pattern) {
               Ok(regex) => regexes.push(TrackedRegex::new(regex)),
