@@ -112,14 +112,13 @@ fn has_comments(text: &str) -> bool {
 
 /// Strips single-line comments from JSON text,
 /// replacing them with spaces to preserve line numbers for error reporting.
-/// Returns a Cow to avoid allocation when no comments are present.
 fn strip_comments(text: &str) -> Cow<'_, str> {
-  // If no comments found, return borrowed reference
   if !has_comments(text) {
+    // no comments in string --> return borrowed reference
     return Cow::Borrowed(text);
   }
 
-  // Build the result with comments stripped
+  // here the comment contains a string --> return an owned copy where comments are overwritten with spaces
   let mut result = String::with_capacity(text.len());
   let mut chars = text.chars().peekable();
   let mut in_string = false;
