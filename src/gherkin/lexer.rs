@@ -1,9 +1,9 @@
-use crate::errors::Result;
+use crate::errors::AppResult;
 use std::fmt::Display;
 use std::io::BufRead;
 
 /// lexes the given file content
-pub fn file(text: impl BufRead) -> Result<Vec<Line>> {
+pub fn file(text: impl BufRead) -> AppResult<Vec<Line>> {
   let mut result = vec![];
   for (i, text_line) in text.lines().enumerate() {
     let line = Line::new(text_line.unwrap(), i)?;
@@ -31,7 +31,7 @@ pub struct Line {
 }
 
 impl Line {
-  fn new(text: String, number: usize) -> Result<Line> {
+  fn new(text: String, number: usize) -> AppResult<Line> {
     let mut chars = text.char_indices();
 
     // step 1: find the end of the initial whitespace
@@ -91,7 +91,7 @@ impl Line {
   }
 }
 
-fn text_line(number: usize, text: String, indent: usize) -> Result<Line> {
+fn text_line(number: usize, text: String, indent: usize) -> AppResult<Line> {
   Ok(Line {
     number,
     text,

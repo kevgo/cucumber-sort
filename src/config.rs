@@ -1,5 +1,5 @@
 use crate::cli::Flags;
-use crate::errors::{Result, UserError};
+use crate::errors::{AppResult, UserError};
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::io::ErrorKind;
@@ -7,7 +7,7 @@ use std::io::ErrorKind;
 /// the filename of the configuration file
 pub const CONFIG_FILE_NAME: &str = "cucumber-sort.json";
 
-pub fn create() -> Result<()> {
+pub fn create() -> AppResult<()> {
   Config::default().save()
 }
 
@@ -29,7 +29,7 @@ pub struct Config {
 }
 
 impl Config {
-  pub fn load() -> Result<Config> {
+  pub fn load() -> AppResult<Config> {
     match fs::read_to_string(CONFIG_FILE_NAME) {
       Ok(text) => {
         let sanitized = strip_comments(&text);
@@ -62,7 +62,7 @@ impl Config {
     }
   }
 
-  pub fn save(&self) -> Result<()> {
+  pub fn save(&self) -> AppResult<()> {
     let json = serde_json::to_string_pretty(self).map_err(|err| UserError::ConfigFileCreate {
       file: CONFIG_FILE_NAME.into(),
       message: format!("Failed to serialize config: {}", err),

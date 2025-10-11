@@ -1,5 +1,5 @@
 use crate::config::Config;
-use crate::errors::{Result, UserError};
+use crate::errors::{AppResult, UserError};
 use camino::{Utf8DirEntry, Utf8Path, Utf8PathBuf};
 
 /// FileFinder encapsulates the logic for finding feature files.
@@ -10,7 +10,7 @@ pub struct FileFinder {
 }
 
 impl FileFinder {
-  pub fn search_folder(&self, dir: impl AsRef<Utf8Path>) -> Result<Vec<Utf8PathBuf>> {
+  pub fn search_folder(&self, dir: impl AsRef<Utf8Path>) -> AppResult<Vec<Utf8PathBuf>> {
     let mut result = vec![];
     let mut entries: Vec<Utf8DirEntry> = dir
       .as_ref()
@@ -75,7 +75,7 @@ impl TryFrom<&Config> for FileFinder {
   type Error = UserError;
 
   /// Creates a new FileFinder from the JSON configuration
-  fn try_from(config: &Config) -> Result<Self> {
+  fn try_from(config: &Config) -> AppResult<Self> {
     let mut include_globs = vec![];
     for pattern in &config.include {
       let glob = glob::Pattern::new(pattern).map_err(|err| UserError::IgnoreFileInvalidGlob {
