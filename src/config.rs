@@ -1,6 +1,7 @@
 use crate::cli::Flags;
 use crate::errors::{AppResult, UserError};
 use serde::{Deserialize, Serialize};
+use std::borrow::Cow;
 use std::fs;
 use std::io::ErrorKind;
 
@@ -83,11 +84,46 @@ pub enum StepPattern {
 
 /// Strips single-line comments from JSON text,
 /// replacing them with spaces to preserve line numbers for error reporting.
-fn strip_comments(text: &str) -> String {
-  let mut result = String::with_capacity(text.len());
+/// Returns a Cow to avoid allocation when no comments are present.
+fn strip_comments(text: &str) -> Cow<'_, str> {
   let mut chars = text.chars().peekable();
   let mut in_string = false;
   let mut escaped = false;
+
+  // First pass: check if there are any comments
+  let mut temp_chars = chars.clone();
+  let mut temp_in_string = false;
+  let mut temp_escaped = false;
+  let mut has_comments = false;
+
+  while let Some(ch) = temp_chars.next() {
+    if temp_in_string {
+      if temp_escaped {
+        temp_escaped = false;
+      } else if ch == '\\' {
+        temp_escaped = true;
+      } else if ch == '"' {
+        temp_in_string = false;
+      }
+    } else {
+      match ch {
+        '"' => temp_in_string = true,
+        '/' if temp_chars.peek() == Some(&'/') => {
+          has_comments = true;
+          break;
+        }
+        _ => {}
+      }
+    }
+  }
+
+  // If no comments found, return borrowed reference
+  if !has_comments {
+    return Cow::Borrowed(text);
+  }
+
+  // Second pass: build the result with comments stripped
+  let mut result = String::with_capacity(text.len());
   while let Some(ch) = chars.next() {
     if in_string {
       result.push(ch);
@@ -119,7 +155,7 @@ fn strip_comments(text: &str) -> String {
       }
     }
   }
-  result
+  Cow::Owned(result)
 }
 
 #[cfg(test)]
