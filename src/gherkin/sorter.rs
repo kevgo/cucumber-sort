@@ -38,8 +38,7 @@ impl TryFrom<&str> for TrackedRegex {
   type Error = regex::Error;
 
   fn try_from(text: &str) -> std::result::Result<Self, Self::Error> {
-    let regex = Regex::new(text)?;
-    Ok(TrackedRegex { regex, used: false })
+    Ok(TrackedRegex::new(Regex::new(text)?))
   }
 }
 
