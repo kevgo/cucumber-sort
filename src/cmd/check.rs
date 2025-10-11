@@ -2,8 +2,7 @@ use crate::cli::Flags;
 use crate::config::Config;
 use crate::errors::{Finding, Result};
 use crate::file_finder::FileFinder;
-use crate::gherkin::sorter;
-use crate::gherkin::{self, Sorter};
+use crate::gherkin::{self, Sorter, sorter};
 use camino::Utf8PathBuf;
 use std::process::ExitCode;
 
