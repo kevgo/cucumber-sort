@@ -100,6 +100,11 @@ impl Sorter {
     let mut result = Vec::<gherkin::Step>::with_capacity(unordered_steps.len());
     let mut deletable_steps = DeletableSteps::from(deoptimize_keywords(unordered_steps));
     for entry in &self.entries {
+      // step 1: find the steps that match the regexes for this entry
+      // step 2: validate that these are the actual matches
+      //         - for each step that matches, see if another available regex also matches and its definition is longer
+      //         - if yes: don't extract the step
+      //         - if no: extract the step
       let extracted = deletable_steps.extract(&entry.regexes);
       if !extracted.is_empty() {
         result.extend(extracted);
@@ -166,8 +171,8 @@ impl TryFrom<&Config> for Sorter {
 struct DeletableSteps(Vec<Option<gherkin::Step>>);
 
 impl DeletableSteps {
-  /// moves all steps from self that match the given regexes
-  /// into the given result Vec
+  /// Moves all steps from self that match the given regexes into the given result Vec.
+  /// But only if there are no other regexes left that also match but where the regex definition is longer.
   fn extract(&mut self, regexes: &[TrackedRegex]) -> Vec<gherkin::Step> {
     let mut result = vec![];
     for entry_opt in self.0.iter_mut() {
