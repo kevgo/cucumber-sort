@@ -123,7 +123,12 @@ impl Document {
       match block {
         Block::Sortable(steps) => {
           for step in steps {
-            result.push(format!("{}{} {}", step.indent, step.keyword, step.title));
+            result.push(format!(
+              "{}{} {}",
+              step.indent,
+              step.keyword.as_str(),
+              step.title
+            ));
             result.extend(step.additional_lines);
           }
         }

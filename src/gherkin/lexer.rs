@@ -1,5 +1,4 @@
 use crate::errors::AppResult;
-use std::fmt::Display;
 use std::io::BufRead;
 
 /// lexes the given file content
@@ -135,12 +134,6 @@ impl Keyword {
       Keyword::Then => "Then",
       Keyword::And => "And",
     }
-  }
-}
-
-impl Display for Keyword {
-  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-    f.write_str(self.as_str())
   }
 }
 
