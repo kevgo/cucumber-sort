@@ -1,5 +1,5 @@
 use crate::config::{Config, StepPattern};
-use crate::errors::{Finding, Issue, Result, UserError};
+use crate::errors::{AppResult, Finding, Issue, UserError};
 use crate::gherkin::{self, Keyword};
 use crate::regex::make_regex;
 use camino::Utf8Path;
@@ -227,7 +227,7 @@ fn optimize_keywords(steps: Vec<gherkin::Step>) -> Vec<gherkin::Step> {
 }
 
 /// records the given missing steps in the config file
-pub fn store_missing(missings: &[Finding]) -> Result<()> {
+pub fn store_missing(missings: &[Finding]) -> AppResult<()> {
   if missings.is_empty() {
     return Ok(());
   }

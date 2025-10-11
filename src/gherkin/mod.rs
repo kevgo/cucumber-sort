@@ -2,7 +2,7 @@ mod lexer;
 mod parser;
 pub mod sorter;
 
-use crate::errors::{Result, UserError};
+use crate::errors::{AppResult, UserError};
 use camino::Utf8Path;
 pub use lexer::Keyword;
 pub use parser::{Block, Document, Step};
@@ -10,7 +10,7 @@ pub use sorter::Sorter;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
-pub fn load(filepath: &Utf8Path) -> Result<parser::Document> {
+pub fn load(filepath: &Utf8Path) -> AppResult<parser::Document> {
   let file_content = File::open(filepath).map_err(|e| UserError::FileRead {
     file: filepath.to_path_buf(),
     reason: e.to_string(),
@@ -19,7 +19,7 @@ pub fn load(filepath: &Utf8Path) -> Result<parser::Document> {
 }
 
 /// parses the given file content into Gherkin
-pub fn file(text: impl BufRead) -> Result<parser::Document> {
+pub fn file(text: impl BufRead) -> AppResult<parser::Document> {
   // step 1: lex the file content into token (lines)
   let lines = lexer::file(text)?;
   // step 2: parse the tokens (lines) into Gherkin data structures
