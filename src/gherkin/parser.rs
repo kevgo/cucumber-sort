@@ -1,4 +1,4 @@
-use crate::errors::{Finding, Issue, AppResult};
+use crate::errors::{AppResult, Finding, Issue};
 use crate::gherkin::lexer::{self, Keyword, LineType};
 use camino::Utf8Path;
 use std::fmt::{Display, Write};

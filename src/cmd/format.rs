@@ -1,6 +1,6 @@
 use crate::cli::Flags;
 use crate::config::Config;
-use crate::errors::{Finding, AppResult, UserError};
+use crate::errors::{AppResult, Finding, UserError};
 use crate::file_finder::FileFinder;
 use crate::gherkin::{self, Sorter, sorter};
 use camino::Utf8PathBuf;
