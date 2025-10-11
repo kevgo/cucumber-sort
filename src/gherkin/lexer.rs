@@ -1,5 +1,4 @@
 use crate::errors::AppResult;
-use std::fmt::Display;
 use std::io::BufRead;
 
 /// lexes the given file content
@@ -127,17 +126,14 @@ impl Keyword {
       _ => None,
     }
   }
-}
 
-impl Display for Keyword {
-  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-    let text = match self {
+  pub fn as_str(&self) -> &'static str {
+    match self {
       Keyword::Given => "Given",
       Keyword::When => "When",
       Keyword::Then => "Then",
       Keyword::And => "And",
-    };
-    f.write_str(text)
+    }
   }
 }
 
