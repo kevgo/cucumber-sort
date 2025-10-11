@@ -19,8 +19,13 @@ impl FileFinder {
         dir: dir.as_ref().to_path_buf(),
         message: err.to_string(),
       })?
-      .map(|opt| opt.unwrap())
-      .collect();
+      .map(|opt| {
+        opt.map_err(|err| UserError::FileRead {
+          file: dir.as_ref().to_path_buf(),
+          reason: err.to_string(),
+        })
+      })
+      .collect::<Result<Vec<_>>>()?;
     let mut paths: Vec<&Utf8Path> = entries.iter().map(|entry| entry.path()).collect();
     paths.sort();
     for path in paths {
