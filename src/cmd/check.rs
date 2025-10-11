@@ -47,9 +47,9 @@ fn all(config: &Config, sorter: &mut Sorter) -> Result<Vec<Finding>> {
 /// checks the file with the given path
 fn file(filepath: Utf8PathBuf, sorter: &mut Sorter) -> Result<Vec<Finding>> {
   let gherkin = gherkin::load(&filepath)?;
-  let (sorted_file, mut findings) = sorter.sort_file(gherkin.clone(), &filepath);
+  let original_lines = gherkin.clone().lines();
+  let (sorted_file, mut findings) = sorter.sort_file(gherkin, &filepath);
   let sorted_lines = sorted_file.lines();
-  let original_lines = gherkin.lines();
   if findings.is_empty() {
     findings.extend(original_lines.find_mismatching(&sorted_lines, &filepath));
   }
