@@ -101,13 +101,18 @@ impl Sorter {
     let mut deletable_steps = DeletableSteps::from(deoptimize_keywords(unordered_steps));
     for entry in &self.entries {
       // step 1: find the steps that match the regexes for this entry
-      // step 2: validate that these are the actual matches
+      //         Ideally store the indexes, so that we can extract them directly in step 2
+      //         and don't need to match all regexes again.
+      let candidates = deletable_steps.find_matches(&entry.regexes);
+      // step 2: validate that these are the best matches
       //         - for each step that matches, see if another available regex also matches and its definition is longer
-      //         - if yes: don't extract the step
+      //         - if yes: don't extract the step (it'll get extracted when we reach the longer regex)
       //         - if no: extract the step
-      let extracted = deletable_steps.extract(&entry.regexes);
-      if !extracted.is_empty() {
-        result.extend(extracted);
+      for candidate in candidates {
+        if deletable_steps.validate_match(candidate, &entry.regexes) {
+          let extracted = deletable_steps.remove(candidate)
+          result.extend(extracted);
+        }
       }
     }
     // report the remaining unextracted steps as unknown steps
@@ -171,6 +176,21 @@ impl TryFrom<&Config> for Sorter {
 struct DeletableSteps(Vec<Option<gherkin::Step>>);
 
 impl DeletableSteps {
+  fn find_matches(&self, regexes: &[TrackedRegex]) -> Vec<&gherkin::Step> {
+    let mut result = vec![];
+    for entry_opt in &self.0 {
+      if let Some(entry) = &entry_opt {
+        for regex in regexes {
+          if regex.regex.is_match(&entry.title) {
+            result.push(entry);
+            break;
+          }
+        }
+      }
+    }
+    result
+  }
+
   /// Moves all steps from self that match the given regexes into the given result Vec.
   /// But only if there are no other regexes left that also match but where the regex definition is longer.
   fn extract(&mut self, regexes: &[TrackedRegex]) -> Vec<gherkin::Step> {
@@ -183,11 +203,6 @@ impl DeletableSteps {
             regex.used.set(true);
             break;
           }
-        }
-        if let Some(longest) = longest_matching_regex {
-          // find the regex matching "longest"
-
-          //
         }
         result.push(entry_opt.take().unwrap());
         regex.used = true;
