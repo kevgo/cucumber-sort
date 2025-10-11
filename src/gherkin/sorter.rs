@@ -6,7 +6,6 @@ use camino::Utf8Path;
 use regex::Regex;
 
 /// Sorter encapsulates the minutiae around checking the order of Gherkin steps.
-/// You give it a config file and it sorts Steps for you.
 pub struct Sorter {
   pub entries: Vec<Entry>,
 }
@@ -179,9 +178,8 @@ impl DeletableSteps {
   /// into the result
   fn extract(&mut self, regexes: &mut [UsedRegex]) -> Vec<gherkin::Step> {
     let mut result = vec![];
-    // step 1: find the longest matching entry
-    for entry_opt in self.0.iter_mut().enumerate() {
-      if let Some(entry) = &entry_opt {
+    for entry in &self.0 {
+      if let Some(entry) = &entry {
         let mut longest_matching_regex: Option<&str> = None;
         for regex in regexes.iter() {
           if regex.regex.is_match(&entry.title) {
@@ -192,24 +190,19 @@ impl DeletableSteps {
           }
         }
         if let Some(longest) = longest_matching_regex {
-            // find the regex matching "longest"
+          // find the regex matching "longest"
 
-            //
+          //
         }
-        result
-            .push(entry_opt.take().unwrap());
-            regex.used = true;
-            break;
-          }
-        }
+        result.push(entry_opt.take().unwrap());
+        regex.used = true;
+        break;
       }
     }
-    result
   }
 
-  fn elements(self) -> impl Iterator<Item = gherkin::Step> {
-    self.0.into_iter().flatten()
-  }
+fn elements(self) -> impl Iterator<Item = gherkin::Step> {
+  self.0.into_iter().flatten()
 }
 
 impl From<Vec<gherkin::Step>> for DeletableSteps {
