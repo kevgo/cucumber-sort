@@ -4,6 +4,7 @@ use crate::gherkin::{self, Keyword};
 use crate::regex::make_regex;
 use camino::Utf8Path;
 use regex::Regex;
+use std::cell::Cell;
 
 /// Sorter encapsulates the minutiae around checking the order of Gherkin steps.
 /// You give it a config file and it sorts Steps for you.
@@ -25,12 +26,15 @@ pub struct TrackedRegex {
   regex: Regex,
 
   /// whether this regex was used in the current invocation of the tool
-  used: bool,
+  used: Cell<bool>,
 }
 
 impl TrackedRegex {
   pub fn new(regex: Regex) -> TrackedRegex {
-    TrackedRegex { regex, used: false }
+    TrackedRegex {
+      regex,
+      used: Cell::new(false),
+    }
   }
 }
 
@@ -63,7 +67,7 @@ impl Sorter {
     let mut result = vec![];
     for entry in &self.entries {
       for used_regex in &entry.regexes {
-        if !used_regex.used {
+        if !used_regex.used.get() {
           result.push(Finding {
             file: crate::config::CONFIG_FILE_NAME.into(),
             line: entry.line,
@@ -96,8 +100,8 @@ impl Sorter {
   ) -> (Vec<gherkin::Step>, Vec<Finding>) {
     let mut result = Vec::<gherkin::Step>::with_capacity(unordered_steps.len());
     let mut deletable_steps = DeletableSteps::from(deoptimize_keywords(unordered_steps));
-    for entry in &mut self.entries {
-      let extracted = deletable_steps.extract(&mut entry.regexes);
+    for entry in &self.entries {
+      let extracted = deletable_steps.extract(&entry.regexes);
       if !extracted.is_empty() {
         result.extend(extracted);
       }
@@ -165,14 +169,14 @@ struct DeletableSteps(Vec<Option<gherkin::Step>>);
 impl DeletableSteps {
   /// moves all steps from self that match the given config_step
   /// into the given result Vec
-  fn extract(&mut self, regexes: &mut [TrackedRegex]) -> Vec<gherkin::Step> {
+  fn extract(&mut self, regexes: &[TrackedRegex]) -> Vec<gherkin::Step> {
     let mut result = vec![];
     for entry_opt in self.0.iter_mut() {
       if let Some(entry) = &entry_opt {
-        for regex in regexes.iter_mut() {
+        for regex in regexes.iter() {
           if regex.regex.is_match(&entry.title) {
             result.push(entry_opt.take().unwrap());
-            regex.used = true;
+            regex.used.set(true);
             break;
           }
         }
@@ -285,12 +289,12 @@ mod tests {
         additional_lines: vec![],
       };
       let mut steps = DeletableSteps::from(vec![step_1.clone(), step_2.clone(), step_3.clone()]);
-      let mut regexes = vec![TrackedRegex::try_from("step 2").unwrap()];
-      let extracted = steps.extract(&mut regexes);
+      let regexes = vec![TrackedRegex::try_from("step 2").unwrap()];
+      let extracted = steps.extract(&regexes);
       assert_eq!(vec![step_2], extracted);
       let want_steps = DeletableSteps(vec![Some(step_1), None, Some(step_3)]);
       assert_eq!(want_steps, steps);
-      assert!(regexes[0].used);
+      assert!(regexes[0].used.get());
     }
 
     #[test]
@@ -323,12 +327,12 @@ mod tests {
         step_3.clone(),
         step_2.clone(),
       ]);
-      let mut regexes = vec![TrackedRegex::try_from("step 2").unwrap()];
-      let extracted = steps.extract(&mut regexes);
+      let regexes = vec![TrackedRegex::try_from("step 2").unwrap()];
+      let extracted = steps.extract(&regexes);
       assert_eq!(vec![step_2.clone(), step_2.clone(), step_2], extracted);
       let want_steps = DeletableSteps(vec![Some(step_1), None, None, Some(step_3), None]);
       assert_eq!(want_steps, steps);
-      assert!(regexes[0].used);
+      assert!(regexes[0].used.get());
     }
 
     #[test]
@@ -355,12 +359,12 @@ mod tests {
         additional_lines: vec![],
       };
       let mut steps = DeletableSteps::from(vec![step_1.clone(), step_2.clone(), step_3.clone()]);
-      let mut regexes = vec![TrackedRegex::try_from("step [23]").unwrap()];
-      let extracted = steps.extract(&mut regexes);
+      let regexes = vec![TrackedRegex::try_from("step [23]").unwrap()];
+      let extracted = steps.extract(&regexes);
       assert_eq!(vec![step_2, step_3], extracted);
       let want_steps = DeletableSteps(vec![Some(step_1), None, None]);
       assert_eq!(want_steps, steps);
-      assert!(regexes[0].used);
+      assert!(regexes[0].used.get());
     }
 
     #[test]
@@ -373,12 +377,12 @@ mod tests {
         additional_lines: vec![],
       };
       let mut steps = DeletableSteps::from(vec![step_1.clone()]);
-      let mut regexes = vec![TrackedRegex::try_from("step 2").unwrap()];
-      let extracted = steps.extract(&mut regexes);
+      let regexes = vec![TrackedRegex::try_from("step 2").unwrap()];
+      let extracted = steps.extract(&regexes);
       assert_eq!(Vec::<Step>::new(), extracted);
       let want_steps = DeletableSteps(vec![Some(step_1)]);
       assert_eq!(want_steps, steps);
-      assert!(!regexes[0].used);
+      assert!(!regexes[0].used.get());
     }
   }
 
