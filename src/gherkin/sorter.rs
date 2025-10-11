@@ -202,10 +202,12 @@ impl DeletableSteps {
         break;
       }
     }
+    result
   }
 
-fn elements(self) -> impl Iterator<Item = gherkin::Step> {
-  self.0.into_iter().flatten()
+  fn elements(self) -> impl Iterator<Item = gherkin::Step> {
+    self.0.into_iter().flatten()
+  }
 }
 
 impl From<Vec<gherkin::Step>> for DeletableSteps {
