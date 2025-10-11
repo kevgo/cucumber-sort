@@ -1,5 +1,6 @@
 pub fn make_regex(text: &str) -> String {
-  let mut result = String::from('^');
+  let mut result = String::with_capacity(text.len() + 2);
+  result.push('^');
   let mut chars = text.chars().peekable();
   while let Some(ch) = chars.next() {
     if ch == '"' {
