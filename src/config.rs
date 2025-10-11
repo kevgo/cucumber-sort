@@ -17,14 +17,19 @@ pub fn create() -> AppResult<()> {
 pub struct Config {
   #[serde(default)]
   pub include: Vec<String>,
+
   #[serde(default)]
   pub exclude: Vec<String>,
+
   #[serde(default)]
   pub record: bool,
+
   #[serde(default, rename = "fail-fast")]
   pub fail_fast: bool,
+
   #[serde(default)]
   pub steps: Vec<StepPattern>,
+
   #[serde(default, rename = "unknown-steps")]
   pub unknown_steps: Vec<String>,
 }
