@@ -6,7 +6,7 @@ mod file_finder;
 mod gherkin;
 mod regex;
 
-use crate::errors::Result;
+use crate::errors::AppResult;
 use ansi_term::Color::Red;
 use cli::Command::{Check, Format, Init};
 use std::process::ExitCode;
@@ -25,7 +25,7 @@ fn main() -> ExitCode {
   }
 }
 
-fn inner() -> Result<ExitCode> {
+fn inner() -> AppResult<ExitCode> {
   match cli::parse() {
     Check { flags, file } => cmd::check(flags, file),
     Format { flags, file } => cmd::format(flags, file),

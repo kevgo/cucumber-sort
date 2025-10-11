@@ -1,9 +1,9 @@
-use crate::errors::{Finding, Issue, Result};
+use crate::errors::{AppResult, Finding, Issue};
 use crate::gherkin::lexer::{self, Keyword, LineType};
 use camino::Utf8Path;
 use std::fmt::{Display, Write};
 
-pub fn file(lines: Vec<lexer::Line>) -> Result<Document> {
+pub fn file(lines: Vec<lexer::Line>) -> AppResult<Document> {
   let mut blocks: Vec<Block> = vec![];
   let mut open_block: Option<Block> = None; // the block that is currently being populated
   let mut open_step: Option<Step> = None; // the step that is currently being populated
