@@ -12,7 +12,7 @@ pub struct FileFinder {
 impl FileFinder {
   pub fn search_folder(&self, dir: impl AsRef<Utf8Path>) -> Result<Vec<Utf8PathBuf>> {
     let mut result = vec![];
-    let entries: Vec<Utf8DirEntry> = dir
+    let mut entries: Vec<Utf8DirEntry> = dir
       .as_ref()
       .read_dir_utf8()
       .map_err(|err| UserError::DirRead {
@@ -24,9 +24,9 @@ impl FileFinder {
         dir: dir.as_ref().to_path_buf(),
         message: err.to_string(),
       })?;
-    let mut paths: Vec<&Utf8Path> = entries.iter().map(|entry| entry.path()).collect();
-    paths.sort();
-    for path in paths {
+    entries.sort_by(|a, b| a.path().cmp(b.path()));
+    for entry in &entries {
+      let path = entry.path();
       let entry_path = path.strip_prefix(".").unwrap_or(path);
       if entry_path.is_dir() {
         result.extend(self.search_folder(entry_path)?);
