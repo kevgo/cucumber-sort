@@ -19,7 +19,7 @@ impl FileFinder {
         dir: dir.as_ref().to_path_buf(),
         message: err.to_string(),
       })?
-      .collect::<Result<Vec<_>, _>>()
+      .collect::<std::result::Result<Vec<_>, _>>()
       .map_err(|err| UserError::FileRead {
         file: dir.as_ref().to_path_buf(),
         reason: err.to_string(),
