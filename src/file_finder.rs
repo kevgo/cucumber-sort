@@ -20,9 +20,9 @@ impl FileFinder {
         message: err.to_string(),
       })?
       .collect::<std::result::Result<Vec<_>, _>>()
-      .map_err(|err| UserError::FileRead {
-        file: dir.as_ref().to_path_buf(),
-        reason: err.to_string(),
+      .map_err(|err| UserError::DirRead {
+        dir: dir.as_ref().to_path_buf(),
+        message: err.to_string(),
       })?;
     let mut paths: Vec<&Utf8Path> = entries.iter().map(|entry| entry.path()).collect();
     paths.sort();
