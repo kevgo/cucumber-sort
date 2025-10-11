@@ -1,6 +1,7 @@
 use crate::cli::Flags;
 use crate::errors::{AppResult, UserError};
 use serde::{Deserialize, Serialize};
+use std::borrow::Cow;
 use std::fs;
 use std::io::ErrorKind;
 
@@ -81,9 +82,43 @@ pub enum StepPattern {
   Group(Vec<String>),
 }
 
+/// Checks if the text contains any single-line comments outside of strings.
+/// Returns true if comments are found, false otherwise.
+fn has_comments(text: &str) -> bool {
+  let mut chars = text.chars().peekable();
+  let mut in_string = false;
+  let mut escaped = false;
+  while let Some(ch) = chars.next() {
+    if in_string {
+      if escaped {
+        escaped = false;
+      } else if ch == '\\' {
+        escaped = true;
+      } else if ch == '"' {
+        in_string = false;
+      }
+    } else {
+      match ch {
+        '"' => in_string = true,
+        '/' if chars.peek() == Some(&'/') => {
+          return true;
+        }
+        _ => {}
+      }
+    }
+  }
+  false
+}
+
 /// Strips single-line comments from JSON text,
 /// replacing them with spaces to preserve line numbers for error reporting.
-fn strip_comments(text: &str) -> String {
+fn strip_comments(text: &str) -> Cow<'_, str> {
+  if !has_comments(text) {
+    // no comments in string --> return borrowed reference
+    return Cow::Borrowed(text);
+  }
+
+  // here the comment contains a string --> return an owned copy where comments are overwritten with spaces
   let mut result = String::with_capacity(text.len());
   let mut chars = text.chars().peekable();
   let mut in_string = false;
@@ -119,7 +154,7 @@ fn strip_comments(text: &str) -> String {
       }
     }
   }
-  result
+  Cow::Owned(result)
 }
 
 #[cfg(test)]
