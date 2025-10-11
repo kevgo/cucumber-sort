@@ -82,48 +82,51 @@ pub enum StepPattern {
   Group(Vec<String>),
 }
 
-/// Strips single-line comments from JSON text,
-/// replacing them with spaces to preserve line numbers for error reporting.
-/// Returns a Cow to avoid allocation when no comments are present.
-fn strip_comments(text: &str) -> Cow<'_, str> {
+/// Checks if the text contains any single-line comments outside of strings.
+/// Returns true if comments are found, false otherwise.
+fn has_comments(text: &str) -> bool {
   let mut chars = text.chars().peekable();
   let mut in_string = false;
   let mut escaped = false;
 
-  // First pass: check if there are any comments
-  let mut temp_chars = chars.clone();
-  let mut temp_in_string = false;
-  let mut temp_escaped = false;
-  let mut has_comments = false;
-
-  while let Some(ch) = temp_chars.next() {
-    if temp_in_string {
-      if temp_escaped {
-        temp_escaped = false;
+  while let Some(ch) = chars.next() {
+    if in_string {
+      if escaped {
+        escaped = false;
       } else if ch == '\\' {
-        temp_escaped = true;
+        escaped = true;
       } else if ch == '"' {
-        temp_in_string = false;
+        in_string = false;
       }
     } else {
       match ch {
-        '"' => temp_in_string = true,
-        '/' if temp_chars.peek() == Some(&'/') => {
-          has_comments = true;
-          break;
+        '"' => in_string = true,
+        '/' if chars.peek() == Some(&'/') => {
+          return true;
         }
         _ => {}
       }
     }
   }
 
+  false
+}
+
+/// Strips single-line comments from JSON text,
+/// replacing them with spaces to preserve line numbers for error reporting.
+/// Returns a Cow to avoid allocation when no comments are present.
+fn strip_comments(text: &str) -> Cow<'_, str> {
   // If no comments found, return borrowed reference
-  if !has_comments {
+  if !has_comments(text) {
     return Cow::Borrowed(text);
   }
 
-  // Second pass: build the result with comments stripped
+  // Build the result with comments stripped
   let mut result = String::with_capacity(text.len());
+  let mut chars = text.chars().peekable();
+  let mut in_string = false;
+  let mut escaped = false;
+
   while let Some(ch) = chars.next() {
     if in_string {
       result.push(ch);
