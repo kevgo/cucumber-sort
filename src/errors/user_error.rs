@@ -19,6 +19,10 @@ pub enum UserError {
     content: String,
     reason: String,
   },
+  DirRead {
+    dir: Utf8PathBuf,
+    message: String,
+  },
   FileRead {
     file: Utf8PathBuf,
     reason: String,
@@ -59,7 +63,8 @@ impl UserError {
         format!("cannot read configuration file ({file}): {reason}"),
         Some(content),
       ),
-      UserError::FileRead { file, reason } => (format!("cannot read file {file}: {reason}"), None),
+      UserError::DirRead { dir, message } => (format!("cannot read dir {dir}"), Some(message)),
+      UserError::FileRead { file, reason } => (format!("cannot read file {file}"), Some(reason)),
       UserError::FileWrite { file, reason } => {
         (format!("cannot write file {file}: {reason}"), None)
       }

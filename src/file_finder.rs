@@ -15,7 +15,10 @@ impl FileFinder {
     let entries: Vec<Utf8DirEntry> = dir
       .as_ref()
       .read_dir_utf8()
-      .unwrap()
+      .map_err(|err| UserError::DirRead {
+        dir: dir.as_ref().to_path_buf(),
+        message: err.to_string(),
+      })?
       .map(|opt| opt.unwrap())
       .collect();
     let mut paths: Vec<&Utf8Path> = entries.iter().map(|entry| entry.path()).collect();
