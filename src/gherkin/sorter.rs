@@ -109,10 +109,10 @@ impl Sorter {
       //         - if yes: don't extract the step (it'll get extracted when we reach the longer regex)
       //         - if no: extract the step
       for candidate in candidates {
-        if deletable_steps.validate_match(candidate, &entry.regexes, &self.entries, entry_idx) {
-          if let Some(extracted) = deletable_steps.remove(candidate, &entry.regexes) {
-            result.push(extracted);
-          }
+        if deletable_steps.validate_match(candidate, &entry.regexes, &self.entries, entry_idx)
+          && let Some(extracted) = deletable_steps.remove(candidate, &entry.regexes)
+        {
+          result.push(extracted);
         }
       }
     }
@@ -201,41 +201,41 @@ impl DeletableSteps {
     all_entries: &[Entry],
     current_entry_idx: usize,
   ) -> bool {
-    if let Some(step) = &self.0[index] {
-      // Find the longest matching regex length from current_regexes
-      let mut current_longest = 0;
-      for regex in current_regexes {
+    let Some(step) = &self.0[index] else {
+      return false;
+    };
+
+    // Find the longest matching regex length from current_regexes
+    let mut current_longest = 0;
+    for regex in current_regexes {
+      if regex.regex.is_match(&step.title) {
+        let len = regex.regex.as_str().len();
+        if len > current_longest {
+          current_longest = len;
+        }
+      }
+    }
+
+    // Check if there's a longer regex match in other entries (not yet processed)
+    for (entry_idx, entry) in all_entries.iter().enumerate() {
+      // Only check entries we haven't processed yet
+      if entry_idx <= current_entry_idx {
+        continue;
+      }
+
+      // Check if any regex in this entry matches and is longer
+      for regex in &entry.regexes {
         if regex.regex.is_match(&step.title) {
           let len = regex.regex.as_str().len();
           if len > current_longest {
-            current_longest = len;
+            // Found a longer regex that also matches, don't extract this step yet
+            return false;
           }
         }
       }
-
-      // Check if there's a longer regex match in other entries (not yet processed)
-      for (entry_idx, entry) in all_entries.iter().enumerate() {
-        // Only check entries we haven't processed yet
-        if entry_idx <= current_entry_idx {
-          continue;
-        }
-
-        // Check if any regex in this entry matches and is longer
-        for regex in &entry.regexes {
-          if regex.regex.is_match(&step.title) {
-            let len = regex.regex.as_str().len();
-            if len > current_longest {
-              // Found a longer regex that also matches, don't extract this step yet
-              return false;
-            }
-          }
-        }
-      }
-
-      true
-    } else {
-      false
     }
+
+    true
   }
 
   /// Removes and returns the step at the given index, marking the matching regex as used
