@@ -6,9 +6,12 @@ pub fn make_regex(text: &str) -> String {
     if ch == '"' {
       // here we found an opening quote --> skip all chars until the closing quote
       // and store .* instead
-      while let Some(inner_ch) = chars.next()
-        && inner_ch != '"'
-      {}
+      loop {
+        match chars.next() {
+          Some(inner_ch) if inner_ch != '"' => continue,
+          _ => break,
+        }
+      }
       result.push_str("\".*\"");
     } else {
       result.push(ch);
