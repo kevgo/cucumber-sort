@@ -215,6 +215,11 @@ impl DeletableSteps {
       }
     }
 
+    // If no regex matched, this step doesn't belong to this entry
+    if current_longest == 0 {
+      return false;
+    }
+
     // Check if there's a longer regex match in other entries (not yet processed)
     for entry in &all_entries[current_entry_idx + 1..] {
       // Check if any regex in this entry matches and is longer
