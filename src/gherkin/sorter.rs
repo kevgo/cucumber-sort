@@ -97,7 +97,7 @@ impl Sorter {
     unordered_steps: Vec<gherkin::Step>,
     filename: &Utf8Path,
   ) -> (Vec<gherkin::Step>, Vec<Finding>) {
-    let mut result = Vec::<gherkin::Step>::with_capacity(unordered_steps.len());
+    let mut result = Vec::with_capacity(unordered_steps.len());
     let mut deletable_steps = DeletableSteps::from(deoptimize_keywords(unordered_steps));
     for (entry_idx, entry) in self.entries.iter().enumerate() {
       // step 1: find the steps that match the regexes for this entry
@@ -239,15 +239,15 @@ impl DeletableSteps {
 
   /// Removes and returns the step at the given index, marking the matching regex as used
   fn remove(&mut self, index: usize, regexes: &[TrackedRegex]) -> gherkin::Step {
-    if let Some(step) = &self.0[index] {
-      // Mark the first matching regex as used
-      for regex in regexes {
-        if regex.regex.is_match(&step.title) {
-          regex.used.set(true);
-          break;
-        }
-      }
-    }
+    let step = self.0[index].as_ref().unwrap();
+    // Mark the first matching regex as used
+    regexes
+      .iter()
+      .find(|regex| regex.regex.is_match(&step.title))
+      .unwrap()
+      .used
+      .set(true);
+
     self.0[index].take().unwrap()
   }
 
