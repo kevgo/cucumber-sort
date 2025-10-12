@@ -109,9 +109,8 @@ impl Sorter {
       //         - if yes: don't extract the step (it'll get extracted when we reach the longer regex)
       //         - if no: extract the step
       for candidate in candidates {
-        if deletable_steps.validate_match(candidate, &entry.regexes, &self.entries, entry_idx)
-          && let Some(extracted) = deletable_steps.remove(candidate, &entry.regexes)
-        {
+        if deletable_steps.validate_match(candidate, &entry.regexes, &self.entries, entry_idx) {
+          let extracted = deletable_steps.remove(candidate, &entry.regexes);
           result.push(extracted);
         }
       }
@@ -239,7 +238,7 @@ impl DeletableSteps {
   }
 
   /// Removes and returns the step at the given index, marking the matching regex as used
-  fn remove(&mut self, index: usize, regexes: &[TrackedRegex]) -> Option<gherkin::Step> {
+  fn remove(&mut self, index: usize, regexes: &[TrackedRegex]) -> gherkin::Step {
     if let Some(step) = &self.0[index] {
       // Mark the first matching regex as used
       for regex in regexes {
@@ -249,7 +248,7 @@ impl DeletableSteps {
         }
       }
     }
-    self.0[index].take()
+    self.0[index].take().unwrap()
   }
 
   fn elements(self) -> impl Iterator<Item = gherkin::Step> {
