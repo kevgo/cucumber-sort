@@ -198,7 +198,7 @@ impl DeletableSteps {
     result
   }
 
-  /// Indicates whether the  step at the given index is the best match for the given regexes.
+  /// Indicates whether the given regex is the best match for the step at the given index.
   fn is_longest_regex(
     &self,
     candidate_idx: usize,
