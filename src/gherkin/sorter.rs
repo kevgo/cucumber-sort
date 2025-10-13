@@ -110,6 +110,7 @@ impl Sorter {
           &self.entries,
           entry_idx,
         ) {
+          // step 3: the current regex is the longest --> extract step and mark regex as used
           let extracted = deletable_steps.remove(candidate, &entry.regexes);
           result.push(extracted);
         }
