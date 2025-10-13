@@ -214,12 +214,13 @@ impl DeletableSteps {
     // go through the other regexes and see if one matches and is longer
     for entry in &all_entries[current_entry_idx + 1..] {
       for regex in &entry.regexes {
+        let len = regex.regex.as_str().len();
+        if len <= current_longest {
+          continue;
+        }
         if regex.regex.is_match(&step.title) {
-          let len = regex.regex.as_str().len();
-          if len > current_longest {
-            // Found a longer regex that also matches, don't extract this step yet
-            return false;
-          }
+          // Found a longer regex that also matches, don't extract this step yet
+          return false;
         }
       }
     }
