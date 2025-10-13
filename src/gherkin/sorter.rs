@@ -199,7 +199,6 @@ impl DeletableSteps {
   }
 
   /// Indicates whether the  step at the given index is the best match for the given regexes.
-  /// Returns true if the step should be extracted, false otherwise.
   fn is_longest_regex(
     &self,
     candidate_idx: usize,
@@ -210,8 +209,6 @@ impl DeletableSteps {
     let Some(step) = &self.0[candidate_idx] else {
       return false;
     };
-
-    // go through the other regexes and see if one matches and is longer
     for entry in &all_entries[current_entry_idx + 1..] {
       for regex in &entry.regexes {
         let is_longer = regex.regex.as_str().len() > candidate_regex.len();
@@ -221,7 +218,6 @@ impl DeletableSteps {
         }
       }
     }
-
     true
   }
 
