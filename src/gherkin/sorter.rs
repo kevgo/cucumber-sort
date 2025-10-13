@@ -103,10 +103,21 @@ impl Sorter {
       // step 1: find the Gherkin steps that match the regexes for this config file entry
       let candidates = deletable_steps.find_matches(&entry.regexes);
       // step 2: keep each step from (1) only if no other regex also matches and is longer
-      for candidate in candidates {
-        if deletable_steps.is_longest_regex(candidate, &entry.regexes, &self.entries, entry_idx) {
+      for (candidate_idx, candidate_regex) in candidates {
+        if deletable_steps.is_longest_regex(
+          candidate_idx,
+          &candidate_regex,
+          &self.entries,
+          entry_idx,
+        ) {
           // step 3: if current regex is the longest: extract step and mark regex as used
-          let extracted = deletable_steps.remove(candidate, &entry.regexes);
+          let extracted = deletable_steps.remove(candidate_idx);
+          // mark the regex as used
+          for regex in &entry.regexes {
+            if regex.regex.as_str() == candidate_regex {
+              regex.used.set(true);
+            }
+          }
           result.push(extracted);
         }
       }
@@ -172,13 +183,13 @@ impl TryFrom<&Config> for Sorter {
 struct DeletableSteps(Vec<Option<gherkin::Step>>);
 
 impl DeletableSteps {
-  fn find_matches(&self, regexes: &[TrackedRegex]) -> Vec<usize> {
+  fn find_matches(&self, regexes: &[TrackedRegex]) -> Vec<(usize, String)> {
     let mut result = vec![];
     for (index, entry_opt) in self.0.iter().enumerate() {
       if let Some(entry) = &entry_opt {
         for regex in regexes {
           if regex.regex.is_match(&entry.title) {
-            result.push(index);
+            result.push((index, regex.regex.to_string()));
             break;
           }
         }
@@ -191,31 +202,20 @@ impl DeletableSteps {
   /// Returns true if the step should be extracted, false otherwise.
   fn is_longest_regex(
     &self,
-    index: usize,
-    current_regexes: &[TrackedRegex],
+    candidate_idx: usize,
+    candidate_regex: &str,
     all_entries: &[Entry],
     current_entry_idx: usize,
   ) -> bool {
-    let Some(step) = &self.0[index] else {
+    let Some(step) = &self.0[candidate_idx] else {
       return false;
     };
-
-    // find the length of the currently matching regex
-    let mut current_longest = 0;
-    for regex in current_regexes {
-      if regex.regex.is_match(&step.title) {
-        let len = regex.regex.as_str().len();
-        if len > current_longest {
-          current_longest = len;
-        }
-      }
-    }
 
     // go through the other regexes and see if one matches and is longer
     for entry in &all_entries[current_entry_idx + 1..] {
       for regex in &entry.regexes {
         let len = regex.regex.as_str().len();
-        if len <= current_longest {
+        if len <= candidate_regex.len() {
           // regex isn't longer --> no need to check if it matches, it wouldn't qualify anyways
           continue;
         }
@@ -230,16 +230,7 @@ impl DeletableSteps {
   }
 
   /// Removes and returns the step at the given index, marking the matching regex as used
-  fn remove(&mut self, index: usize, regexes: &[TrackedRegex]) -> gherkin::Step {
-    let step = self.0[index].as_ref().unwrap();
-    // Mark the first matching regex as used
-    regexes
-      .iter()
-      .find(|regex| regex.regex.is_match(&step.title))
-      .unwrap()
-      .used
-      .set(true);
-
+  fn remove(&mut self, index: usize) -> gherkin::Step {
     self.0[index].take().unwrap()
   }
 
