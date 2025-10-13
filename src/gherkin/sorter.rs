@@ -216,7 +216,6 @@ impl DeletableSteps {
       for regex in &entry.regexes {
         let len = regex.regex.as_str().len();
         if len <= candidate_regex.len() {
-          // regex isn't longer --> no need to check if it matches, it wouldn't qualify anyways
           continue;
         }
         if regex.regex.is_match(&step.title) {
