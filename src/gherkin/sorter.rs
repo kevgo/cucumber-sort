@@ -102,10 +102,10 @@ impl Sorter {
     for (entry_idx, entry) in self.entries.iter().enumerate() {
       // step 1: find the Gherkin steps that match the regexes for this config file entry
       let candidates = deletable_steps.find_matches(&entry.regexes);
-      // step 2: validate that the currently matching regex is the longest of all regexes that matches
+      // step 2: keep each step from (1) only if no other regex also matches and is longer
       for candidate in candidates {
         if deletable_steps.is_longest_regex(candidate, &entry.regexes, &self.entries, entry_idx) {
-          // step 3: the current regex is the longest --> extract step and mark regex as used
+          // step 3: if current regex is the longest: extract step and mark regex as used
           let extracted = deletable_steps.remove(candidate, &entry.regexes);
           result.push(extracted);
         }
