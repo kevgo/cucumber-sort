@@ -106,7 +106,7 @@ impl Sorter {
       for (candidate_idx, candidate_regex) in candidates {
         if deletable_steps.is_longest_regex(
           candidate_idx,
-          &candidate_regex,
+          candidate_regex,
           &self.entries,
           entry_idx,
         ) {
@@ -183,13 +183,13 @@ impl TryFrom<&Config> for Sorter {
 struct DeletableSteps(Vec<Option<gherkin::Step>>);
 
 impl DeletableSteps {
-  fn find_matches(&self, regexes: &[TrackedRegex]) -> Vec<(usize, String)> {
+  fn find_matches<'a>(&self, regexes: &'a [TrackedRegex]) -> Vec<(usize, &'a str)> {
     let mut result = vec![];
     for (index, entry_opt) in self.0.iter().enumerate() {
       if let Some(entry) = &entry_opt {
         for regex in regexes {
           if regex.regex.is_match(&entry.title) {
-            result.push((index, regex.regex.to_string()));
+            result.push((index, regex.regex.as_str()));
             break;
           }
         }
