@@ -214,8 +214,7 @@ impl DeletableSteps {
     // go through the other regexes and see if one matches and is longer
     for entry in &all_entries[current_entry_idx + 1..] {
       for regex in &entry.regexes {
-        let len = regex.regex.as_str().len();
-        if len > candidate_regex.len() && regex.regex.is_match(&step.title) {
+        if regex.regex.as_str().len() > candidate_regex.len() && regex.regex.is_match(&step.title) {
           // Found a longer regex that also matches
           return false;
         }
