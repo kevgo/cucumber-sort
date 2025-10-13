@@ -220,7 +220,7 @@ impl DeletableSteps {
           continue;
         }
         if regex.regex.is_match(&step.title) {
-          // Found a longer regex that also matches, don't extract this step yet
+          // Found a longer regex that also matches
           return false;
         }
       }
