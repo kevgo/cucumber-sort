@@ -100,14 +100,9 @@ impl Sorter {
     let mut result = Vec::with_capacity(unordered_steps.len());
     let mut deletable_steps = DeletableSteps::from(deoptimize_keywords(unordered_steps));
     for (entry_idx, entry) in self.entries.iter().enumerate() {
-      // step 1: find the steps that match the regexes for this entry
-      //         Ideally store the indexes, so that we can extract them directly in step 2
-      //         and don't need to match all regexes again.
+      // step 1: find the Gherkin steps that match the regexes for this entry
       let candidates = deletable_steps.find_matches(&entry.regexes);
-      // step 2: validate that these are the best matches
-      //         - for each step that matches, see if another available regex also matches and its definition is longer
-      //         - if yes: don't extract the step (it'll get extracted when we reach the longer regex)
-      //         - if no: extract the step
+      // step 2: validate that the currently matching regex is the longest of all regexes that matches
       for candidate in candidates {
         if deletable_steps.validate_match(candidate, &entry.regexes, &self.entries, entry_idx) {
           let extracted = deletable_steps.remove(candidate, &entry.regexes);
