@@ -104,7 +104,12 @@ impl Sorter {
       let candidates = deletable_steps.find_matches(&entry.regexes);
       // step 2: validate that the currently matching regex is the longest of all regexes that matches
       for candidate in candidates {
-        if deletable_steps.validate_match(candidate, &entry.regexes, &self.entries, entry_idx) {
+        if deletable_steps.is_longest_matching_regex(
+          candidate,
+          &entry.regexes,
+          &self.entries,
+          entry_idx,
+        ) {
           let extracted = deletable_steps.remove(candidate, &entry.regexes);
           result.push(extracted);
         }
@@ -188,7 +193,7 @@ impl DeletableSteps {
 
   /// Validates that the step at the given index is the best match for the given regexes.
   /// Returns true if the step should be extracted, false otherwise.
-  fn validate_match(
+  fn is_longest_matching_regex(
     &self,
     index: usize,
     current_regexes: &[TrackedRegex],
