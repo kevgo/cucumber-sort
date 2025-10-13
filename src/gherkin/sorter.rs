@@ -215,10 +215,7 @@ impl DeletableSteps {
     for entry in &all_entries[current_entry_idx + 1..] {
       for regex in &entry.regexes {
         let len = regex.regex.as_str().len();
-        if len <= candidate_regex.len() {
-          continue;
-        }
-        if regex.regex.is_match(&step.title) {
+        if len > candidate_regex.len() && regex.regex.is_match(&step.title) {
           // Found a longer regex that also matches
           return false;
         }
