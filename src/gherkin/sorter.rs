@@ -187,7 +187,7 @@ impl DeletableSteps {
     result
   }
 
-  /// Validates that the step at the given index is the best match for the given regexes.
+  /// Indicates whether the  step at the given index is the best match for the given regexes.
   /// Returns true if the step should be extracted, false otherwise.
   fn is_longest_regex(
     &self,
@@ -200,7 +200,7 @@ impl DeletableSteps {
       return false;
     };
 
-    // Find the longest matching regex length from current_regexes
+    // find the length of the currently matching regex
     let mut current_longest = 0;
     for regex in current_regexes {
       if regex.regex.is_match(&step.title) {
@@ -209,11 +209,6 @@ impl DeletableSteps {
           current_longest = len;
         }
       }
-    }
-
-    // If no regex matched, this step doesn't belong to this entry
-    if current_longest == 0 {
-      return false;
     }
 
     // Check if there's a longer regex match in other entries (not yet processed)
