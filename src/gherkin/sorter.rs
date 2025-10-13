@@ -7,7 +7,6 @@ use regex::Regex;
 use std::cell::Cell;
 
 /// Sorter encapsulates the minutiae around checking the order of Gherkin steps.
-/// You give it a config file and it sorts Steps for you.
 pub struct Sorter {
   /// the lines from the "steps" section in the config file
   pub entries: Vec<Entry>,
@@ -98,12 +97,29 @@ impl Sorter {
     unordered_steps: Vec<gherkin::Step>,
     filename: &Utf8Path,
   ) -> (Vec<gherkin::Step>, Vec<Finding>) {
-    let mut result = Vec::<gherkin::Step>::with_capacity(unordered_steps.len());
+    let mut result = Vec::with_capacity(unordered_steps.len());
     let mut deletable_steps = DeletableSteps::from(deoptimize_keywords(unordered_steps));
-    for entry in &self.entries {
-      let extracted = deletable_steps.extract(&entry.regexes);
-      if !extracted.is_empty() {
-        result.extend(extracted);
+    for (entry_idx, entry) in self.entries.iter().enumerate() {
+      // step 1: find the Gherkin steps that match the regexes for this config file entry
+      let candidates = deletable_steps.find_matches(&entry.regexes);
+      // step 2: keep each step from (1) only if no other regex also matches and is longer
+      for (candidate_idx, candidate_regex) in candidates {
+        if deletable_steps.is_longest_regex(
+          candidate_idx,
+          candidate_regex,
+          &self.entries,
+          entry_idx,
+        ) {
+          // step 3: if current regex is the longest: extract step and mark regex as used
+          let extracted = deletable_steps.remove(candidate_idx);
+          // mark the regex as used
+          for regex in &entry.regexes {
+            if regex.regex.as_str() == candidate_regex {
+              regex.used.set(true);
+            }
+          }
+          result.push(extracted);
+        }
       }
     }
     // report the remaining unextracted steps as unknown steps
@@ -167,22 +183,47 @@ impl TryFrom<&Config> for Sorter {
 struct DeletableSteps(Vec<Option<gherkin::Step>>);
 
 impl DeletableSteps {
-  /// moves all steps from self that match the given config_step
-  /// into the given result Vec
-  fn extract(&mut self, regexes: &[TrackedRegex]) -> Vec<gherkin::Step> {
+  fn find_matches<'a>(&self, regexes: &'a [TrackedRegex]) -> Vec<(usize, &'a str)> {
     let mut result = vec![];
-    for entry_opt in self.0.iter_mut() {
+    for (index, entry_opt) in self.0.iter().enumerate() {
       if let Some(entry) = &entry_opt {
-        for regex in regexes.iter() {
+        for regex in regexes {
           if regex.regex.is_match(&entry.title) {
-            result.push(entry_opt.take().unwrap());
-            regex.used.set(true);
+            result.push((index, regex.regex.as_str()));
             break;
           }
         }
       }
     }
     result
+  }
+
+  /// Indicates whether the given regex is the best match for the step at the given index.
+  fn is_longest_regex(
+    &self,
+    candidate_idx: usize,
+    candidate_regex: &str,
+    all_entries: &[Entry],
+    current_entry_idx: usize,
+  ) -> bool {
+    let Some(step) = &self.0[candidate_idx] else {
+      return false;
+    };
+    for entry in &all_entries[current_entry_idx + 1..] {
+      for regex in &entry.regexes {
+        let is_longer = regex.regex.as_str().len() > candidate_regex.len();
+        if is_longer && regex.regex.is_match(&step.title) {
+          // found a longer regex that also matches
+          return false;
+        }
+      }
+    }
+    true
+  }
+
+  /// Removes and returns the step at the given index, marking the matching regex as used
+  fn remove(&mut self, index: usize) -> gherkin::Step {
+    self.0[index].take().unwrap()
   }
 
   fn elements(self) -> impl Iterator<Item = gherkin::Step> {
@@ -259,132 +300,6 @@ pub fn store_missing(missings: &[Finding]) -> AppResult<()> {
 mod tests {
   use crate::gherkin::{Keyword, Step};
   use big_s::S;
-
-  mod deletable_steps {
-    use crate::gherkin::sorter::{DeletableSteps, TrackedRegex};
-    use crate::gherkin::{Keyword, Step};
-    use big_s::S;
-
-    #[test]
-    fn extract_single_step() {
-      let step_1 = Step {
-        line_no: 1,
-        indent: S("  "),
-        keyword: Keyword::Given,
-        title: S("step 1"),
-        additional_lines: vec![],
-      };
-      let step_2 = Step {
-        line_no: 2,
-        indent: S("  "),
-        keyword: Keyword::Given,
-        title: S("step 2"),
-        additional_lines: vec![],
-      };
-      let step_3 = Step {
-        line_no: 3,
-        indent: S("  "),
-        keyword: Keyword::Given,
-        title: S("step 3"),
-        additional_lines: vec![],
-      };
-      let mut steps = DeletableSteps::from(vec![step_1.clone(), step_2.clone(), step_3.clone()]);
-      let regexes = vec![TrackedRegex::try_from("step 2").unwrap()];
-      let extracted = steps.extract(&regexes);
-      assert_eq!(vec![step_2], extracted);
-      let want_steps = DeletableSteps(vec![Some(step_1), None, Some(step_3)]);
-      assert_eq!(want_steps, steps);
-      assert!(regexes[0].used.get());
-    }
-
-    #[test]
-    fn extract_multiple_instances_of_same_step() {
-      let step_1 = Step {
-        line_no: 1,
-        indent: S("  "),
-        keyword: Keyword::Given,
-        title: S("step 1"),
-        additional_lines: vec![],
-      };
-      let step_2 = Step {
-        line_no: 2,
-        indent: S("  "),
-        keyword: Keyword::Given,
-        title: S("step 2"),
-        additional_lines: vec![],
-      };
-      let step_3 = Step {
-        line_no: 3,
-        indent: S("  "),
-        keyword: Keyword::Given,
-        title: S("step 3"),
-        additional_lines: vec![],
-      };
-      let mut steps = DeletableSteps::from(vec![
-        step_1.clone(),
-        step_2.clone(),
-        step_2.clone(),
-        step_3.clone(),
-        step_2.clone(),
-      ]);
-      let regexes = vec![TrackedRegex::try_from("step 2").unwrap()];
-      let extracted = steps.extract(&regexes);
-      assert_eq!(vec![step_2.clone(), step_2.clone(), step_2], extracted);
-      let want_steps = DeletableSteps(vec![Some(step_1), None, None, Some(step_3), None]);
-      assert_eq!(want_steps, steps);
-      assert!(regexes[0].used.get());
-    }
-
-    #[test]
-    fn extract_multiple_step_types() {
-      let step_1 = Step {
-        line_no: 1,
-        indent: S("  "),
-        keyword: Keyword::Given,
-        title: S("step 1"),
-        additional_lines: vec![],
-      };
-      let step_2 = Step {
-        line_no: 2,
-        indent: S("  "),
-        keyword: Keyword::Given,
-        title: S("step 2"),
-        additional_lines: vec![],
-      };
-      let step_3 = Step {
-        line_no: 3,
-        indent: S("  "),
-        keyword: Keyword::Given,
-        title: S("step 3"),
-        additional_lines: vec![],
-      };
-      let mut steps = DeletableSteps::from(vec![step_1.clone(), step_2.clone(), step_3.clone()]);
-      let regexes = vec![TrackedRegex::try_from("step [23]").unwrap()];
-      let extracted = steps.extract(&regexes);
-      assert_eq!(vec![step_2, step_3], extracted);
-      let want_steps = DeletableSteps(vec![Some(step_1), None, None]);
-      assert_eq!(want_steps, steps);
-      assert!(regexes[0].used.get());
-    }
-
-    #[test]
-    fn extract_unknown_step() {
-      let step_1 = Step {
-        line_no: 1,
-        indent: S("  "),
-        keyword: Keyword::Given,
-        title: S("step 1"),
-        additional_lines: vec![],
-      };
-      let mut steps = DeletableSteps::from(vec![step_1.clone()]);
-      let regexes = vec![TrackedRegex::try_from("step 2").unwrap()];
-      let extracted = steps.extract(&regexes);
-      assert_eq!(Vec::<Step>::new(), extracted);
-      let want_steps = DeletableSteps(vec![Some(step_1)]);
-      assert_eq!(want_steps, steps);
-      assert!(!regexes[0].used.get());
-    }
-  }
 
   #[test]
   fn deoptimize_and_optimize_keywords() {
@@ -751,6 +666,62 @@ mod tests {
         problem: Issue::UndefinedStep(S("step 3")),
       }];
       pretty::assert_eq!(want_issues, issues);
+    }
+
+    #[test]
+    fn multiple_matching_regex() {
+      let config = Config {
+        steps: vec![
+          StepPattern::Single("file".to_string()),
+          StepPattern::Single("another step".to_string()),
+          StepPattern::Single("file one.txt".to_string()),
+        ],
+        ..Default::default()
+      };
+      let mut sorter = Sorter::try_from(&config).unwrap();
+      let give = vec![
+        gherkin::Step {
+          title: S("file one.txt"),
+          line_no: 0,
+          keyword: Keyword::Given,
+          ..Default::default()
+        },
+        gherkin::Step {
+          title: S("file two.txt"),
+          line_no: 1,
+          keyword: Keyword::And,
+          ..Default::default()
+        },
+        gherkin::Step {
+          title: S("another step"),
+          line_no: 2,
+          keyword: Keyword::And,
+          ..Default::default()
+        },
+      ];
+      let want = vec![
+        gherkin::Step {
+          title: S("file two.txt"),
+          line_no: 1,
+          keyword: Keyword::Given,
+          ..Default::default()
+        },
+        gherkin::Step {
+          title: S("another step"),
+          line_no: 2,
+          keyword: Keyword::And,
+          ..Default::default()
+        },
+        gherkin::Step {
+          title: S("file one.txt"),
+          line_no: 0,
+          keyword: Keyword::And,
+          ..Default::default()
+        },
+      ];
+      let (have_block, issues) = sorter.sort_steps(give, "test.feature".into());
+      pretty::assert_eq!(want, have_block);
+      assert!(issues.is_empty());
     }
   }
 }
