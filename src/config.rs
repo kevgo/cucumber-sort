@@ -1,5 +1,6 @@
 use crate::cli::Flags;
 use crate::errors::{AppResult, UserError};
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
 use std::fs;
@@ -8,29 +9,55 @@ use std::io::ErrorKind;
 /// the filename of the configuration file
 pub const CONFIG_FILE_NAME: &str = "cucumber-sort.json";
 
+/// the URL of the JSON schema for the configuration file
+const SCHEMA_URL: &str =
+  "https://raw.githubusercontent.com/kevgo/cucumber-sort/refs/heads/main/docs/schema.json";
+
+fn default_schema_url() -> String {
+  SCHEMA_URL.to_string()
+}
+
 pub fn create() -> AppResult<()> {
   Config::default().save()
 }
 
-/// low-level configuration, structured as in the config file
-#[derive(Debug, Serialize, Deserialize, Default)]
+/// Cucumber-Sort configuration, see https://github.com/kevgo/cucumber-sort
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct Config {
+  #[serde(rename = "$schema", default = "default_schema_url", skip_deserializing)]
+  #[schemars(skip)]
+  pub schema: String,
+
   #[serde(default)]
+  #[schemars(description = "Glob patterns for feature files to include")]
   pub include: Vec<String>,
 
   #[serde(default)]
+  #[schemars(description = "Glob patterns for feature files to exclude")]
   pub exclude: Vec<String>,
 
   #[serde(default)]
+  #[schemars(description = "Add unknown steps to the config file")]
   pub record: bool,
 
   #[serde(default, rename = "fail-fast")]
+  #[schemars(
+    rename = "fail-fast",
+    description = "Fail immediately on first file with problems"
+  )]
   pub fail_fast: bool,
 
   #[serde(default)]
+  #[schemars(
+    description = "Ordered list of step patterns, can be individual regex or array of regex that should be sorted together"
+  )]
   pub steps: Vec<StepPattern>,
 
   #[serde(default, rename = "unknown-steps")]
+  #[schemars(
+    rename = "unknown-steps",
+    description = "steps that exist in feature files but have an unknown order"
+  )]
   pub unknown_steps: Vec<String>,
 }
 
@@ -59,6 +86,7 @@ impl Config {
   /// merges the given CLI flags into the configuration
   pub fn merge(self, Flags { fail_fast, record }: Flags) -> Self {
     Config {
+      schema: self.schema,
       include: self.include,
       exclude: self.exclude,
       record: self.record || record,
@@ -80,10 +108,31 @@ impl Config {
   }
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+impl Default for Config {
+  fn default() -> Self {
+    Config {
+      schema: default_schema_url(),
+      include: Vec::new(),
+      exclude: Vec::new(),
+      record: false,
+      fail_fast: false,
+      steps: Vec::new(),
+      unknown_steps: Vec::new(),
+    }
+  }
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, JsonSchema)]
 #[serde(untagged)]
+#[schemars(
+  description = "A step pattern can be either a single regex string or a group of regex strings that can appear in any order"
+)]
 pub enum StepPattern {
+  #[schemars(description = "A single step (regex)")]
   Single(String),
+  #[schemars(
+    description = "A group of steps that get sorted maintaining their existing order relative to each other"
+  )]
   Group(Vec<String>),
 }
 

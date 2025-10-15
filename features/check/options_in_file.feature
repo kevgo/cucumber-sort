@@ -4,6 +4,7 @@ Feature: enable options through the opts file
     Given file "cucumber-sort.json" with content:
       """
       {
+        "$schema": "https://raw.githubusercontent.com/kevgo/cucumber-sort/refs/heads/main/docs/schema.json",
         "include": [],
         "exclude": [],
         "record": true,

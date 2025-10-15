@@ -48,6 +48,7 @@ order. Currently, it looks like this:
 
 ```sh
 {
+  "$schema": "https://raw.githubusercontent.com/kevgo/cucumber-sort/refs/heads/main/docs/schema.json",
   "include": [],
   "exclude": [],
   "record": false,
@@ -79,6 +80,7 @@ appear in the recipes. For example:
 
 ```sh
 {
+  "$schema": "https://raw.githubusercontent.com/kevgo/cucumber-sort/refs/heads/main/docs/schema.json",
   "include": [],
   "exclude": [],
   "record": false,
