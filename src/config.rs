@@ -9,12 +9,9 @@ use std::io::ErrorKind;
 /// the filename of the configuration file
 pub const CONFIG_FILE_NAME: &str = "cucumber-sort.json";
 
-/// the URL of the JSON schema for the configuration file
-const SCHEMA_URL: &str =
-  "https://raw.githubusercontent.com/kevgo/cucumber-sort/refs/heads/main/docs/schema.json";
-
 fn default_schema_url() -> String {
-  SCHEMA_URL.to_string()
+  "https://raw.githubusercontent.com/kevgo/cucumber-sort/refs/heads/main/docs/schema.json"
+    .to_string()
 }
 
 pub fn create() -> AppResult<()> {
