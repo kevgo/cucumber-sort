@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Config",
+  "description": "low-level configuration, structured as in the config file",
+  "type": "object",
+  "properties": {
+    "exclude": {
+      "description": "Glob patterns for feature files to exclude",
+      "default": [],
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "fail-fast": {
+      "description": "Fail immediately on first file with problems",
+      "default": false,
+      "type": "boolean"
+    },
+    "include": {
+      "description": "Glob patterns for feature files to include",
+      "default": [],
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "record": {
+      "description": "Add unknown steps to the config file",
+      "default": false,
+      "type": "boolean"
+    },
+    "steps": {
+      "description": "Ordered list of step patterns, can be individual regex or array of regex that should be sorted together",
+      "default": [],
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/StepPattern"
+      }
+    },
+    "unknown-steps": {
+      "description": "steps that exist in .feature files but have an unknown order",
+      "default": [],
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "definitions": {
+    "StepPattern": {
+      "description": "A step pattern can be either a single regex string or a group of regex strings that can appear in any order",
+      "anyOf": [
+        {
+          "description": "A single step (regex)",
+          "type": "string"
+        },
+        {
+          "description": "A group of steps that get sorted maintaining their existing order relative to each other",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      ]
+    }
+  }
+}
