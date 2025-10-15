@@ -28,6 +28,8 @@ pub enum Command {
   },
   /// Create the configuration file
   Init,
+  /// Export the JSON schema for the configuration file
+  Schema,
 }
 
 #[derive(Parser)]

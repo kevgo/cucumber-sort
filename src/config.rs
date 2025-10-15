@@ -1,5 +1,6 @@
 use crate::cli::Flags;
 use crate::errors::{AppResult, UserError};
+use schemars::{JsonSchema, schema_for};
 use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
 use std::fs;
@@ -12,25 +13,44 @@ pub fn create() -> AppResult<()> {
   Config::default().save()
 }
 
+pub fn generate_schema() -> String {
+  let schema = schema_for!(Config);
+  serde_json::to_string_pretty(&schema).unwrap()
+}
+
 /// low-level configuration, structured as in the config file
-#[derive(Debug, Serialize, Deserialize, Default)]
+#[derive(Debug, Serialize, Deserialize, Default, JsonSchema)]
 pub struct Config {
   #[serde(default)]
+  #[schemars(description = "Glob patterns for feature files to include")]
   pub include: Vec<String>,
 
   #[serde(default)]
+  #[schemars(description = "Glob patterns for feature files to exclude")]
   pub exclude: Vec<String>,
 
   #[serde(default)]
+  #[schemars(description = "Add unknown steps to the config file")]
   pub record: bool,
 
   #[serde(default, rename = "fail-fast")]
+  #[schemars(
+    rename = "fail-fast",
+    description = "Fail immediately on first file with problems"
+  )]
   pub fail_fast: bool,
 
   #[serde(default)]
+  #[schemars(
+    description = "Ordered list of step patterns, can be individual regex or array of regex that should be sorted together"
+  )]
   pub steps: Vec<StepPattern>,
 
   #[serde(default, rename = "unknown-steps")]
+  #[schemars(
+    rename = "unknown-steps",
+    description = "steps that exist in .feature files but have an unknown order"
+  )]
   pub unknown_steps: Vec<String>,
 }
 
@@ -80,10 +100,17 @@ impl Config {
   }
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, JsonSchema)]
 #[serde(untagged)]
+#[schemars(
+  description = "A step pattern can be either a single regex string or a group of regex strings that can appear in any order"
+)]
 pub enum StepPattern {
+  #[schemars(description = "A single step (regex)")]
   Single(String),
+  #[schemars(
+    description = "A group of steps that get sorted maintaining their existing order relative to each other"
+  )]
   Group(Vec<String>),
 }
 

@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Cucumber Sort Configuration",
+  "description": "Configuration file for cucumber-sort tool",
+  "type": "object",
+  "properties": {
+    "include": {
+      "type": "array",
+      "description": "Glob patterns for feature files to include",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "exclude": {
+      "type": "array",
+      "description": "Glob patterns for feature files to exclude",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "record": {
+      "type": "boolean",
+      "description": "Whether to record step ordering",
+      "default": false
+    },
+    "fail-fast": {
+      "type": "boolean",
+      "description": "Whether to fail immediately on first error",
+      "default": false
+    },
+    "steps": {
+      "type": "array",
+      "description": "Ordered list of step patterns, can be individual strings or groups of strings",
+      "items": {
+        "oneOf": [
+          {
+            "type": "string",
+            "description": "A single step pattern (regex)"
+          },
+          {
+            "type": "array",
+            "description": "A group of step patterns that can appear in any order relative to each other",
+            "items": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "default": []
+    },
+    "unknown-steps": {
+      "type": "array",
+      "description": "List of step patterns that are not yet categorized",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    }
+  },
+  "additionalProperties": false
+}
