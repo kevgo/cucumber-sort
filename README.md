@@ -177,7 +177,8 @@ A naive approach would be this step order:
 }
 ```
 
-However, sorting steps this way messes up the recipe:
+However, sorting steps this way would mess up the recipe and make it look like
+this:
 
 ```cucumber
 Feature: laminated dough
