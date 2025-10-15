@@ -6,7 +6,7 @@ use std::path::Path;
 #[test]
 fn export_schema() {
   // Generate the schema
-  let schema = serde_json::to_string_pretty(&schema_for!(Config)).unwrap();
+  let schema = serde_json::to_string_pretty(&schema_for!(Config)).unwrap() + "\n";
 
   // Ensure docs directory exists
   let docs_dir = Path::new("docs");

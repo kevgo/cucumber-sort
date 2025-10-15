@@ -37,7 +37,7 @@ lint: node_modules tools/rta@${RUN_THAT_APP_VERSION}  # checks formatting
 	cargo machete
 	tools/rta --optional node node_modules/.bin/gherkin-lint
 
-ps: fix test   # pitstop, run during development
+ps: fix test  # pitstop, run during development
 	cargo run --quiet -- check
 
 setup: setup-ci  # install development dependencies on this computer
