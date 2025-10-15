@@ -4,6 +4,14 @@ version = "0.1.0"
 edition = "2024"
 description = "Sorts steps in Cucumber files"
 
+[lib]
+name = "cucumber_sort"
+path = "src/lib.rs"
+
+[[bin]]
+name = "cucumber-sort"
+path = "src/main.rs"
+
 [dependencies]
 ansi_term = "0.12.1"
 big_s = "1.0.2"

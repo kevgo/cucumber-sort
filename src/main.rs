@@ -1,14 +1,7 @@
-mod cli;
-mod cmd;
-mod config;
-mod errors;
-mod file_finder;
-mod gherkin;
-mod regex;
-
-use crate::errors::AppResult;
 use ansi_term::Color::Red;
 use cli::Command::{Check, Format, Init};
+use cucumber_sort::errors::AppResult;
+use cucumber_sort::{cli, cmd};
 use std::process::ExitCode;
 
 fn main() -> ExitCode {
