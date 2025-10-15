@@ -1,11 +1,12 @@
-use cucumber_sort::config;
+use cucumber_sort::config::Config;
+use schemars::schema_for;
 use std::fs;
 use std::path::Path;
 
 #[test]
 fn export_schema() {
   // Generate the schema
-  let schema = config::generate_schema();
+  let schema = serde_json::to_string_pretty(&schema_for!(Config)).unwrap();
 
   // Ensure docs directory exists
   let docs_dir = Path::new("docs");

@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Config",
-  "description": "low-level configuration, structured as in the config file",
+  "description": "Cucumber-Sort configuration, see https://github.com/kevgo/cucumber-sort",
   "type": "object",
   "properties": {
     "exclude": {

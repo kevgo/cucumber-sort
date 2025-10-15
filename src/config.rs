@@ -1,6 +1,6 @@
 use crate::cli::Flags;
 use crate::errors::{AppResult, UserError};
-use schemars::{JsonSchema, schema_for};
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
 use std::fs;
@@ -11,11 +11,6 @@ pub const CONFIG_FILE_NAME: &str = "cucumber-sort.json";
 
 pub fn create() -> AppResult<()> {
   Config::default().save()
-}
-
-pub fn generate_schema() -> String {
-  let schema = schema_for!(Config);
-  serde_json::to_string_pretty(&schema).unwrap()
 }
 
 /// Cucumber-Sort configuration, see https://github.com/kevgo/cucumber-sort
