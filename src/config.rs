@@ -56,7 +56,7 @@ pub struct Config {
   #[serde(default, rename = "unknown-steps")]
   #[schemars(
     rename = "unknown-steps",
-    description = "steps that exist in .feature files but have an unknown order"
+    description = "steps that exist in feature files but have an unknown order"
   )]
   pub unknown_steps: Vec<String>,
 }
