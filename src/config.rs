@@ -18,7 +18,7 @@ pub fn generate_schema() -> String {
   serde_json::to_string_pretty(&schema).unwrap()
 }
 
-/// low-level configuration, structured as in the config file
+/// Cucumber-Sort configuration, see https://github.com/kevgo/cucumber-sort
 #[derive(Debug, Serialize, Deserialize, Default, JsonSchema)]
 pub struct Config {
   #[serde(default)]
