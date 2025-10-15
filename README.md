@@ -46,7 +46,7 @@ cucumber-sort check --record
 This creates file named **cucumber-sort.json**, which defines the expected step
 order. Currently, it looks like this:
 
-```sh
+```json
 {
   "$schema": "https://raw.githubusercontent.com/kevgo/cucumber-sort/refs/heads/main/docs/schema.json",
   "include": [],
@@ -78,7 +78,7 @@ doesn't yet know how to order.
 Edit **cucumber-sort.json** to arrange the steps in the order you want them to
 appear in the recipes. For example:
 
-```sh
+```json
 {
   "$schema": "https://raw.githubusercontent.com/kevgo/cucumber-sort/refs/heads/main/docs/schema.json",
   "include": [],
@@ -136,6 +136,90 @@ readable, and easier to maintain.
 > [!TIP]
 > To see a real-world example of using _cucumber-sort_ in production, check out
 > the [Git Town codebase](https://github.com/git-town/git-town).
+
+### Step 4: sort repetetive steps
+
+Sometimes multiple steps repeat several times. An example is making
+[laminated dough](https://en.wikipedia.org/wiki/Laminated_dough). Creating it
+requires to repeat three steps several times:
+
+<a type="workspace/new-file" filename="laminated_dough.feature">
+
+```cucumber
+Feature: laminated dough
+
+  Scenario: make the dough
+    Given a mixing bowl
+    Then fold the dough
+    And add a layer of butter
+    And chill in the fridge
+    And fold the dough
+    And add a layer of butter
+    And chill in the fridge
+    And fold the dough
+    And add a layer of butter
+    And sprinkle with cinnamon
+```
+
+</a>
+
+A naive approach would be this step order:
+
+```json
+{
+  "steps": [
+    "a mixing bowl",
+    "fold the dough",
+    "add a layer of butter",
+    "chill in the fridge",
+    "sprinkle with cinnamon"
+  ]
+}
+```
+
+However, sorting steps this way messes up the recipe:
+
+```cucumber
+Feature: laminated dough
+
+  Scenario: make the dough
+    Given a mixing bowl
+    Then fold the dough
+    And fold the dough
+    And fold the dough
+    And add a layer of butter
+    And add a layer of butter
+    And add a layer of butter
+    And chill in the fridge
+    And chill in the fridge
+    And sprinkle with cinnamon
+```
+
+To sort this recipe properly, we tell _cucumber-sort_ to keep certain steps in
+the order they occur together:
+
+<a type="workspace/new-file" filename="cucumber-sort.json">
+
+```json
+{
+  "steps": [
+    "a mixing bowl",
+    [
+      "fold the dough",
+      "add a layer of butter",
+      "chill in the fridge"
+    ],
+    "sprinkle with cinnamon"
+  ]
+}
+```
+
+</a>
+
+<a type="shell/command" command="cucumber-sort format"></a>
+<a type="workspace/existing-file-with-content" filename="laminated_dough.feature">
+
+Now if we sort the file, it keeps the original order.
 
 ## Installation
 
