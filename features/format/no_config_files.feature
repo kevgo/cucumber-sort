@@ -34,6 +34,7 @@ Feature: run without config file
     And file "cucumber-sort.json" now has content:
       """
       {
+        "$schema": "https://raw.githubusercontent.com/kevgo/cucumber-sort/refs/heads/main/docs/schema.json",
         "include": [],
         "exclude": [],
         "record": false,
