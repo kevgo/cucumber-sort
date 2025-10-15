@@ -1,6 +1,7 @@
-mod cli;
+pub mod cli;
+pub mod cmd;
 pub mod config;
-mod errors;
-mod file_finder;
-mod gherkin;
-mod regex;
+pub mod errors;
+pub mod file_finder;
+pub mod gherkin;
+pub mod regex;
