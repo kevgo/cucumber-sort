@@ -39,7 +39,7 @@
       }
     },
     "unknown-steps": {
-      "description": "steps that exist in .feature files but have an unknown order",
+      "description": "steps that exist in feature files but have an unknown order",
       "default": [],
       "type": "array",
       "items": {
