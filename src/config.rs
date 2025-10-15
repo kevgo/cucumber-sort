@@ -9,13 +9,25 @@ use std::io::ErrorKind;
 /// the filename of the configuration file
 pub const CONFIG_FILE_NAME: &str = "cucumber-sort.json";
 
+/// the URL of the JSON schema for the configuration file
+const SCHEMA_URL: &str =
+  "https://raw.githubusercontent.com/kevgo/cucumber-sort/refs/heads/main/docs/schema.json";
+
+fn default_schema_url() -> String {
+  SCHEMA_URL.to_string()
+}
+
 pub fn create() -> AppResult<()> {
   Config::default().save()
 }
 
 /// Cucumber-Sort configuration, see https://github.com/kevgo/cucumber-sort
-#[derive(Debug, Serialize, Deserialize, Default, JsonSchema)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct Config {
+  #[serde(rename = "$schema", default = "default_schema_url", skip_deserializing)]
+  #[schemars(skip)]
+  pub schema: String,
+
   #[serde(default)]
   #[schemars(description = "Glob patterns for feature files to include")]
   pub include: Vec<String>,
@@ -74,6 +86,7 @@ impl Config {
   /// merges the given CLI flags into the configuration
   pub fn merge(self, Flags { fail_fast, record }: Flags) -> Self {
     Config {
+      schema: self.schema,
       include: self.include,
       exclude: self.exclude,
       record: self.record || record,
@@ -92,6 +105,20 @@ impl Config {
       file: CONFIG_FILE_NAME.into(),
       message: err.to_string(),
     })
+  }
+}
+
+impl Default for Config {
+  fn default() -> Self {
+    Config {
+      schema: default_schema_url(),
+      include: Vec::new(),
+      exclude: Vec::new(),
+      record: false,
+      fail_fast: false,
+      steps: Vec::new(),
+      unknown_steps: Vec::new(),
+    }
   }
 }
 
