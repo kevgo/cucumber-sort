@@ -232,7 +232,8 @@ To sort this recipe properly, we need to tell _cucumber-sort_ to keep the steps
 <a type="workspace/compare-files" have="laminated_2.feature"
 want="laminated_3.feature">
 
-Now if we sort the file, it keeps the original order.
+Now when _cucumber-sort_ formats the recipe for laminated dough, it does not
+change the content.
 
 ## Installation
 
