@@ -141,7 +141,7 @@ readable, and easier to maintain.
 
 Sometimes multiple steps interleave several times. As an example, creating
 [laminated dough](https://en.wikipedia.org/wiki/Laminated_dough) requires to
-repeatedly add layers of dough and butterj
+repeatedly add layers of dough and butter:
 
 <a type="workspace/new-file" filename="laminated_1.feature">
 
