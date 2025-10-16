@@ -78,7 +78,7 @@ doesn't yet know how to order.
 Edit **cucumber-sort.json** to arrange the steps in the order you want them to
 appear in the recipes. For example:
 
-```json
+```jsonc
 {
   "$schema": "https://raw.githubusercontent.com/kevgo/cucumber-sort/refs/heads/main/docs/schema.json",
   "include": [],
