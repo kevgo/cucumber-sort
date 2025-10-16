@@ -137,13 +137,13 @@ readable, and easier to maintain.
 > To see a real-world example of using _cucumber-sort_ in production, check out
 > the [Git Town codebase](https://github.com/git-town/git-town).
 
-### Step 4: sort repetetive steps
+### Step 4: sort repetitive steps
 
-Sometimes multiple steps repeat several times. An example is making
-[laminated dough](https://en.wikipedia.org/wiki/Laminated_dough). Creating it
-requires to repeat three steps several times:
+Sometimes multiple steps interleave several times. As an example, creating
+[laminated dough](https://en.wikipedia.org/wiki/Laminated_dough) requires to
+repeatedly add layers of dough and butterj
 
-<a type="workspace/new-file" filename="laminated_dough.feature">
+<a type="workspace/new-file" filename="laminated_1.feature">
 
 ```cucumber
 Feature: laminated dough
@@ -162,8 +162,12 @@ Feature: laminated dough
 ```
 
 </a>
+<a type="workspace/copy-file" src="laminated_1.feature" dst="laminated_2.feature"></a>
+<a type="workspace/copy-file" src="laminated_1.feature" dst="laminated_3.feature"></a>
 
 A naive approach would be this step order:
+
+<a type="workspace/new-file" filename="cucumber-sort.json">
 
 ```json
 {
@@ -177,8 +181,12 @@ A naive approach would be this step order:
 }
 ```
 
-However, sorting steps this way would mess up the recipe and make it look like
-this:
+</a>
+
+However, sorting steps this way would mess up the recipe:
+
+<a type="shell/command" command="cucumber-sort format laminated_1.feature"></a>
+<a type="workspace/existing-file-with-content" filename="laminated_1.feature">
 
 ```cucumber
 Feature: laminated dough
@@ -196,8 +204,11 @@ Feature: laminated dough
     And sprinkle with cinnamon
 ```
 
-To sort this recipe properly, we tell _cucumber-sort_ to keep certain steps in
-the order they occur together:
+</a>
+
+To sort this recipe properly, we need to tell _cucumber-sort_ to keep the steps
+`fold the dough`, `add a layer of butter`, and `chill in the fridge` in the
+order they occur:
 
 <a type="workspace/new-file" filename="cucumber-sort.json">
 
@@ -217,8 +228,9 @@ the order they occur together:
 
 </a>
 
-<a type="shell/command" command="cucumber-sort format"></a>
-<a type="workspace/existing-file-with-content" filename="laminated_dough.feature">
+<a type="shell/command" command="cucumber-sort format laminated_2.feature"></a>
+<a type="workspace/compare-files" have="laminated_2.feature"
+want="laminated_3.feature">
 
 Now if we sort the file, it keeps the original order.
 
