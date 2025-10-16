@@ -207,8 +207,8 @@ Feature: laminated dough
 </a>
 
 To sort this recipe properly, we need to tell _cucumber-sort_ to keep the steps
-`fold the dough`, `add a layer of butter`, and `chill in the fridge` in the
-order they occur:
+`fold the dough`, `add a layer of butter`, and `chill in the fridge` together
+(in the order they occur) while sorting:
 
 <a type="workspace/new-file" filename="cucumber-sort.json">
 
