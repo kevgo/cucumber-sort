@@ -66,9 +66,9 @@ order. Currently, it looks like this:
 
 </a>
 
-Everything inside
-<code type="workspace/existing-file-with-content" filename="cucumber-sort.json" partial-match>
-"unknown-steps"</code> are Gherkin steps that _cucumber-sort_ can see but
+Everything inside 
+<code type="workspace/existing-file-with-content" filename="cucumber-sort.json" partial-match>"unknown-steps"</code>
+are Gherkin steps that _cucumber-sort_ can see but
 doesn't yet know how to order.
 
 ### Step 2: arrange the steps in the desired order
