@@ -43,6 +43,12 @@ ps: fix test  # pitstop, run during development
 setup: setup-ci  # install development dependencies on this computer
 	cargo install cargo-edit cargo-upgrades --locked
 
+setup-ci: node_modules
+	rustup component add clippy
+	rustup toolchain add nightly
+	rustup component add rustfmt --toolchain nightly
+	cargo install cargo-machete --locked
+
 test: build unit lint cuke doc   # runs all tests
 
 unit:  # runs the unit tests
@@ -61,12 +67,6 @@ build:
 
 help:  # prints all available targets
 	grep -h -E '^[a-zA-Z_-]+:.*?# .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?# "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
-
-setup-ci: node_modules
-	rustup component add clippy
-	rustup toolchain add nightly
-	rustup component add rustfmt --toolchain nightly
-	cargo install cargo-machete --locked
 
 tools/rta@${RUN_THAT_APP_VERSION}:
 	rm -f tools/rta* tools/rta
