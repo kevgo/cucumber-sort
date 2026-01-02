@@ -1,6 +1,5 @@
 Feature: enforce alphabetical ordering of similar steps
 
-	# @this
 	Scenario:
 		Given file "cucumber-sort.json" with content:
 			"""
