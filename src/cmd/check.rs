@@ -51,9 +51,9 @@ fn file(filepath: Utf8PathBuf, sorter: &mut Sorter) -> AppResult<Vec<Finding>> {
   let (sorted_file, mut findings) = sorter.sort_file(gherkin, &filepath);
   if findings.is_empty() {
     let sorted_lines = sorted_file.lines();
-    findings.extend(deduplicate_unsorted_lines(
-      original_lines.find_mismatching(&sorted_lines, &filepath),
-    ));
+    let mismatching_findings = original_lines.find_mismatching(&sorted_lines, &filepath);
+    let deduplicated_findings = deduplicate_unsorted_lines(mismatching_findings);
+    findings.extend(deduplicated_findings);
   }
   Ok(findings)
 }
