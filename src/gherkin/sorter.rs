@@ -10,7 +10,7 @@ use std::cell::Cell;
 pub struct Sorter {
   /// the lines from the "steps" section in the config file
   pub entries: Vec<Entry>,
-  /// regexes for steps that should maintain their original order
+  /// steps that should maintain their original order
   keep_order: Vec<Regex>,
 }
 
