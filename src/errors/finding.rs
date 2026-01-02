@@ -97,6 +97,7 @@ mod tests {
   use big_s::S;
   use camino::Utf8PathBuf;
 
+  /// helper function that provides an Issue of type UnsortedLine
   fn unsorted_line() -> Issue {
     Issue::UnsortedLine {
       have: String::new(),
@@ -104,10 +105,12 @@ mod tests {
     }
   }
 
+  /// helper function that provides the name for test file 1
   fn file_1() -> Utf8PathBuf {
     Utf8PathBuf::from("one")
   }
 
+  /// helper function that provides the name for test file 2
   fn file_2() -> Utf8PathBuf {
     Utf8PathBuf::from("two")
   }
