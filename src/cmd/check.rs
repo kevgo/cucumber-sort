@@ -51,7 +51,8 @@ fn file(filepath: Utf8PathBuf, sorter: &mut Sorter) -> AppResult<Vec<Finding>> {
   let (sorted_file, mut findings) = sorter.sort_file(gherkin, &filepath);
   if findings.is_empty() {
     let sorted_lines = sorted_file.lines();
-    findings.extend(original_lines.find_mismatching(&sorted_lines, &filepath));
+    let mismatching_findings = original_lines.find_mismatching(&sorted_lines, &filepath);
+    findings.extend(mismatching_findings);
   }
   Ok(findings)
 }
