@@ -66,24 +66,24 @@ pub enum Issue {
 // Removes consecutive findings of type UnsortedLine from the given findings.
 pub fn filter_consecutive_unsorted_lines(findings: Vec<Finding>) -> Vec<Finding> {
   let mut result = vec![];
-  let mut prev_was_unsorted_at: Option<(Utf8PathBuf, usize)> = None;
+  let mut prev_unsorted: Option<(Utf8PathBuf, usize)> = None;
   for finding in findings {
     match &finding.problem {
       Issue::UnsortedLine { .. } => {
-        let is_consecutive = if let Some((prev_file, prev_line)) = &prev_was_unsorted_at {
+        let is_consecutive = if let Some((prev_file, prev_line)) = &prev_unsorted {
           &finding.file == prev_file && finding.line == prev_line + 1
         } else {
           false
         };
         if is_consecutive {
-          prev_was_unsorted_at = Some((finding.file, finding.line));
+          prev_unsorted = Some((finding.file, finding.line));
         } else {
-          prev_was_unsorted_at = Some((finding.file.clone(), finding.line));
+          prev_unsorted = Some((finding.file.clone(), finding.line));
           result.push(finding);
         }
       }
       _ => {
-        prev_was_unsorted_at = None;
+        prev_unsorted = None;
         result.push(finding);
       }
     }
