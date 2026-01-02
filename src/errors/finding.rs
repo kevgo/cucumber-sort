@@ -94,7 +94,6 @@ pub fn filter_consecutive_unsorted_lines(findings: Vec<Finding>) -> Vec<Finding>
 #[cfg(test)]
 mod tests {
   use crate::errors::{Finding, Issue};
-  use big_s::S;
   use camino::Utf8PathBuf;
 
   /// helper function that provides an Issue of type UnsortedLine
@@ -120,8 +119,8 @@ mod tests {
   }
 
   mod filter_consecutive_unsorted_lines {
+    use crate::errors::Finding;
     use crate::errors::finding::tests::{file_1, file_2, undefined_step, unsorted_line};
-    use crate::errors::{Finding, Issue};
 
     #[test]
     fn consecutive_unsorted_lines() {
