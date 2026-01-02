@@ -97,9 +97,8 @@ mod tests {
   use big_s::S;
 
   mod deduplicate_unsorted_lines {
-    use camino::Utf8PathBuf;
-
     use crate::errors::{Finding, Issue};
+    use camino::Utf8PathBuf;
 
     #[test]
     fn consecutive_lines_in_one_file() {
