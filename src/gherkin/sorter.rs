@@ -111,10 +111,7 @@ impl Sorter {
         // Check if any candidate matches a keep-order pattern
         let should_keep_order = candidates.iter().any(|(idx, _)| {
           if let Some(step) = &deletable_steps.0[*idx] {
-            self
-              .keep_order
-              .iter()
-              .any(|regex| regex.is_match(&step.title))
+            self.keep_order.iter().any(|re| re.is_match(&step.title))
           } else {
             false
           }
