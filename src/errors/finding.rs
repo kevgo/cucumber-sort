@@ -105,6 +105,10 @@ mod tests {
     }
   }
 
+  fn undefined_step() -> Issue {
+    Issue::UndefinedStep(String::new())
+  }
+
   /// helper function that provides the name for test file 1
   fn file_1() -> Utf8PathBuf {
     Utf8PathBuf::from("one")
@@ -116,7 +120,7 @@ mod tests {
   }
 
   mod filter_consecutive_unsorted_lines {
-    use crate::errors::finding::tests::{file_1, file_2, unsorted_line};
+    use crate::errors::finding::tests::{file_1, file_2, undefined_step, unsorted_line};
     use crate::errors::{Finding, Issue};
 
     #[test]
@@ -203,7 +207,7 @@ mod tests {
         Finding {
           file: file_1(),
           line: 3,
-          problem: Issue::UndefinedStep("step".into()),
+          problem: undefined_step(),
         },
         Finding {
           file: file_1(),
@@ -225,7 +229,7 @@ mod tests {
         Finding {
           file: file_1(),
           line: 3,
-          problem: Issue::UndefinedStep("step".into()),
+          problem: undefined_step(),
         },
         Finding {
           file: file_1(),
@@ -240,39 +244,38 @@ mod tests {
 
   #[test]
   fn ordering() {
-    let undefined_step = Issue::UndefinedStep(S("step"));
     let mut give = vec![
       Finding {
         file: file_2(),
         line: 1,
-        problem: undefined_step.clone(),
+        problem: undefined_step(),
       },
       Finding {
         file: file_1(),
         line: 2,
-        problem: undefined_step.clone(),
+        problem: undefined_step(),
       },
       Finding {
         file: file_1(),
         line: 1,
-        problem: undefined_step.clone(),
+        problem: undefined_step(),
       },
     ];
     let want = vec![
       Finding {
         file: file_1(),
         line: 1,
-        problem: undefined_step.clone(),
+        problem: undefined_step(),
       },
       Finding {
         file: file_1(),
         line: 2,
-        problem: undefined_step.clone(),
+        problem: undefined_step(),
       },
       Finding {
         file: file_2(),
         line: 1,
-        problem: undefined_step,
+        problem: undefined_step(),
       },
     ];
     give.sort();
