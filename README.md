@@ -138,7 +138,7 @@ readable, and easier to maintain.
 > To see a real-world example of using _cucumber-sort_ in production, check out
 > the [Git Town codebase](https://github.com/git-town/git-town).
 
-### Step 4: keep order of interleaving steps
+### Step 4: keep the order of interleaving steps
 
 Sometimes multiple steps interleave several times. As an example, creating
 [laminated dough](https://en.wikipedia.org/wiki/Laminated_dough) requires to
@@ -236,7 +236,7 @@ want="laminated_3.feature">
 Now when _cucumber-sort_ formats the recipe for laminated dough, it does not
 change the content.
 
-### Preserving the order of some repeated steps
+### Step 5: preserve the order of some repeated steps
 
 By default, Cucumber-sort sorts repeated steps alphabetically. Consider the
 following feature file:
