@@ -25,6 +25,5 @@ Feature: ignoring globs
     Then it prints:
       """
       features/unordered.feature:4  expected When step 1 but found When step 2
-      features/unordered.feature:5  expected And step 2 but found And step 1
       """
     And the exit code is failure

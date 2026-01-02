@@ -77,8 +77,5 @@ Feature: format dependent steps
     Then it prints:
       """
       features/one.feature:8  expected And the branches but found And a file
-      features/one.feature:9  expected | branch-1 | but found And the branches
-      features/one.feature:10  expected | branch-2 | but found | branch-1 |
-      features/one.feature:11  expected And a file but found | branch-2 |
       """
     And the exit code is failure
