@@ -57,9 +57,7 @@ impl Sorter {
     for file_block in file.blocks {
       let (sorted_block, block_issues) = self.sort_block(file_block, filename);
       new_blocks.push(sorted_block);
-      if let Some(first) = block_issues.into_iter().next() {
-        doc_issues.push(first);
-      }
+      doc_issues.extend(block_issues);
     }
     (gherkin::Document { blocks: new_blocks }, doc_issues)
   }
