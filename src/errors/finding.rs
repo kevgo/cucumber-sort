@@ -64,7 +64,7 @@ pub enum Issue {
 }
 
 // Removes consecutive unsorted lines from the given findings.
-pub fn deduplicate_unsorted_lines(findings: Vec<Finding>) -> Vec<Finding> {
+pub fn filter_consecutive_unsorted_lines(findings: Vec<Finding>) -> Vec<Finding> {
   let mut result = vec![];
   let mut prev_was_unsorted_at: Option<(Utf8PathBuf, usize)> = None;
   for finding in findings {
@@ -96,28 +96,28 @@ mod tests {
   use crate::errors::{Finding, Issue};
   use big_s::S;
 
-  mod deduplicate_unsorted_lines {
+  mod filter_consecutive_unsorted_lines {
     use crate::errors::{Finding, Issue};
     use camino::Utf8PathBuf;
 
     #[test]
-    fn consecutive_lines_in_one_file() {
+    fn consecutive_unsorted_lines() {
       let one = Utf8PathBuf::from("one");
       let give = vec![
         Finding {
           file: one.clone(),
           line: 1,
           problem: Issue::UnsortedLine {
-            have: "oneA".into(),
-            want: "oneB".into(),
+            have: "a".into(),
+            want: "b".into(),
           },
         },
         Finding {
           file: one.clone(),
           line: 2,
           problem: Issue::UnsortedLine {
-            have: "twoA".into(),
-            want: "twoB".into(),
+            have: "a".into(),
+            want: "b".into(),
           },
         },
       ];
@@ -125,11 +125,11 @@ mod tests {
         file: one,
         line: 1,
         problem: Issue::UnsortedLine {
-          have: "oneA".into(),
-          want: "oneB".into(),
+          have: "a".into(),
+          want: "b".into(),
         },
       }];
-      let have = super::super::deduplicate_unsorted_lines(give);
+      let have = super::super::filter_consecutive_unsorted_lines(give);
       pretty::assert_eq!(have, want);
     }
 
@@ -140,16 +140,16 @@ mod tests {
           file: "one.feature".into(),
           line: 1,
           problem: Issue::UnsortedLine {
-            have: "oneA".into(),
-            want: "oneB".into(),
+            have: "a".into(),
+            want: "b".into(),
           },
         },
         Finding {
           file: "two.feature".into(),
           line: 2,
           problem: Issue::UnsortedLine {
-            have: "twoA".into(),
-            want: "twoB".into(),
+            have: "a".into(),
+            want: "b".into(),
           },
         },
       ];
@@ -158,41 +158,41 @@ mod tests {
           file: "one.feature".into(),
           line: 1,
           problem: Issue::UnsortedLine {
-            have: "oneA".into(),
-            want: "oneB".into(),
+            have: "a".into(),
+            want: "b".into(),
           },
         },
         Finding {
           file: "two.feature".into(),
           line: 2,
           problem: Issue::UnsortedLine {
-            have: "twoA".into(),
-            want: "twoB".into(),
+            have: "a".into(),
+            want: "b".into(),
           },
         },
       ];
-      let have = super::super::deduplicate_unsorted_lines(give);
+      let have = super::super::filter_consecutive_unsorted_lines(give);
       pretty::assert_eq!(have, want);
     }
 
     #[test]
-    fn sandwich_in_one_file() {
+    fn mixing_unsorted_lines_with_other_issues() {
       let one = Utf8PathBuf::from("one");
       let give = vec![
         Finding {
           file: one.clone(),
           line: 1,
           problem: Issue::UnsortedLine {
-            have: "oneA".into(),
-            want: "oneB".into(),
+            have: "a".into(),
+            want: "b".into(),
           },
         },
         Finding {
           file: one.clone(),
           line: 2,
           problem: Issue::UnsortedLine {
-            have: "twoA".into(),
-            want: "twoB".into(),
+            have: "a".into(),
+            want: "b".into(),
           },
         },
         Finding {
@@ -204,16 +204,16 @@ mod tests {
           file: one.clone(),
           line: 4,
           problem: Issue::UnsortedLine {
-            have: "fourA".into(),
-            want: "fourB".into(),
+            have: "a".into(),
+            want: "b".into(),
           },
         },
         Finding {
           file: one.clone(),
           line: 5,
           problem: Issue::UnsortedLine {
-            have: "fiveA".into(),
-            want: "fiveB".into(),
+            have: "a".into(),
+            want: "b".into(),
           },
         },
       ];
@@ -222,8 +222,8 @@ mod tests {
           file: one.clone(),
           line: 1,
           problem: Issue::UnsortedLine {
-            have: "oneA".into(),
-            want: "oneB".into(),
+            have: "a".into(),
+            want: "b".into(),
           },
         },
         Finding {
@@ -235,12 +235,12 @@ mod tests {
           file: one,
           line: 4,
           problem: Issue::UnsortedLine {
-            have: "fourA".into(),
-            want: "fourB".into(),
+            have: "a".into(),
+            want: "b".into(),
           },
         },
       ];
-      let have = super::super::deduplicate_unsorted_lines(give);
+      let have = super::super::filter_consecutive_unsorted_lines(give);
       pretty::assert_eq!(have, want);
     }
   }
