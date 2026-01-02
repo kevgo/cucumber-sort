@@ -236,9 +236,10 @@ want="laminated_3.feature">
 Now when _cucumber-sort_ formats the recipe for laminated dough, it does not
 change the content.
 
-### Keep the order of some repeated steps
+### Preserving the order of some repeated steps
 
-Cucumber-sort sorts repeated steps alphabetically. Consider this feature file:
+By default, Cucumber-sort sorts repeated steps alphabetically. Consider the
+following feature file:
 
 <a type="workspace/new-file" filename="commands_1.feature">
 
@@ -254,7 +255,7 @@ Feature: shell commands
 </a>
 <a type="workspace/copy-file" src="commands_1.feature" dst="commands_2.feature"></a>
 
-The configuration file is straightforward:
+With this configuration:
 
 <a type="workspace/new-file" filename="cucumber-sort.json">
 
@@ -269,7 +270,8 @@ The configuration file is straightforward:
 
 </a>
 
-Sorting the steps `I run .*` alphabetically messes up their order:
+Cucumber-Sort will sort the repeated `I run .*` steps alphabetically. This
+produces an incorrect result, since the order of shell commands matters:
 
 <a type="shell/command" command="cucumber-sort format commands_1.feature"></a>
 <a type="workspace/existing-file-with-content" filename="commands_1.feature">
@@ -285,7 +287,8 @@ Feature: shell commands
 
 </a>
 
-You can tell Cucumber-Sort to not sort this step:
+To prevent this, you can tell Cucumber-Sort to preserve the original order for
+specific step patterns using `keep-order`:
 
 <a type="workspace/new-file" filename="cucumber-sort.json">
 
@@ -303,7 +306,8 @@ You can tell Cucumber-Sort to not sort this step:
 
 </a>
 
-Now it doesn't sort step `I run .*` anymore:
+With this configuration, steps matching `I run .*` are no longer reordered, and
+the original sequence is preserved:
 
 <a type="shell/command" command="cucumber-sort format commands_2.feature"></a>
 <a type="workspace/existing-file-with-content" filename="commands_2.feature">
