@@ -97,13 +97,16 @@ mod tests {
   use big_s::S;
 
   mod deduplicate_unsorted_lines {
+    use camino::Utf8PathBuf;
+
     use crate::errors::{Finding, Issue};
 
     #[test]
     fn consecutive_lines_in_one_file() {
+      let one = Utf8PathBuf::from("one");
       let give = vec![
         Finding {
-          file: "one.feature".into(),
+          file: one.clone(),
           line: 1,
           problem: Issue::UnsortedLine {
             have: "oneA".into(),
@@ -111,7 +114,7 @@ mod tests {
           },
         },
         Finding {
-          file: "one.feature".into(),
+          file: one.clone(),
           line: 2,
           problem: Issue::UnsortedLine {
             have: "twoA".into(),
@@ -120,7 +123,7 @@ mod tests {
         },
       ];
       let want = vec![Finding {
-        file: "one.feature".into(),
+        file: one,
         line: 1,
         problem: Issue::UnsortedLine {
           have: "oneA".into(),
@@ -175,9 +178,10 @@ mod tests {
 
     #[test]
     fn sandwich_in_one_file() {
+      let one = Utf8PathBuf::from("one");
       let give = vec![
         Finding {
-          file: "one.feature".into(),
+          file: one.clone(),
           line: 1,
           problem: Issue::UnsortedLine {
             have: "oneA".into(),
@@ -185,7 +189,7 @@ mod tests {
           },
         },
         Finding {
-          file: "one.feature".into(),
+          file: one.clone(),
           line: 2,
           problem: Issue::UnsortedLine {
             have: "twoA".into(),
@@ -193,12 +197,12 @@ mod tests {
           },
         },
         Finding {
-          file: "one.feature".into(),
+          file: one.clone(),
           line: 3,
           problem: Issue::UndefinedStep("step".into()),
         },
         Finding {
-          file: "one.feature".into(),
+          file: one.clone(),
           line: 4,
           problem: Issue::UnsortedLine {
             have: "fourA".into(),
@@ -206,7 +210,7 @@ mod tests {
           },
         },
         Finding {
-          file: "one.feature".into(),
+          file: one.clone(),
           line: 5,
           problem: Issue::UnsortedLine {
             have: "fiveA".into(),
@@ -216,7 +220,7 @@ mod tests {
       ];
       let want = vec![
         Finding {
-          file: "one.feature".into(),
+          file: one.clone(),
           line: 1,
           problem: Issue::UnsortedLine {
             have: "oneA".into(),
@@ -224,12 +228,12 @@ mod tests {
           },
         },
         Finding {
-          file: "one.feature".into(),
+          file: one.clone(),
           line: 3,
           problem: Issue::UndefinedStep("step".into()),
         },
         Finding {
-          file: "one.feature".into(),
+          file: one,
           line: 4,
           problem: Issue::UnsortedLine {
             have: "fourA".into(),
