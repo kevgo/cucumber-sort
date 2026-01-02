@@ -76,10 +76,8 @@ pub fn deduplicate_unsorted_lines(findings: Vec<Finding>) -> Vec<Finding> {
           false
         };
         if is_consecutive {
-          // update tracking but don't include consecutive findings
           prev_was_unsorted_at = Some((finding.file, finding.line));
         } else {
-          // include and update tracking
           prev_was_unsorted_at = Some((finding.file.clone(), finding.line));
           result.push(finding);
         }
