@@ -70,7 +70,7 @@ impl Sorter {
       for used_regex in &entry.regexes {
         if !used_regex.used.get() {
           result.push(Finding {
-            file: crate::config::CONFIG_FILE_NAME.into(),
+            file: CONFIG_FILE_NAME.into(),
             line: entry.line,
             problem: Issue::UnusedRegex(used_regex.regex.to_string()),
           });
