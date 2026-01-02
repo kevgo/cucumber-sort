@@ -97,38 +97,48 @@ mod tests {
   use big_s::S;
   use camino::Utf8PathBuf;
 
+  fn unsorted_line() -> Issue {
+    Issue::UnsortedLine {
+      have: String::new(),
+      want: String::new(),
+    }
+  }
+
+  fn file_1() -> Utf8PathBuf {
+    Utf8PathBuf::from("one")
+  }
+
+  fn file_2() -> Utf8PathBuf {
+    Utf8PathBuf::from("two")
+  }
+
   mod filter_consecutive_unsorted_lines {
+    use crate::errors::finding::tests::{file_1, file_2, unsorted_line};
     use crate::errors::{Finding, Issue};
-    use camino::Utf8PathBuf;
 
     #[test]
     fn consecutive_unsorted_lines() {
-      let one = Utf8PathBuf::from("one");
-      let unsorted_line = Issue::UnsortedLine {
-        have: "a".into(),
-        want: "b".into(),
-      };
       let give = vec![
         Finding {
-          file: one.clone(),
+          file: file_1(),
           line: 1,
-          problem: unsorted_line.clone(),
+          problem: unsorted_line(),
         },
         Finding {
-          file: one.clone(),
+          file: file_1(),
           line: 2,
-          problem: unsorted_line.clone(),
+          problem: unsorted_line(),
         },
         Finding {
-          file: one.clone(),
+          file: file_1(),
           line: 3,
-          problem: unsorted_line.clone(),
+          problem: unsorted_line(),
         },
       ];
       let want = vec![Finding {
-        file: one,
+        file: file_1(),
         line: 1,
-        problem: unsorted_line,
+        problem: unsorted_line(),
       }];
       let have = super::super::filter_consecutive_unsorted_lines(give);
       pretty::assert_eq!(have, want);
@@ -136,44 +146,38 @@ mod tests {
 
     #[test]
     fn consecutive_unsorted_lines_in_different_files() {
-      let one = Utf8PathBuf::from("one");
-      let two = Utf8PathBuf::from("two");
-      let unsorted_line = Issue::UnsortedLine {
-        have: "a".into(),
-        want: "b".into(),
-      };
       let give = vec![
         Finding {
-          file: one.clone(),
+          file: file_1(),
           line: 1,
-          problem: unsorted_line.clone(),
+          problem: unsorted_line(),
         },
         Finding {
-          file: one.clone(),
+          file: file_1(),
           line: 2,
-          problem: unsorted_line.clone(),
+          problem: unsorted_line(),
         },
         Finding {
-          file: two.clone(),
+          file: file_2(),
           line: 3,
-          problem: unsorted_line.clone(),
+          problem: unsorted_line(),
         },
         Finding {
-          file: two.clone(),
+          file: file_2(),
           line: 4,
-          problem: unsorted_line.clone(),
+          problem: unsorted_line(),
         },
       ];
       let want = vec![
         Finding {
-          file: one.clone(),
+          file: file_1(),
           line: 1,
-          problem: unsorted_line.clone(),
+          problem: unsorted_line(),
         },
         Finding {
-          file: two,
+          file: file_2(),
           line: 3,
-          problem: unsorted_line.clone(),
+          problem: unsorted_line(),
         },
       ];
       let have = super::super::filter_consecutive_unsorted_lines(give);
@@ -182,53 +186,48 @@ mod tests {
 
     #[test]
     fn mixing_unsorted_lines_with_other_issues() {
-      let one = Utf8PathBuf::from("one");
-      let unsorted_line = Issue::UnsortedLine {
-        have: "a".into(),
-        want: "b".into(),
-      };
       let give = vec![
         Finding {
-          file: one.clone(),
+          file: file_1(),
           line: 1,
-          problem: unsorted_line.clone(),
+          problem: unsorted_line(),
         },
         Finding {
-          file: one.clone(),
+          file: file_1(),
           line: 2,
-          problem: unsorted_line.clone(),
+          problem: unsorted_line(),
         },
         Finding {
-          file: one.clone(),
+          file: file_1(),
           line: 3,
           problem: Issue::UndefinedStep("step".into()),
         },
         Finding {
-          file: one.clone(),
+          file: file_1(),
           line: 4,
-          problem: unsorted_line.clone(),
+          problem: unsorted_line(),
         },
         Finding {
-          file: one.clone(),
+          file: file_1(),
           line: 5,
-          problem: unsorted_line.clone(),
+          problem: unsorted_line(),
         },
       ];
       let want = vec![
         Finding {
-          file: one.clone(),
+          file: file_1(),
           line: 1,
-          problem: unsorted_line.clone(),
+          problem: unsorted_line(),
         },
         Finding {
-          file: one.clone(),
+          file: file_1(),
           line: 3,
           problem: Issue::UndefinedStep("step".into()),
         },
         Finding {
-          file: one,
+          file: file_1(),
           line: 4,
-          problem: unsorted_line.clone(),
+          problem: unsorted_line(),
         },
       ];
       let have = super::super::filter_consecutive_unsorted_lines(give);
@@ -238,39 +237,37 @@ mod tests {
 
   #[test]
   fn ordering() {
-    let one = Utf8PathBuf::from("one");
-    let two = Utf8PathBuf::from("two");
     let undefined_step = Issue::UndefinedStep(S("step"));
     let mut give = vec![
       Finding {
-        file: two.clone(),
+        file: file_2(),
         line: 1,
         problem: undefined_step.clone(),
       },
       Finding {
-        file: one.clone(),
+        file: file_1(),
         line: 2,
         problem: undefined_step.clone(),
       },
       Finding {
-        file: one.clone(),
+        file: file_1(),
         line: 1,
         problem: undefined_step.clone(),
       },
     ];
     let want = vec![
       Finding {
-        file: one.clone(),
+        file: file_1(),
         line: 1,
         problem: undefined_step.clone(),
       },
       Finding {
-        file: one,
+        file: file_1(),
         line: 2,
         problem: undefined_step.clone(),
       },
       Finding {
-        file: two,
+        file: file_2(),
         line: 1,
         problem: undefined_step,
       },
