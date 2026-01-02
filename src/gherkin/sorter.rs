@@ -109,13 +109,7 @@ impl Sorter {
       //         and only if the step isn't listed in keep-order
       if entry.regexes.len() == 1 {
         // Check if any candidate matches a keep-order pattern
-        let should_keep_order = candidates.iter().any(|(idx, _)| {
-          if let Some(step) = &deletable_steps.0[*idx] {
-            self.keep_order.iter().any(|re| re.is_match(&step.title))
-          } else {
-            false
-          }
-        });
+        let should_keep_order = self.has_keep_order_match(&candidates, &deletable_steps);
 
         if !should_keep_order {
           candidates.sort_by(|a, b| {
@@ -155,6 +149,21 @@ impl Sorter {
       });
     }
     (optimize_keywords(result), issues)
+  }
+
+  /// Checks if any of the candidate steps match a keep-order pattern
+  fn has_keep_order_match(
+    &self,
+    candidates: &[(usize, &str)],
+    deletable_steps: &DeletableSteps,
+  ) -> bool {
+    candidates.iter().any(|(idx, _)| {
+      if let Some(step) = &deletable_steps.0[*idx] {
+        self.keep_order.iter().any(|re| re.is_match(&step.title))
+      } else {
+        false
+      }
+    })
   }
 }
 
