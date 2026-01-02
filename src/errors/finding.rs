@@ -144,8 +144,18 @@ mod tests {
           problem: unsorted_line.clone(),
         },
         Finding {
-          file: two.clone(),
+          file: one.clone(),
           line: 2,
+          problem: unsorted_line.clone(),
+        },
+        Finding {
+          file: two.clone(),
+          line: 3,
+          problem: unsorted_line.clone(),
+        },
+        Finding {
+          file: two.clone(),
+          line: 4,
           problem: unsorted_line.clone(),
         },
       ];
@@ -157,7 +167,7 @@ mod tests {
         },
         Finding {
           file: two,
-          line: 2,
+          line: 3,
           problem: unsorted_line.clone(),
         },
       ];
