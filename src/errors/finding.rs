@@ -63,6 +63,7 @@ pub enum Issue {
   UnusedRegex(String),
 }
 
+// Removes consecutive unsorted lines from the given findings.
 pub fn deduplicate_unsorted_lines(findings: Vec<Finding>) -> Vec<Finding> {
   let mut result = vec![];
   for finding in findings {
@@ -78,35 +79,40 @@ mod tests {
   use crate::errors::{Finding, Issue};
   use big_s::S;
 
-  #[test]
-  fn deduplicate_unsorted_lines() {
-    let give = vec![
-      Finding {
+  mod deduplicate_unsorted_lines {
+    use crate::errors::{Finding, Issue};
+
+    #[test]
+    fn consecutive_lines() {
+      let give = vec![
+        Finding {
+          file: "two.feature".into(),
+          line: 1,
+          problem: Issue::UnsortedLine {
+            have: "one".into(),
+            want: "one".into(),
+          },
+        },
+        Finding {
+          file: "two.feature".into(),
+          line: 2,
+          problem: Issue::UnsortedLine {
+            have: "two".into(),
+            want: "two".into(),
+          },
+        },
+      ];
+      let want = vec![Finding {
         file: "two.feature".into(),
         line: 1,
         problem: Issue::UnsortedLine {
           have: "one".into(),
           want: "one".into(),
         },
-      },
-      Finding {
-        file: "two.feature".into(),
-        line: 2,
-        problem: Issue::UnsortedLine {
-          have: "two".into(),
-          want: "two".into(),
-        },
-      },
-    ];
-    let want = vec![Finding {
-      file: "two.feature".into(),
-      line: 1,
-      problem: Issue::UnsortedLine {
-        have: "one".into(),
-        want: "one".into(),
-      },
-    }];
-    pretty::assert_eq!(want, give);
+      }];
+      let have = super::super::deduplicate_unsorted_lines(give);
+      pretty::assert_eq!(have, want);
+    }
   }
 
   #[test]
