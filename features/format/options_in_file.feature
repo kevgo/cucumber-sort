@@ -46,7 +46,7 @@ Feature: enable options through the opts file
         "$schema": "https://raw.githubusercontent.com/kevgo/cucumber-sort/refs/heads/main/docs/schema.json",
         "include": [],
         "exclude": [],
-        "keep-order": false,
+        "keep-order": [],
         "record": true,
         "fail-fast": true,
         "steps": [

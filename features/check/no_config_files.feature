@@ -38,7 +38,7 @@ Feature: run without config file
         "exclude": [],
         "record": false,
         "fail-fast": false,
-        "keep-order": false,
+        "keep-order": [],
         "steps": [],
         "unknown-steps": [
           "^file \".*\" with content:$",
