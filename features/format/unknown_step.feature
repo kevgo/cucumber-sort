@@ -79,7 +79,7 @@ Feature: format unknown steps
         "exclude": [],
         "record": false,
         "fail-fast": false,
-        "keep-order": false,
+        "keep-order": [],
         "steps": [
           "step 1"
         ],
