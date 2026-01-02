@@ -119,11 +119,16 @@ mod tests {
           line: 2,
           problem: unsorted_line.clone(),
         },
+        Finding {
+          file: one.clone(),
+          line: 3,
+          problem: unsorted_line.clone(),
+        },
       ];
       let want = vec![Finding {
         file: one,
         line: 1,
-        problem: unsorted_line.clone(),
+        problem: unsorted_line,
       }];
       let have = super::super::filter_consecutive_unsorted_lines(give);
       pretty::assert_eq!(have, want);
