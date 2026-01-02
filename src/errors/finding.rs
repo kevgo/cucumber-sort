@@ -63,7 +63,7 @@ pub enum Issue {
   UnusedRegex(String),
 }
 
-// Removes consecutive unsorted lines from the given findings.
+// Removes consecutive findings of type UnsortedLine from the given findings.
 pub fn filter_consecutive_unsorted_lines(findings: Vec<Finding>) -> Vec<Finding> {
   let mut result = vec![];
   let mut prev_was_unsorted_at: Option<(Utf8PathBuf, usize)> = None;
