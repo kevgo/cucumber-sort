@@ -53,6 +53,7 @@ order. Currently, it looks like this:
   "exclude": [],
   "record": false,
   "fail-fast": false,
+  "keep-order": [],
   "steps": [],
   "unknown-steps": [
     "^a mixing bowl$",
@@ -137,7 +138,7 @@ readable, and easier to maintain.
 > To see a real-world example of using _cucumber-sort_ in production, check out
 > the [Git Town codebase](https://github.com/git-town/git-town).
 
-### Step 4: sort repetitive steps
+### Step 4: keep order of interleaving steps
 
 Sometimes multiple steps interleave several times. As an example, creating
 [laminated dough](https://en.wikipedia.org/wiki/Laminated_dough) requires to
@@ -234,6 +235,93 @@ want="laminated_3.feature">
 
 Now when _cucumber-sort_ formats the recipe for laminated dough, it does not
 change the content.
+
+### Preserving the order of some repeated steps
+
+By default, Cucumber-sort sorts repeated steps alphabetically. Consider the
+following feature file:
+
+<a type="workspace/new-file" filename="commands_1.feature">
+
+```cucumber
+Feature: shell commands
+
+  Scenario: re-create a folder
+    Given a folder "test"
+    And I run "rm -rf test"
+    And I run "mkdir test"
+```
+
+</a>
+<a type="workspace/copy-file" src="commands_1.feature" dst="commands_2.feature"></a>
+
+With this configuration:
+
+<a type="workspace/new-file" filename="cucumber-sort.json">
+
+```json
+{
+  "steps": [
+    "a folder .*",
+    "I run .*"
+  ]
+}
+```
+
+</a>
+
+Cucumber-Sort will sort the repeated `I run .*` steps alphabetically. This
+produces an incorrect result, since the order of shell commands matters:
+
+<a type="shell/command" command="cucumber-sort format commands_1.feature"></a>
+<a type="workspace/existing-file-with-content" filename="commands_1.feature">
+
+```cucumber
+Feature: shell commands
+
+  Scenario: re-create a folder
+    Given a folder "test"
+    And I run "mkdir test"
+    And I run "rm -rf test"
+```
+
+</a>
+
+To prevent this, you can tell Cucumber-Sort to preserve the original order for
+specific step patterns using `keep-order`:
+
+<a type="workspace/new-file" filename="cucumber-sort.json">
+
+```json
+{
+  "steps": [
+    "a folder .*",
+    "I run .*"
+  ],
+  "keep-order": [
+    "I run .*"
+  ]
+}
+```
+
+</a>
+
+With this configuration, steps matching `I run .*` are no longer reordered, and
+the original sequence is preserved:
+
+<a type="shell/command" command="cucumber-sort format commands_2.feature"></a>
+<a type="workspace/existing-file-with-content" filename="commands_2.feature">
+
+```cucumber
+Feature: shell commands
+
+  Scenario: re-create a folder
+    Given a folder "test"
+    And I run "rm -rf test"
+    And I run "mkdir test"
+```
+
+</a>
 
 ## Installation
 

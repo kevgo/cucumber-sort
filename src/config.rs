@@ -44,6 +44,13 @@ pub struct Config {
   )]
   pub fail_fast: bool,
 
+  #[serde(default, rename = "keep-order")]
+  #[schemars(
+    rename = "keep-order",
+    description = "Don't order the listed steps alphabetically"
+  )]
+  pub keep_order: Vec<String>,
+
   #[serde(default)]
   #[schemars(
     description = "Ordered list of step patterns, can be individual regex or array of regex that should be sorted together"
@@ -86,6 +93,7 @@ impl Config {
       schema: self.schema,
       include: self.include,
       exclude: self.exclude,
+      keep_order: self.keep_order,
       record: self.record || record,
       fail_fast: self.fail_fast || fail_fast,
       steps: self.steps,
@@ -111,6 +119,7 @@ impl Default for Config {
       schema: default_schema_url(),
       include: Vec::new(),
       exclude: Vec::new(),
+      keep_order: Vec::new(),
       record: false,
       fail_fast: false,
       steps: Vec::new(),

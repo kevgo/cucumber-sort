@@ -48,6 +48,7 @@ Feature: enable options through the opts file
         "exclude": [],
         "record": true,
         "fail-fast": true,
+        "keep-order": [],
         "steps": [
           "step 1"
         ],

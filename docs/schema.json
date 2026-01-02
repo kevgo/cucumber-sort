@@ -25,6 +25,14 @@
         "type": "string"
       }
     },
+    "keep-order": {
+      "description": "Don't order the listed steps alphabetically",
+      "default": [],
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
     "record": {
       "description": "Add unknown steps to the config file",
       "default": false,

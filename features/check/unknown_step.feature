@@ -57,6 +57,7 @@ Feature: check unknown steps
         "exclude": [],
         "record": false,
         "fail-fast": false,
+        "keep-order": [],
         "steps": [
           "step 1"
         ],
@@ -96,6 +97,7 @@ Feature: check unknown steps
         "exclude": [],
         "record": false,
         "fail-fast": false,
+        "keep-order": [],
         "steps": [
           "step 1"
         ],

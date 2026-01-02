@@ -14,6 +14,7 @@ Feature: creating the config files
         "exclude": [],
         "record": false,
         "fail-fast": false,
+        "keep-order": [],
         "steps": [],
         "unknown-steps": []
       }
