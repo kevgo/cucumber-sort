@@ -79,6 +79,37 @@ mod tests {
   use big_s::S;
 
   #[test]
+  fn deduplicate_unsorted_lines() {
+    let give = vec![
+      Finding {
+        file: "two.feature".into(),
+        line: 1,
+        problem: Issue::UnsortedLine {
+          have: "one".into(),
+          want: "one".into(),
+        },
+      },
+      Finding {
+        file: "two.feature".into(),
+        line: 2,
+        problem: Issue::UnsortedLine {
+          have: "two".into(),
+          want: "two".into(),
+        },
+      },
+    ];
+    let want = vec![Finding {
+      file: "two.feature".into(),
+      line: 1,
+      problem: Issue::UnsortedLine {
+        have: "one".into(),
+        want: "one".into(),
+      },
+    }];
+    pretty::assert_eq!(want, give);
+  }
+
+  #[test]
   fn ordering() {
     let mut give = vec![
       Finding {
