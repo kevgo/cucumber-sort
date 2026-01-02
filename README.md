@@ -236,7 +236,7 @@ want="laminated_3.feature">
 Now when _cucumber-sort_ formats the recipe for laminated dough, it does not
 change the content.
 
-### Keep the order of particular repeated steps
+### Keep the order of some repeated steps
 
 Cucumber-sort sorts repeated steps alphabetically. Consider this feature file:
 
