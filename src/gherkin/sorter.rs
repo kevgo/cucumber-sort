@@ -101,7 +101,16 @@ impl Sorter {
     let mut deletable_steps = DeletableSteps::from(deoptimize_keywords(unordered_steps));
     for (entry_idx, entry) in self.entries.iter().enumerate() {
       // step 1: find the Gherkin steps that match the regexes for this config file entry
-      let candidates = deletable_steps.find_matches(&entry.regexes);
+      let mut candidates = deletable_steps.find_matches(&entry.regexes);
+      // step 2: sort candidates alphabetically by step title
+      // only if there's a single regex (groups of regexes maintain file order)
+      if entry.regexes.len() == 1 {
+        candidates.sort_by(|a, b| {
+          let title_a = &deletable_steps.0[a.0].as_ref().unwrap().title;
+          let title_b = &deletable_steps.0[b.0].as_ref().unwrap().title;
+          title_a.cmp(title_b)
+        });
+      }
       // step 2: keep each step from (1) only if no other regex also matches and is longer
       for (candidate_idx, candidate_regex) in candidates {
         if deletable_steps.is_longest_regex(
