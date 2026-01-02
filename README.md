@@ -53,6 +53,7 @@ order. Currently, it looks like this:
   "exclude": [],
   "record": false,
   "fail-fast": false,
+  "keep-order": [],
   "steps": [],
   "unknown-steps": [
     "^a mixing bowl$",

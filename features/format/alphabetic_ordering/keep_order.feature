@@ -1,6 +1,5 @@
 Feature: keep order of some steps
 
-  @this
   Scenario: correct order but not sorted alphabetically
     Given file "cucumber-sort.json" with content:
       """
