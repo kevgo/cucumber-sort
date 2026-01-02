@@ -63,6 +63,16 @@ pub enum Issue {
   UnusedRegex(String),
 }
 
+pub fn deduplicate_unsorted_lines(findings: Vec<Finding>) -> Vec<Finding> {
+  let mut result = vec![];
+  for finding in findings {
+    if let Issue::UnsortedLine { have, want } = finding.problem {
+      result.push(finding);
+    }
+  }
+  result
+}
+
 #[cfg(test)]
 mod tests {
   use crate::errors::{Finding, Issue};
