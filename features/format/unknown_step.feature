@@ -42,6 +42,7 @@ Feature: format unknown steps
         "exclude": [],
         "record": false,
         "fail-fast": false,
+        "keep-order": false,
         "steps": [
           "step 1"
         ],
@@ -78,6 +79,7 @@ Feature: format unknown steps
         "exclude": [],
         "record": false,
         "fail-fast": false,
+        "keep-order": false,
         "steps": [
           "step 1"
         ],

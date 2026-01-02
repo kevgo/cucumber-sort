@@ -7,9 +7,9 @@ Feature: run without config file
 
         Scenario: test
           Given file "foo" with content:
-            '''
-            bar
-            '''
+    '''
+    bar
+    '''
           And step 2
       """
 
@@ -38,6 +38,7 @@ Feature: run without config file
         "exclude": [],
         "record": false,
         "fail-fast": false,
+        "keep-order": false,
         "steps": [],
         "unknown-steps": [
           "^file \".*\" with content:$",

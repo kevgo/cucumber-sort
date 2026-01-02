@@ -7,9 +7,9 @@ Feature: run without config file
 
         Scenario: test
           Given file "foo" with content:
-            '''
-            bar
-            '''
+    '''
+    bar
+    '''
           And step 2
       """
 
@@ -37,6 +37,7 @@ Feature: run without config file
         "$schema": "https://raw.githubusercontent.com/kevgo/cucumber-sort/refs/heads/main/docs/schema.json",
         "include": [],
         "exclude": [],
+        "keep-order": false,
         "record": false,
         "fail-fast": false,
         "steps": [],
