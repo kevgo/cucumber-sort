@@ -37,9 +37,9 @@ Feature: run without config file
         "$schema": "https://raw.githubusercontent.com/kevgo/cucumber-sort/refs/heads/main/docs/schema.json",
         "include": [],
         "exclude": [],
-        "keep-order": [],
         "record": false,
         "fail-fast": false,
+        "keep-order": [],
         "steps": [],
         "unknown-steps": [
           "^file \".*\" with content:$",

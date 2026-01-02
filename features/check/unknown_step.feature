@@ -55,9 +55,9 @@ Feature: check unknown steps
         "$schema": "https://raw.githubusercontent.com/kevgo/cucumber-sort/refs/heads/main/docs/schema.json",
         "include": [],
         "exclude": [],
-        "keep-order": [],
         "record": false,
         "fail-fast": false,
+        "keep-order": [],
         "steps": [
           "step 1"
         ],
@@ -97,7 +97,7 @@ Feature: check unknown steps
         "exclude": [],
         "record": false,
         "fail-fast": false,
-        "keep-order": false,
+        "keep-order": [],
         "steps": [
           "step 1"
         ],
