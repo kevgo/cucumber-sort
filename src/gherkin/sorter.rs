@@ -1,4 +1,4 @@
-use crate::config::{Config, StepPattern};
+use crate::config::{CONFIG_FILE_NAME, Config, StepPattern};
 use crate::errors::{AppResult, Finding, Issue, UserError};
 use crate::gherkin::{self, Keyword};
 use crate::regex::make_regex;
@@ -68,7 +68,7 @@ impl Sorter {
       for used_regex in &entry.regexes {
         if !used_regex.used.get() {
           result.push(Finding {
-            file: crate::config::CONFIG_FILE_NAME.into(),
+            file: CONFIG_FILE_NAME.into(),
             line: entry.line,
             problem: Issue::UnusedRegex(used_regex.regex.to_string()),
           });
@@ -159,7 +159,7 @@ impl TryFrom<&Config> for Sorter {
           }),
           Err(err) => {
             return Err(UserError::ConfigFileInvalidRegex {
-              file: crate::config::CONFIG_FILE_NAME.into(),
+              file: CONFIG_FILE_NAME.into(),
               line: i,
               message: format!("Invalid regex '{}': {}", pattern, err),
             });
@@ -172,7 +172,7 @@ impl TryFrom<&Config> for Sorter {
               Ok(regex) => regexes.push(TrackedRegex::new(regex)),
               Err(err) => {
                 return Err(UserError::ConfigFileInvalidRegex {
-                  file: crate::config::CONFIG_FILE_NAME.into(),
+                  file: CONFIG_FILE_NAME.into(),
                   line: i,
                   message: format!("Invalid regex '{}': {}", pattern, err),
                 });
