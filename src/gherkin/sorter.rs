@@ -10,6 +10,8 @@ use std::cell::Cell;
 pub struct Sorter {
   /// the lines from the "steps" section in the config file
   pub entries: Vec<Entry>,
+  /// regexes for steps that should maintain their original order
+  keep_order: Vec<Regex>,
 }
 
 /// an line from the "steps" section of the config file
@@ -104,12 +106,27 @@ impl Sorter {
       let mut candidates = deletable_steps.find_matches(&entry.regexes);
       // step 2: sort candidates alphabetically by step title
       //         only if there's a single regex (groups of regexes maintain file order)
+      //         and only if the step isn't listed in keep-order
       if entry.regexes.len() == 1 {
-        candidates.sort_by(|a, b| {
-          let title_a = &deletable_steps.0[a.0].as_ref().unwrap().title;
-          let title_b = &deletable_steps.0[b.0].as_ref().unwrap().title;
-          title_a.cmp(title_b)
+        // Check if any candidate matches a keep-order pattern
+        let should_keep_order = candidates.iter().any(|(idx, _)| {
+          if let Some(step) = &deletable_steps.0[*idx] {
+            self
+              .keep_order
+              .iter()
+              .any(|regex| regex.is_match(&step.title))
+          } else {
+            false
+          }
         });
+
+        if !should_keep_order {
+          candidates.sort_by(|a, b| {
+            let title_a = &deletable_steps.0[a.0].as_ref().unwrap().title;
+            let title_b = &deletable_steps.0[b.0].as_ref().unwrap().title;
+            title_a.cmp(title_b)
+          });
+        }
       }
       // step 2: keep each step from (1) only if no other regex also matches and is longer
       for (candidate_idx, candidate_regex) in candidates {
@@ -183,7 +200,26 @@ impl TryFrom<&Config> for Sorter {
         }
       }
     }
-    Ok(Sorter { entries })
+
+    // Compile keep-order patterns
+    let mut keep_order = Vec::with_capacity(config.keep_order.len());
+    for pattern in &config.keep_order {
+      match Regex::new(pattern) {
+        Ok(regex) => keep_order.push(regex),
+        Err(err) => {
+          return Err(UserError::ConfigFileInvalidRegex {
+            file: crate::config::CONFIG_FILE_NAME.into(),
+            line: 0, // keep-order doesn't have line numbers in the same way
+            message: format!("Invalid keep-order regex '{}': {}", pattern, err),
+          });
+        }
+      }
+    }
+
+    Ok(Sorter {
+      entries,
+      keep_order,
+    })
   }
 }
 
