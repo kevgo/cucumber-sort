@@ -30,8 +30,6 @@ Feature: check unordered steps
     Then it prints:
       """
       features/one.feature:4  expected Then step 1 but found Then step 2
-      features/one.feature:5  expected And step 2 but found And step 1
       features/two.feature:4  expected Then step 1 but found Then step 2
-      features/two.feature:5  expected And step 2 but found And step 1
       """
     And the exit code is failure
