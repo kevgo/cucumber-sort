@@ -1,6 +1,6 @@
 use crate::cli::Flags;
 use crate::config::Config;
-use crate::errors::{AppResult, Finding};
+use crate::errors::{AppResult, Finding, deduplicate_unsorted_lines};
 use crate::file_finder::FileFinder;
 use crate::gherkin::{self, Sorter, sorter};
 use camino::Utf8PathBuf;
@@ -51,7 +51,9 @@ fn file(filepath: Utf8PathBuf, sorter: &mut Sorter) -> AppResult<Vec<Finding>> {
   let (sorted_file, mut findings) = sorter.sort_file(gherkin, &filepath);
   if findings.is_empty() {
     let sorted_lines = sorted_file.lines();
-    findings.extend(original_lines.find_mismatching(&sorted_lines, &filepath));
+    findings.extend(deduplicate_unsorted_lines(
+      original_lines.find_mismatching(&sorted_lines, &filepath),
+    ));
   }
   Ok(findings)
 }

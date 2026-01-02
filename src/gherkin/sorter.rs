@@ -1,5 +1,5 @@
 use crate::config::{Config, StepPattern};
-use crate::errors::{AppResult, Finding, Issue, UserError, deduplicate_unsorted_lines};
+use crate::errors::{AppResult, Finding, Issue, UserError};
 use crate::gherkin::{self, Keyword};
 use crate::regex::make_regex;
 use camino::Utf8Path;
@@ -57,7 +57,7 @@ impl Sorter {
     for file_block in file.blocks {
       let (sorted_block, block_issues) = self.sort_block(file_block, filename);
       new_blocks.push(sorted_block);
-      doc_issues.extend(deduplicate_unsorted_lines(block_issues));
+      doc_issues.extend(block_issues);
     }
     (gherkin::Document { blocks: new_blocks }, doc_issues)
   }
