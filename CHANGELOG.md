@@ -1,4 +1,4 @@
-### 0.1.2
+### 0.2.0
 
 - sorts repeated occurrences of the same step alphabetically
 - keep-order setting
