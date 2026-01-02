@@ -66,7 +66,7 @@ pub enum Issue {
 pub fn deduplicate_unsorted_lines(findings: Vec<Finding>) -> Vec<Finding> {
   let mut result = vec![];
   for finding in findings {
-    if let Issue::UnsortedLine { have, want } = finding.problem {
+    if let Issue::UnsortedLine { .. } = &finding.problem {
       result.push(finding);
     }
   }
