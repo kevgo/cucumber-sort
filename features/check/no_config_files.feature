@@ -7,9 +7,9 @@ Feature: run without config file
 
         Scenario: test
           Given file "foo" with content:
-    '''
-    bar
-    '''
+          '''
+          bar
+          '''
           And step 2
       """
 
