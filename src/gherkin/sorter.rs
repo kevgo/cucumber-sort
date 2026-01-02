@@ -209,7 +209,7 @@ impl TryFrom<&Config> for Sorter {
     // Compile keep-order patterns
     let mut keep_order = Vec::with_capacity(config.keep_order.len());
     for pattern in &config.keep_order {
-      match Regex::new(pattern) {
+      match Regex::new(&make_regex(pattern)) {
         Ok(regex) => keep_order.push(regex),
         Err(err) => {
           return Err(UserError::ConfigFileInvalidRegex {
