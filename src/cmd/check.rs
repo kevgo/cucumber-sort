@@ -32,15 +32,17 @@ pub fn check(flags: Flags, filepath: Option<Utf8PathBuf>) -> AppResult<ExitCode>
 fn all(config: &Config, sorter: &mut Sorter) -> AppResult<Vec<Finding>> {
   let mut result = vec![];
   let finder = FileFinder::try_from(config)?;
+  let mut add_unused_regexes = true;
   for filepath in finder.search_folder(".")? {
     let findings = file(filepath, sorter)?;
     let found_problems = !findings.is_empty();
     result.extend(findings);
     if config.fail_fast && found_problems {
+      add_unused_regexes = false;
       break;
     }
   }
-  if result.is_empty() {
+  if add_unused_regexes {
     result.extend(sorter.unused_regexes());
   }
   Ok(result)
