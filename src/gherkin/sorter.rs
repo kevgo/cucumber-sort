@@ -103,7 +103,7 @@ impl Sorter {
       // step 1: find the Gherkin steps that match the regexes for this config file entry
       let mut candidates = deletable_steps.find_matches(&entry.regexes);
       // step 2: sort candidates alphabetically by step title
-      // only if there's a single regex (groups of regexes maintain file order)
+      //         only if there's a single regex (groups of regexes maintain file order)
       if entry.regexes.len() == 1 {
         candidates.sort_by(|a, b| {
           let title_a = &deletable_steps.0[a.0].as_ref().unwrap().title;
