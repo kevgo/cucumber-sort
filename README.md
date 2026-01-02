@@ -138,7 +138,7 @@ readable, and easier to maintain.
 > To see a real-world example of using _cucumber-sort_ in production, check out
 > the [Git Town codebase](https://github.com/git-town/git-town).
 
-### Step 4: sort repetitive steps
+### Step 4: keep order of interleaving steps
 
 Sometimes multiple steps interleave several times. As an example, creating
 [laminated dough](https://en.wikipedia.org/wiki/Laminated_dough) requires to
@@ -235,6 +235,89 @@ want="laminated_3.feature">
 
 Now when _cucumber-sort_ formats the recipe for laminated dough, it does not
 change the content.
+
+### Keep the order of particular repeated steps
+
+Cucumber-sort sorts repeated steps alphabetically. Consider this feature file:
+
+<a type="workspace/new-file" filename="commands_1.feature">
+
+```cucumber
+Feature: shell commands
+
+  Scenario: re-create a folder
+    Given a folder "test"
+    And I run "rm -rf test"
+    And I run "mkdir test"
+```
+
+</a>
+<a type="workspace/copy-file" src="commands_1.feature" dst="commands_2.feature"></a>
+
+The configuration file is straightforward:
+
+<a type="workspace/new-file" filename="cucumber-sort.json">
+
+```json
+{
+  "steps": [
+    "a folder .*",
+    "I run .*"
+  ]
+}
+```
+
+</a>
+
+Sorting the steps `I run .*` alphabetically messes up their order:
+
+<a type="shell/command" command="cucumber-sort format commands_1.feature"></a>
+<a type="workspace/existing-file-with-content" filename="commands_1.feature">
+
+```cucumber
+Feature: shell commands
+
+  Scenario: re-create a folder
+    Given a folder "test"
+    And I run "mkdir test"
+    And I run "rm -rf test"
+```
+
+</a>
+
+You can tell Cucumber-Sort to not sort this step:
+
+<a type="workspace/new-file" filename="cucumber-sort.json">
+
+```json
+{
+  "steps": [
+    "a folder .*",
+    "I run .*"
+  ],
+  "keep-order": [
+    "I run .*"
+  ]
+}
+```
+
+</a>
+
+Now it doesn't sort step `I run .*` anymore:
+
+<a type="shell/command" command="cucumber-sort format commands_2.feature"></a>
+<a type="workspace/existing-file-with-content" filename="commands_2.feature">
+
+```cucumber
+Feature: shell commands
+
+  Scenario: re-create a folder
+    Given a folder "test"
+    And I run "rm -rf test"
+    And I run "mkdir test"
+```
+
+</a>
 
 ## Installation
 
