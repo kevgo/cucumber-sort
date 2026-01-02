@@ -40,7 +40,9 @@ fn all(config: &Config, sorter: &mut Sorter) -> AppResult<Vec<Finding>> {
       break;
     }
   }
-  result.extend(sorter.unused_regexes());
+  if result.is_empty() {
+    result.extend(sorter.unused_regexes());
+  }
   Ok(result)
 }
 
