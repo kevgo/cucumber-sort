@@ -6,7 +6,10 @@ Feature: format dependent steps
       {
         "steps": [
           "a repo",
-          ["the branches", "the commits"],
+          [
+            "the branches",
+            "the commits"
+          ],
           "a file",
           "another thing"
         ]
@@ -59,7 +62,10 @@ Feature: format dependent steps
       {
         "steps": [
           "a repo",
-          ["the branches", "the commits"],
+          [
+            "the branches",
+            "the commits"
+          ],
           "a file",
           "another thing"
         ]
