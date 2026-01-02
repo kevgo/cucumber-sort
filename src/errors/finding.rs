@@ -71,7 +71,7 @@ pub fn deduplicate_unsorted_lines(findings: Vec<Finding>) -> Vec<Finding> {
     match &finding.problem {
       Issue::UnsortedLine { .. } => {
         let is_consecutive = if let Some((prev_file, prev_line)) = &prev_was_unsorted_at {
-          prev_file == &finding.file && prev_line + 1 == finding.line
+          &finding.file == prev_file && finding.line == prev_line + 1
         } else {
           false
         };
