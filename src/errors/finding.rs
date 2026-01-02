@@ -66,9 +66,28 @@ pub enum Issue {
 // Removes consecutive unsorted lines from the given findings.
 pub fn deduplicate_unsorted_lines(findings: Vec<Finding>) -> Vec<Finding> {
   let mut result = vec![];
+  let mut prev_was_unsorted_at: Option<(Utf8PathBuf, usize)> = None;
   for finding in findings {
-    if let Issue::UnsortedLine { .. } = &finding.problem {
-      result.push(finding);
+    match &finding.problem {
+      Issue::UnsortedLine { .. } => {
+        let is_consecutive = if let Some((prev_file, prev_line)) = &prev_was_unsorted_at {
+          prev_file == &finding.file && prev_line + 1 == finding.line
+        } else {
+          false
+        };
+        if is_consecutive {
+          // update tracking but don't include consecutive findings
+          prev_was_unsorted_at = Some((finding.file, finding.line));
+        } else {
+          // include and update tracking
+          prev_was_unsorted_at = Some((finding.file.clone(), finding.line));
+          result.push(finding);
+        }
+      }
+      _ => {
+        prev_was_unsorted_at = None;
+        result.push(finding);
+      }
     }
   }
   result
@@ -83,33 +102,143 @@ mod tests {
     use crate::errors::{Finding, Issue};
 
     #[test]
-    fn consecutive_lines() {
+    fn consecutive_lines_in_one_file() {
       let give = vec![
         Finding {
-          file: "two.feature".into(),
+          file: "one.feature".into(),
           line: 1,
           problem: Issue::UnsortedLine {
-            have: "one".into(),
-            want: "one".into(),
+            have: "oneA".into(),
+            want: "oneB".into(),
+          },
+        },
+        Finding {
+          file: "one.feature".into(),
+          line: 2,
+          problem: Issue::UnsortedLine {
+            have: "twoA".into(),
+            want: "twoB".into(),
+          },
+        },
+      ];
+      let want = vec![Finding {
+        file: "one.feature".into(),
+        line: 1,
+        problem: Issue::UnsortedLine {
+          have: "oneA".into(),
+          want: "oneB".into(),
+        },
+      }];
+      let have = super::super::deduplicate_unsorted_lines(give);
+      pretty::assert_eq!(have, want);
+    }
+
+    #[test]
+    fn consecutive_unsorted_lines_in_different_files() {
+      let give = vec![
+        Finding {
+          file: "one.feature".into(),
+          line: 1,
+          problem: Issue::UnsortedLine {
+            have: "oneA".into(),
+            want: "oneB".into(),
           },
         },
         Finding {
           file: "two.feature".into(),
           line: 2,
           problem: Issue::UnsortedLine {
-            have: "two".into(),
-            want: "two".into(),
+            have: "twoA".into(),
+            want: "twoB".into(),
           },
         },
       ];
-      let want = vec![Finding {
-        file: "two.feature".into(),
-        line: 1,
-        problem: Issue::UnsortedLine {
-          have: "one".into(),
-          want: "one".into(),
+      let want = vec![
+        Finding {
+          file: "one.feature".into(),
+          line: 1,
+          problem: Issue::UnsortedLine {
+            have: "oneA".into(),
+            want: "oneB".into(),
+          },
         },
-      }];
+        Finding {
+          file: "two.feature".into(),
+          line: 2,
+          problem: Issue::UnsortedLine {
+            have: "twoA".into(),
+            want: "twoB".into(),
+          },
+        },
+      ];
+      let have = super::super::deduplicate_unsorted_lines(give);
+      pretty::assert_eq!(have, want);
+    }
+
+    #[test]
+    fn sandwich_in_one_file() {
+      let give = vec![
+        Finding {
+          file: "one.feature".into(),
+          line: 1,
+          problem: Issue::UnsortedLine {
+            have: "oneA".into(),
+            want: "oneB".into(),
+          },
+        },
+        Finding {
+          file: "one.feature".into(),
+          line: 2,
+          problem: Issue::UnsortedLine {
+            have: "twoA".into(),
+            want: "twoB".into(),
+          },
+        },
+        Finding {
+          file: "one.feature".into(),
+          line: 3,
+          problem: Issue::UndefinedStep("step".into()),
+        },
+        Finding {
+          file: "one.feature".into(),
+          line: 4,
+          problem: Issue::UnsortedLine {
+            have: "fourA".into(),
+            want: "fourB".into(),
+          },
+        },
+        Finding {
+          file: "one.feature".into(),
+          line: 5,
+          problem: Issue::UnsortedLine {
+            have: "fiveA".into(),
+            want: "fiveB".into(),
+          },
+        },
+      ];
+      let want = vec![
+        Finding {
+          file: "one.feature".into(),
+          line: 1,
+          problem: Issue::UnsortedLine {
+            have: "oneA".into(),
+            want: "oneB".into(),
+          },
+        },
+        Finding {
+          file: "one.feature".into(),
+          line: 3,
+          problem: Issue::UndefinedStep("step".into()),
+        },
+        Finding {
+          file: "one.feature".into(),
+          line: 4,
+          problem: Issue::UnsortedLine {
+            have: "fourA".into(),
+            want: "fourB".into(),
+          },
+        },
+      ];
       let have = super::super::deduplicate_unsorted_lines(give);
       pretty::assert_eq!(have, want);
     }
