@@ -41,6 +41,7 @@ install:  # installs the binary on the local machine
 lint: node_modules ${RTA}  # checks formatting
 	${DPRINT} check
 	cargo clippy --all-targets --all-features -- --deny=warnings
+	cargo clippy --test=cuke --all-features -- --deny=warnings
 	cargo +nightly fmt -- --check
 	git diff --check
 	${ACTIONLINT}
