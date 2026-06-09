@@ -58,7 +58,7 @@ async fn file_not_changed(world: &mut MyWorld, filename: String) {
   let Some((_, want_content)) = &world
     .files
     .iter()
-    .find(|(path, _)| path.as_str() == &filepath)
+    .find(|(path, _)| path.as_str() == filepath)
   else {
     panic!("file {filename} isn't stored")
   };
